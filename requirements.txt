@@ -1,0 +1,3 @@
+# FSI Vessel Arrival Monitor v4
+# No external dependencies required - uses Python standard library only
+# This app uses: http.server, json, csv, re, urllib, datetime

@@ -99,33 +99,36 @@ def fetch_vf_expected(vf_code):
     vessels = []
     tables = re.findall(r'<table[^>]*>(.+?)</table>', html, re.DOTALL)
     if not tables: return vessels
-    tbody = re.search(r'<tbody>(.*)</tbody>', tables[0], re.DOTALL)
-    if not tbody: return vessels
-    for row in tbody.group(1).split('<tr>'):
-        if 'vessels/details' not in row: continue
-        imo_m = re.search(r'vessels/details/(\d+)', row)
-        flag_m = re.search(r'flags/4x3/(\w+)\.svg.*?title="([^"]+)"', row)
-        name_m = re.search(r'named-title["\s>]+([^<]+)', row)
-        type_m = re.search(r'named-subtitle["\s>]+([^<]+)', row)
-        time_m = re.search(r'<td>([^<]+)</td>', row)
-        gt_m = re.search(r'col-gt[^>]*>(\d[\d,]*)<', row)
-        dwt_m = re.search(r'col-dwt[^>]*>(\d[\d,]*)<', row)
-        size_m = re.search(r'(\d{2,4})\s*x\s*(\d{2,4})', row)
-        fc = flag_m.group(1).upper() if flag_m else ""
-        if fc in XMAP: fc = XMAP[fc]
-        name = name_m.group(1).strip() if name_m else ""
-        if not name: continue
-        gt_v = gt_m.group(1).replace(",","") if gt_m else ""
-        dwt_v = dwt_m.group(1).replace(",","") if dwt_m else ""
-        vessels.append({
-            "name": name, "imo": imo_m.group(1) if imo_m else "",
-            "type": type_m.group(1).strip() if type_m else "",
-            "eta": time_m.group(1).strip() if time_m else "",
-            "flagCode": fc, "flagName": flag_m.group(2) if flag_m else "",
-            "gt": int(gt_v) if gt_v else 0, "dwt": int(dwt_v) if dwt_v else 0,
-            "loa": size_m.group(1) if size_m else "", "beam": size_m.group(2) if size_m else "",
-            "origin": "", "dest": "", "agent": "", "line": "", "built": "",
-        })
+
+    # Process ALL tables (not just first one) to get all vessels including pagination
+    for table_html in tables:
+        tbody = re.search(r'<tbody>(.*)</tbody>', table_html, re.DOTALL)
+        if not tbody: continue
+        for row in tbody.group(1).split('<tr>'):
+            if 'vessels/details' not in row: continue
+            imo_m = re.search(r'vessels/details/(\d+)', row)
+            flag_m = re.search(r'flags/4x3/(\w+)\.svg.*?title="([^"]+)"', row)
+            name_m = re.search(r'named-title["\s>]+([^<]+)', row)
+            type_m = re.search(r'named-subtitle["\s>]+([^<]+)', row)
+            time_m = re.search(r'<td>([^<]+)</td>', row)
+            gt_m = re.search(r'col-gt[^>]*>(\d[\d,]*)<', row)
+            dwt_m = re.search(r'col-dwt[^>]*>(\d[\d,]*)<', row)
+            size_m = re.search(r'(\d{2,4})\s*x\s*(\d{2,4})', row)
+            fc = flag_m.group(1).upper() if flag_m else ""
+            if fc in XMAP: fc = XMAP[fc]
+            name = name_m.group(1).strip() if name_m else ""
+            if not name: continue
+            gt_v = gt_m.group(1).replace(",","") if gt_m else ""
+            dwt_v = dwt_m.group(1).replace(",","") if dwt_m else ""
+            vessels.append({
+                "name": name, "imo": imo_m.group(1) if imo_m else "",
+                "type": type_m.group(1).strip() if type_m else "",
+                "eta": time_m.group(1).strip() if time_m else "",
+                "flagCode": fc, "flagName": flag_m.group(2) if flag_m else "",
+                "gt": int(gt_v) if gt_v else 0, "dwt": int(dwt_v) if dwt_v else 0,
+                "loa": size_m.group(1) if size_m else "", "beam": size_m.group(2) if size_m else "",
+                "origin": "", "dest": "", "agent": "", "line": "", "built": "",
+            })
     return vessels
 
 # ─── Barcelona Open Data ──────────────────────────────────
@@ -382,7 +385,7 @@ el("tB").innerHTML=so.map(v=>{const imo=v.imo||"",nm=v.name||"",fc=v.flagCode||"
 function toggleSel(k){if(S.sel.has(k))S.sel.delete(k);else S.sel.add(k);render()}
 function clearSel(){S.sel.clear();render()}
 function genCombinedReq(){const f=getF();const selected=f.filter(v=>S.sel.has(vKey(v)));if(!selected.length)return alert("No vessels selected");const byFlag={};selected.forEach(v=>{const fc=v.flagCode||"??";if(!byFlag[fc])byFlag[fc]=[];byFlag[fc].push(v)});const today=new Date().toLocaleDateString("en-GB",{day:"2-digit",month:"long",year:"numeric"});let html="";for(const[fc,vessels]of Object.entries(byFlag)){const admin=flagAdmin[fc]||{name:"Flag Admin ("+fc+")",email:"[email]",dept:"Maritime Safety"};const subject="Scheduled Vessel Arrivals — "+vessels.length+" vessel(s)";const vesselList=vessels.map(v=>v.name+" - "+(v.imo||"????")+" - "+(v.portName||"TBC")+" - "+(v.eta||v.lastETA||"TBC")).join("\n");const body="Dear Colleagues\nGood day\nPlease be informed that the following vessels are scheduled to one of ports within my coverage, in case needed it could be a good opportunity to arrange attendance :\n\n"+vesselList+"\n\nBest regards\nCapt. Gitlevych Illya\nFlag State Inspector\nTel: +34 603 730 040 (WhatsApp)\nE-mail: gitlevych.ilya@gmail.com\nLinkedIn: https://www.linkedin.com/in/gitlevych/";html+='<div style="margin-bottom:20px;padding:16px;background:var(--bg);border:1px solid var(--brd);border-radius:7px"><h3 style="color:var(--t1);font-size:13px;margin:0 0 8px 0">'+flagEmoji(fc)+" "+admin.name+" — "+vessels.length+' vessel(s)</h3><div style="font-size:10px;color:var(--t3);margin-bottom:4px">To: <span style="color:var(--blue);font-family:var(--m)">'+admin.email+'</span></div><pre id="body_'+fc+'" style="font-size:11px;color:var(--t1);font-family:var(--s);padding:10px;background:#050a12;border:1px solid var(--brd);border-radius:4px;white-space:pre-wrap;line-height:1.6;max-height:250px;overflow-y:auto;user-select:all">'+body+'</pre><div style="display:flex;gap:8px;margin-top:8px"><button class="btn btn-primary" onclick="navigator.clipboard.writeText(document.getElementById(\'body_'+fc+"').textContent);this.textContent='✓ Copied!'\">📋 Copy</button><a class=\"btn\" href=\"mailto:"+admin.email+"?subject="+encodeURIComponent(subject)+"&body="+encodeURIComponent(body)+"\" style=\"text-decoration:none\">📧 Email</a></div></div>"}const modal=document.createElement("div");modal.style.cssText="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.85);z-index:999;display:flex;align-items:center;justify-content:center;padding:20px";modal.onclick=e=>{if(e.target===modal)modal.remove()};modal.innerHTML='<div style="background:var(--bg2);border:1px solid var(--brd2);border-radius:10px;padding:20px;max-width:750px;width:100%;max-height:90vh;overflow-y:auto"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px"><h2 style="color:var(--t1);font-size:15px;margin:0">📧 Inspection Requests — '+selected.length+' vessels</h2><button class="btn" onclick="this.closest(\'div[style*=fixed]\').remove()" style="font-size:16px;padding:2px 8px">✕</button></div>'+html+"</div>";document.body.appendChild(modal)}
-function tP(id){const i=S.ports.indexOf(id);if(i>=0)S.ports.splice(i,1);else S.ports.push(id);sv();render();if(S.po.port)rPP(el("pS")?.value||"")}
+function tP(id){const i=S.ports.indexOf(id);if(i>=0)S.ports.splice(i,1);else S.ports.push(id);sv();render();if(S.po.port)rPP(el("pS")?.value||"");if(S.ports.length>0&&!S.live.length)fetchAll()}
 function tF(c){const i=S.flags.indexOf(c);if(i>=0)S.flags.splice(i,1);else S.flags.push(c);sv();render();if(S.po.flag)rFP(el("fS")?.value||"")}
 function tR(r){const ids=PORTS.filter(p=>p.region===r).map(p=>p.id);const all=ids.every(id=>S.ports.includes(id));if(all)S.ports=S.ports.filter(id=>!ids.includes(id));else ids.forEach(id=>{if(!S.ports.includes(id))S.ports.push(id)});sv();render();rPP(el("pS")?.value||"")}
 function tPicker(t){S.po[t]=!S.po[t];el(t+"Picker").style.display=S.po[t]?"block":"none";el(t+"PickerBtn").textContent=S.po[t]?"Close ✕":"+ "+(t==="port"?"Add Ports":"Manage Flags");if(S.po[t])t==="port"?rPP():rFP()}
@@ -390,7 +393,7 @@ function hs(c){if(S.sb===c)S.sd=S.sd==="asc"?"desc":"asc";else{S.sb=c;S.sd="asc"
 function rPP(s=""){const regs=[...new Set(PORTS.map(p=>p.region))];s=(s||"").toLowerCase();el("rBar").innerHTML='<button class="region-btn" style="color:var(--green)" onclick="S.ports=PORTS.map(p=>p.id);sv();render();rPP()">All</button><button class="region-btn" style="color:var(--red)" onclick="S.ports=[];sv();render();rPP()">None</button>'+regs.map(r=>'<button class="region-btn '+(PORTS.filter(p=>p.region===r).every(p=>S.ports.includes(p.id))?"active":"")+'" onclick="tR(\''+r+'\')">'+r+"</button>").join("");let h="";regs.forEach(r=>{const rp=PORTS.filter(p=>p.region===r&&(!s||p.name.toLowerCase().includes(s)));if(!rp.length)return;h+='<div class="region-group"><div class="region-group-label">'+r+'</div><div class="chips-wrap">'+rp.map(p=>'<button class="chip '+(S.ports.includes(p.id)?"active":"")+'" onclick="tP(\''+p.id+'\')">'+(p.bcn||p.direct?"🌟 ":"")+p.name+"</button>").join("")+"</div></div>"});el("pPL").innerHTML=h}
 function rFP(s=""){s=(s||"").toLowerCase();el("fPL").innerHTML=FLAGS.filter(f=>!s||f.n.toLowerCase().includes(s)).map(f=>'<button class="chip '+(S.flags.includes(f.c)?"active":"")+'" onclick="tF(\''+f.c+'\')"><span style="font-size:13px">'+f.e+"</span> "+f.n+"</button>").join("")}
 function exportCSV(){const d=getS(getF());const h=["ETA","Vessel","IMO","Flag","Flag Name","Type","Port","From","To","GT","DWT","LOA","Agent","Line","VesselFinder"];const rows=d.map(v=>[v.eta||v.lastETA||"",v.name,v.imo,v.flagCode,v.flagName||"",v.type||"",v.portName||"",v.origin||"",v.dest||"",v.gt||"",v.dwt||"",v.loa||"",v.agent||"",v.line||"",v.imo?"https://www.vesselfinder.com/vessels/details/"+v.imo:""]);const csv_data=[h,...rows].map(r=>r.map(c=>'"'+String(c||"").replace(/"/g,'""')+'"').join(",")).join("\n");const a=document.createElement("a");a.href=URL.createObjectURL(new Blob(["\ufeff"+csv_data],{type:"text/csv;charset=utf-8"}));a.download="fsi-arrivals-"+new Date().toISOString().slice(0,10)+".csv";a.click()}
-render();fetchAll();
+render();loadHistory();log("⚓ Ready! Select a port to load data.");
 </script></body></html>"""
 
 if __name__ == "__main__":

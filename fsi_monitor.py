@@ -13,7 +13,7 @@ Data Sources:
 """
 
 import http.server, json, os, re, csv, io
-import urllib.request, urllib.error
+import urllib.request, urllib.error, urllib.parse
 from datetime import datetime, timedelta
 from urllib.parse import urlparse, parse_qs
 
@@ -126,12 +126,19 @@ def fetch_bcn_arrivals():
     data = urllib.request.urlopen(req, timeout=30).read().decode("utf-8", errors="replace")
     vessels, seen = [], set()
     for r in csv.DictReader(io.StringIO(data)):
+        name = r.get("VAIXELLNOM","").strip()
         imo = r.get("IMO","").strip()
-        if not imo or imo in seen: continue
-        seen.add(imo)
+        if not name: continue
+        # Use name as unique key if IMO missing, otherwise use IMO
+        key = imo if imo else name.upper()
+        if key in seen: continue
+        seen.add(key)
+        # Extract date from ETA field (format: 2026-03-21 07:00:00)
+        eta_raw = r.get("ETA","").strip()
+        eta = eta_raw.split()[0] if eta_raw else ""  # Get just the date part
         vessels.append({
-            "name": r.get("VAIXELLNOM","").strip(), "imo": imo,
-            "type": r.get("VAIXELLTIPUS","").strip(), "eta": r.get("ETA","").strip(),
+            "name": name, "imo": imo,
+            "type": r.get("VAIXELLTIPUS","").strip(), "eta": eta,
             "flagCode": r.get("VAIXELLBANDERACODI","").strip(),
             "flagName": r.get("VAIXELLBANDERANOM","").strip(),
             "gt": 0, "dwt": 0,
@@ -143,6 +150,22 @@ def fetch_bcn_arrivals():
             "line": r.get("NAVIERA","").strip(), "built": "",
         })
     return vessels
+
+# ─── IMO Lookup via VesselFinder ──────────────────────────
+def lookup_imo(vessel_name, flag_code, port_name=""):
+    """Search VesselFinder for IMO by vessel name and flag"""
+    try:
+        # Search VesselFinder for the vessel
+        search_url = f"https://www.vesselfinder.com/vessels?name={urllib.parse.quote(vessel_name)}&flag={flag_code}"
+        req = urllib.request.Request(search_url, headers={"User-Agent": UA})
+        html = urllib.request.urlopen(req, timeout=10).read().decode("utf-8", errors="replace")
+        # Look for IMO in the first result link: vessels/details/XXXXXXXXX
+        match = re.search(r'vessels/details/(\d+)', html)
+        if match:
+            return match.group(1)
+    except:
+        pass
+    return ""
 
 # ─── Bilbao Port Authority ────────────────────────────────
 def fetch_bilbao():
@@ -182,8 +205,10 @@ def fetch_bilbao():
         name = cl(cells[2])
         if not name or name.isdigit(): continue
         gt_raw = cl(cells[4]).replace(",","").replace(".","")
+        # Lookup IMO using vessel name and flag
+        imo = lookup_imo(name, fc, "Bilbao")
         vessels.append({
-            "name": name, "imo": "", "type": "", "eta": cl(cells[5]),
+            "name": name, "imo": imo, "type": "", "eta": cl(cells[5]),
             "flagCode": fc, "flagName": "",
             "gt": int(gt_raw) if gt_raw.isdigit() else 0, "dwt": 0,
             "loa": cl(cells[3]), "beam": "", "built": "",
@@ -328,7 +353,7 @@ if(!so.length){el("tB").innerHTML='<tr><td colspan="10" class="empty-msg">'+(S.l
 el("tB").innerHTML=so.map(v=>{const imo=v.imo||"",nm=v.name||"",fc=v.flagCode||"",fn=v.flagName||"";const eta=v.eta||v.lastETA||"";const isLive=v._src==="live";const vk=vKey(v).replace(/'/g,"\\'");const checked=S.sel.has(vKey(v))?"checked":"";const lnk=imo?'<a href="https://www.vesselfinder.com/vessels/details/'+imo+'" target="_blank">🚢</a>':'<a href="https://www.vesselfinder.com/vessels?name='+encodeURIComponent(nm)+'" target="_blank">🔍</a>';return '<tr class="'+(isLive?"":"stale")+'"><td><input type="checkbox" class="ck" '+checked+' onchange="toggleSel(\''+vk+'\')"></td><td style="font-size:11px;font-family:var(--m);color:'+(isLive?"var(--amber)":"var(--t3)")+';white-space:nowrap">'+(eta?shortDate(eta):"—")+'</td><td><div style="font-weight:600;color:var(--t1);font-size:12px">'+nm+"</div>"+(imo?'<div style="font-size:10px;color:var(--t3);font-family:var(--m)">IMO '+imo+"</div>":"")+'</td><td style="white-space:nowrap"><span style="font-size:14px">'+flagEmoji(fc)+'</span> <span style="font-size:11px;color:var(--t2)">'+fc+'</span><div style="font-size:9px;color:var(--t3)">'+fn+'</div></td><td style="font-size:11px;color:var(--t2)">'+(v.type||"—")+'</td><td style="font-size:11px;color:var(--t2);font-weight:600">'+(v.portName||"—")+'</td><td style="font-size:10px;color:var(--t3)">'+(v.origin||"—")+'</td><td style="font-size:11px;font-family:var(--m);color:var(--t2)">'+(v.gt?v.gt.toLocaleString():"—")+'</td><td style="font-size:11px;font-family:var(--m);color:var(--t2)">'+(v.dwt?v.dwt.toLocaleString():"—")+'</td><td>'+lnk+"</td></tr>"}).join("")}
 function toggleSel(k){if(S.sel.has(k))S.sel.delete(k);else S.sel.add(k);render()}
 function clearSel(){S.sel.clear();render()}
-function genCombinedReq(){const f=getF();const selected=f.filter(v=>S.sel.has(vKey(v)));if(!selected.length)return alert("No vessels selected");const byFlag={};selected.forEach(v=>{const fc=v.flagCode||"??";if(!byFlag[fc])byFlag[fc]=[];byFlag[fc].push(v)});const today=new Date().toLocaleDateString("en-GB",{day:"2-digit",month:"long",year:"numeric"});let html="";for(const[fc,vessels]of Object.entries(byFlag)){const admin=flagAdmin[fc]||{name:"Flag Admin ("+fc+")",email:"[email]",dept:"Maritime Safety"};const subject="Flag State Inspection Request — "+vessels.length+" vessel(s) — Spanish Ports";const vesselList=vessels.map(v=>"  • "+v.name+(v.imo?" (IMO "+v.imo+")":"")+" — "+(v.type||"N/A")+"\n    Port: "+(v.portName||"TBC")+", ETA: "+(v.eta||v.lastETA||"TBC")+(v.origin?", From: "+v.origin:"")+(v.gt?", GT: "+v.gt:"")).join("\n\n");const body="Dear Sir/Madam,\n\n"+admin.dept+"\n"+admin.name+"\n\nDate: "+today+"\n\nSubject: Flag State Inspection Request — "+vessels.length+" Vessel(s)\n\nI am writing to request authorization to conduct Flag State Inspections on the following "+fc+"-flagged vessels expected at Spanish ports:\n\n"+vesselList+"\n\nAs an authorized Flag State Inspector, I kindly request confirmation and authorization to proceed.\n\nPlease advise on:\n1. Specific inspection requirements or focus areas\n2. Outstanding conditions of class\n3. Pending corrective actions from previous inspections\n4. Current statutory certification status\n\nBest regards,\n[Inspector Name]\n[Authorization Number]\n[Contact Details]";html+='<div style="margin-bottom:20px;padding:16px;background:var(--bg);border:1px solid var(--brd);border-radius:7px"><h3 style="color:var(--t1);font-size:13px;margin:0 0 8px 0">'+flagEmoji(fc)+" "+admin.name+" — "+vessels.length+' vessel(s)</h3><div style="font-size:10px;color:var(--t3);margin-bottom:4px">To: <span style="color:var(--blue);font-family:var(--m)">'+admin.email+'</span></div><pre id="body_'+fc+'" style="font-size:11px;color:var(--t1);font-family:var(--s);padding:10px;background:#050a12;border:1px solid var(--brd);border-radius:4px;white-space:pre-wrap;line-height:1.6;max-height:250px;overflow-y:auto;user-select:all">'+body+'</pre><div style="display:flex;gap:8px;margin-top:8px"><button class="btn btn-primary" onclick="navigator.clipboard.writeText(document.getElementById(\'body_'+fc+"').textContent);this.textContent='✓ Copied!'\">📋 Copy</button><a class=\"btn\" href=\"mailto:"+admin.email+"?subject="+encodeURIComponent(subject)+"&body="+encodeURIComponent(body)+"\" style=\"text-decoration:none\">📧 Email</a></div></div>"}const modal=document.createElement("div");modal.style.cssText="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.85);z-index:999;display:flex;align-items:center;justify-content:center;padding:20px";modal.onclick=e=>{if(e.target===modal)modal.remove()};modal.innerHTML='<div style="background:var(--bg2);border:1px solid var(--brd2);border-radius:10px;padding:20px;max-width:750px;width:100%;max-height:90vh;overflow-y:auto"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px"><h2 style="color:var(--t1);font-size:15px;margin:0">📧 Inspection Requests — '+selected.length+' vessels</h2><button class="btn" onclick="this.closest(\'div[style*=fixed]\').remove()" style="font-size:16px;padding:2px 8px">✕</button></div>'+html+"</div>";document.body.appendChild(modal)}
+function genCombinedReq(){const f=getF();const selected=f.filter(v=>S.sel.has(vKey(v)));if(!selected.length)return alert("No vessels selected");const byFlag={};selected.forEach(v=>{const fc=v.flagCode||"??";if(!byFlag[fc])byFlag[fc]=[];byFlag[fc].push(v)});const today=new Date().toLocaleDateString("en-GB",{day:"2-digit",month:"long",year:"numeric"});let html="";for(const[fc,vessels]of Object.entries(byFlag)){const admin=flagAdmin[fc]||{name:"Flag Admin ("+fc+")",email:"[email]",dept:"Maritime Safety"};const subject="Scheduled Vessel Arrivals — "+vessels.length+" vessel(s)";const vesselList=vessels.map(v=>v.name+" - "+(v.imo||"????")+" - "+(v.portName||"TBC")+" - "+(v.eta||v.lastETA||"TBC")).join("\n");const body="Dear Colleagues\nGood day\nPlease be informed that the following vessels are scheduled to one of ports within my coverage, in case needed it could be a good opportunity to arrange attendance :\n\n"+vesselList+"\n\nBest regards\nCapt. Gitlevych Illya\nFlag State Inspector\nTel: +34 603 730 040 (WhatsApp)\nE-mail: gitlevych.ilya@gmail.com\nLinkedIn: https://www.linkedin.com/in/gitlevych/";html+='<div style="margin-bottom:20px;padding:16px;background:var(--bg);border:1px solid var(--brd);border-radius:7px"><h3 style="color:var(--t1);font-size:13px;margin:0 0 8px 0">'+flagEmoji(fc)+" "+admin.name+" — "+vessels.length+' vessel(s)</h3><div style="font-size:10px;color:var(--t3);margin-bottom:4px">To: <span style="color:var(--blue);font-family:var(--m)">'+admin.email+'</span></div><pre id="body_'+fc+'" style="font-size:11px;color:var(--t1);font-family:var(--s);padding:10px;background:#050a12;border:1px solid var(--brd);border-radius:4px;white-space:pre-wrap;line-height:1.6;max-height:250px;overflow-y:auto;user-select:all">'+body+'</pre><div style="display:flex;gap:8px;margin-top:8px"><button class="btn btn-primary" onclick="navigator.clipboard.writeText(document.getElementById(\'body_'+fc+"').textContent);this.textContent='✓ Copied!'\">📋 Copy</button><a class=\"btn\" href=\"mailto:"+admin.email+"?subject="+encodeURIComponent(subject)+"&body="+encodeURIComponent(body)+"\" style=\"text-decoration:none\">📧 Email</a></div></div>"}const modal=document.createElement("div");modal.style.cssText="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.85);z-index:999;display:flex;align-items:center;justify-content:center;padding:20px";modal.onclick=e=>{if(e.target===modal)modal.remove()};modal.innerHTML='<div style="background:var(--bg2);border:1px solid var(--brd2);border-radius:10px;padding:20px;max-width:750px;width:100%;max-height:90vh;overflow-y:auto"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px"><h2 style="color:var(--t1);font-size:15px;margin:0">📧 Inspection Requests — '+selected.length+' vessels</h2><button class="btn" onclick="this.closest(\'div[style*=fixed]\').remove()" style="font-size:16px;padding:2px 8px">✕</button></div>'+html+"</div>";document.body.appendChild(modal)}
 function tP(id){const i=S.ports.indexOf(id);if(i>=0)S.ports.splice(i,1);else S.ports.push(id);sv();render();if(S.po.port)rPP(el("pS")?.value||"")}
 function tF(c){const i=S.flags.indexOf(c);if(i>=0)S.flags.splice(i,1);else S.flags.push(c);sv();render();if(S.po.flag)rFP(el("fS")?.value||"")}
 function tR(r){const ids=PORTS.filter(p=>p.region===r).map(p=>p.id);const all=ids.every(id=>S.ports.includes(id));if(all)S.ports=S.ports.filter(id=>!ids.includes(id));else ids.forEach(id=>{if(!S.ports.includes(id))S.ports.push(id)});sv();render();rPP(el("pS")?.value||"")}

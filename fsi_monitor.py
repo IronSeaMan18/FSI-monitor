@@ -7,7 +7,6 @@ Cloud:  Set PORT env var (Render/Railway auto-set it)
 
 Data Sources:
   🌟 Bilbao PA    — 68 vessels, 3 weeks ahead (Googlebot UA bypass)
-  🌟 Barcelona OD — 100+ vessels, 7 days (Open Data CSV)
   🌟 Marín PA     — ~8 vessels, 10 days (direct HTML)
   📡 VesselFinder — 10 Expected per port (free tier)
 """
@@ -15,12 +14,11 @@ Data Sources:
 import http.server, json, os, re, csv, io
 import urllib.request, urllib.error
 from datetime import datetime, timedelta
-from urllib.parse import urlparse, parse_qs
+from urllib.parse import urlparse, parse_qs, unquote
 
 PORT = int(os.environ.get("PORT", 8090))
 HOST = "0.0.0.0"  # Accept external connections (needed for cloud)
 VF_BASE = "https://www.vesselfinder.com"
-BCN_CSV = "https://opendatapre.portdebarcelona.cat/dataset/445832be-196a-425d-94ed-c85cff8d80fd/resource/466c0d42-f804-43f5-ba0e-8b8a9f8d5c7d/download/arribadessetdies.csv"
 BILBAO_URL = "https://www.bilbaoport.eus/en/vessel-activity/scheduled-calls/"
 MARIN_URL = "https://www.apmarin.com/es/paginas/buques_esperados"
 SN_BASE  = "https://shipnext.com/api/v1/ports"
@@ -115,7 +113,7 @@ def resolve_flag(imo):
         req = urllib.request.Request(
             f"{VF_BASE}/vessels/details/{imo}",
             headers={"User-Agent": UA, "Accept": "text/html"})
-        html = urllib.request.urlopen(req, timeout=10).read().decode("utf-8", errors="replace")
+        html = urllib.request.urlopen(req, timeout=6).read().decode("utf-8", errors="replace")
         fc_m = re.search(r'flags/4x3/(\w+)\.svg', html)
         fc = fc_m.group(1).upper() if fc_m else ""
         if fc in XMAP: fc = XMAP[fc]
@@ -130,7 +128,7 @@ def resolve_flag(imo):
 
 # ─── ShipNext planned-vessels ─────────────────────────────
 def fetch_shipnext(port_id):
-    """Fetch planned vessels from ShipNext API. Returns more vessels than VF."""
+    """Fetch planned vessels from ShipNext API. Flags resolved in parallel threads."""
     sn_id = SN_PORTS.get(port_id)
     if not sn_id:
         return []
@@ -146,7 +144,6 @@ def fetch_shipnext(port_id):
         details = v.get("details", {})
         route = v.get("route", {})
         eta_raw = (route.get("to") or {}).get("date", "")
-        # Format ETA: "2026-06-06T00:00:00.000Z" -> "Jun 06"
         eta = ""
         if eta_raw:
             try:
@@ -156,19 +153,26 @@ def fetch_shipnext(port_id):
             except:
                 eta = eta_raw[:10]
         result.append({
-            "name": name,
-            "imo": imo,
+            "name": name, "imo": imo,
             "type": details.get("type", ""),
-            "eta": eta,
-            "flagCode": (resolve_flag(imo) if imo else ""),
-            "flagName": "",
-            "gt": 0,
-            "dwt": int(details.get("dwt") or 0),
+            "eta": eta, "flagCode": "", "flagName": "",
+            "gt": 0, "dwt": int(details.get("dwt") or 0),
             "built": str(details.get("blt") or ""),
             "loa": "", "beam": "",
             "origin": (route.get("from") or {}).get("name", ""),
             "dest": "", "agent": "", "line": "",
         })
+    # Resolve flags in parallel (threads) — fast, bounded
+    import concurrent.futures
+    imos = [v["imo"] for v in result if v["imo"]]
+    flags = {}
+    def _rf(imo):
+        return imo, resolve_flag(imo)
+    with concurrent.futures.ThreadPoolExecutor(max_workers=25) as ex:
+        for imo, fc in ex.map(_rf, imos):
+            flags[imo] = fc
+    for v in result:
+        v["flagCode"] = flags.get(v["imo"], "")
     return result
 
 # ─── VesselFinder Expected ────────────────────────────────
@@ -208,30 +212,7 @@ def fetch_vf_expected(vf_code):
         })
     return vessels
 
-# ─── Barcelona Open Data ──────────────────────────────────
-def fetch_bcn_arrivals():
-    req = urllib.request.Request(BCN_CSV, headers={"User-Agent": UA})
-    data = urllib.request.urlopen(req, timeout=30).read().decode("utf-8", errors="replace")
-    vessels, seen = [], set()
-    for r in csv.DictReader(io.StringIO(data)):
-        imo = r.get("IMO","").strip()
-        if not imo or imo in seen: continue
-        seen.add(imo)
-        vessels.append({
-            "name": r.get("VAIXELLNOM","").strip(), "imo": imo,
-            "type": r.get("VAIXELLTIPUS","").strip(), "eta": r.get("ETA","").strip(),
-            "flagCode": r.get("VAIXELLBANDERACODI","").strip(),
-            "flagName": r.get("VAIXELLBANDERANOM","").strip(),
-            "gt": 0, "dwt": 0,
-            "loa": r.get("ESLORA_METRES","").replace(",","."),
-            "beam": r.get("MANEGA_METRES","").replace(",","."),
-            "origin": r.get("PORTORIGENNOM","").strip(),
-            "dest": r.get("PORTDESTINOM","").strip(),
-            "agent": r.get("CONSIGNATARI","").strip(),
-            "line": r.get("NAVIERA","").strip(), "built": "",
-        })
-    return vessels
-
+# ─── (Barcelona removed) ──────────────────────────────────
 # ─── Bilbao Port Authority ────────────────────────────────
 def fetch_bilbao():
     ua_list = [
@@ -325,7 +306,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
             params = parse_qs(p.query)
             vf = params.get("vf",[""])[0]
             pid = params.get("pid",[""])[0]
-            pname = urllib.request.unquote(params.get("pname",[""])[0])
+            pname = unquote(params.get("pname",[""])[0])
             if not vf or not re.match(r'^[A-Z]{5}\d{3}$', vf):
                 return self._json(400, {"error":"Invalid code"})
             try:
@@ -341,7 +322,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
         elif p.path == "/api/shipnext":
             params = parse_qs(p.query)
             pid = params.get("pid",[""])[0]
-            pname = urllib.request.unquote(params.get("pname",[""])[0])
+            pname = unquote(params.get("pname",[""])[0])
             if not pid or pid not in SN_PORTS:
                 return self._json(400, {"error": f"Port {pid} not in ShipNext"})
             try:
@@ -358,15 +339,6 @@ class Handler(http.server.BaseHTTPRequestHandler):
             imo = params.get("imo",[""])[0]
             fc = resolve_flag(imo) if imo else ""
             self._json(200, {"imo": imo, "flagCode": fc})
-        elif p.path == "/api/barcelona":
-            try:
-                vs = fetch_bcn_arrivals()
-                db = load_db()
-                a, u = merge_into_db(db, vs, "ESBCN", "Barcelona", "BCN-OD")
-                save_db(db)
-                self._json(200, {"vessels":vs,"count":len(vs),"added":a,"updated":u})
-            except Exception as e:
-                self._json(500, {"error":str(e)})
         elif p.path == "/api/bilbao":
             try:
                 vs = fetch_bilbao()
@@ -405,8 +377,8 @@ class Handler(http.server.BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(body)
 
-HTML = r"""<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>FSI Arrival Monitor v3</title><link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚓</text></svg>"><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"><style>*{box-sizing:border-box;margin:0;padding:0}:root{--bg:#060b14;--bg2:#0a1220;--brd:#162a42;--brd2:#2a5a8c;--t1:#d8e2ec;--t2:#8899aa;--t3:#4a5a6a;--blue:#5ea8f0;--green:#5cb88a;--amber:#e8b84a;--red:#e06060;--m:'JetBrains Mono',monospace;--s:'DM Sans',system-ui,sans-serif}html{background:var(--bg);color:var(--t1);font-family:var(--s);font-size:13px;line-height:1.5}::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-track{background:var(--bg2)}::-webkit-scrollbar-thumb{background:var(--brd);border-radius:3px}a{color:var(--blue);text-decoration:none}a:hover{text-decoration:underline}@keyframes pulse{0%,100%{opacity:1}50%{opacity:.25}}@keyframes spin{to{transform:rotate(360deg)}}.hdr{background:linear-gradient(180deg,#0c1a2e,var(--bg));border-bottom:1px solid var(--brd);padding:14px 22px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}.hdr-brand{display:flex;align-items:center;gap:10px}.hdr-icon{width:34px;height:34px;border-radius:7px;background:linear-gradient(135deg,#1a4a7c,#0d2a4c);display:flex;align-items:center;justify-content:center;font-size:17px;border:1px solid var(--brd2)}.hdr h1{font-size:15px;font-weight:700;color:#e8f0f8}.hdr p{font-size:10px;color:var(--t3);margin-top:1px}.hdr-actions{display:flex;gap:7px;align-items:center;flex-wrap:wrap}.btn{display:inline-flex;align-items:center;gap:4px;padding:5px 13px;border-radius:5px;font-size:11px;font-weight:600;border:1px solid var(--brd);background:var(--bg2);color:var(--t2);cursor:pointer;transition:all .12s;font-family:var(--s);white-space:nowrap}.btn:hover{border-color:var(--brd2);color:var(--blue)}.btn-green{color:var(--green);border-color:#1a5040}.btn-primary{background:linear-gradient(135deg,#1a4a7c,#0d3060);color:#fff;border-color:var(--brd2)}.btn-amber{color:var(--amber);border-color:#5a4a10}.chip{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:5px;font-size:11px;font-weight:500;border:1px solid var(--brd);background:transparent;color:var(--t3);cursor:pointer;transition:all .12s;font-family:var(--s);white-space:nowrap}.chip:hover{border-color:#3a5a7a;color:var(--t2)}.chip.active{background:#132a48;border-color:var(--brd2);color:var(--blue)}.chip .badge{padding:1px 5px;border-radius:8px;font-size:9px;font-weight:700;background:#0e1e30;color:var(--t3);margin-left:2px}.chip.active .badge{background:#1a3a60;color:#8ec8ff}.card{background:var(--bg2);border:1px solid var(--brd);border-radius:7px;padding:13px 16px}.card-label{font-size:9px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.07em}.card-value{font-size:24px;font-weight:700;font-family:var(--m);margin-top:2px}.input{padding:7px 11px;border-radius:5px;background:var(--bg);border:1px solid var(--brd);color:var(--t1);font-size:12px;outline:none;font-family:var(--s);width:100%}.input:focus{border-color:var(--brd2)}select.input{cursor:pointer;width:auto}.table-wrap{background:var(--bg2);border:1px solid var(--brd);border-radius:7px;overflow:auto;max-height:62vh}table{width:100%;border-collapse:collapse;min-width:1050px}thead th{padding:9px 11px;text-align:left;font-size:9px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.08em;border-bottom:1px solid var(--brd);background:var(--bg);position:sticky;top:0;z-index:2;cursor:pointer;user-select:none;white-space:nowrap}thead th:hover{color:var(--t2)}thead th.sorted{color:var(--blue)}tbody tr{border-bottom:1px solid #0e1a28;transition:background .08s}tbody tr:hover{background:#0b1522}tbody td{padding:9px 11px}tr.stale{opacity:.5}.main{padding:14px 22px;display:flex;flex-direction:column;gap:12px}.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px}.filters-bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.section-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}.section-title{font-size:10px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.06em}.chips-wrap{display:flex;flex-wrap:wrap;gap:5px}.picker-body{margin-top:9px;border-top:1px solid var(--brd);padding-top:9px}.region-bar{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:7px}.region-btn{padding:2px 9px;border-radius:3px;font-size:9px;font-weight:700;border:1px solid var(--brd);background:var(--bg2);color:var(--t3);cursor:pointer;text-transform:uppercase;letter-spacing:.04em}.region-btn.active{background:#132a48;border-color:var(--brd2);color:var(--blue)}.region-group{margin-bottom:7px}.region-group-label{font-size:8px;color:var(--t3);font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:3px;padding-left:2px}.picker-scroll{max-height:200px;overflow-y:auto}.loading{display:none;align-items:center;gap:8px;padding:12px;background:var(--bg2);border:1px solid var(--brd);border-radius:7px;font-size:12px;color:var(--t2)}.spinner{width:16px;height:16px;border:2px solid var(--brd);border-top-color:var(--blue);border-radius:50%;animation:spin .6s linear infinite}.plog{font-size:10px;color:var(--t3);font-family:var(--m);padding:4px 0;min-height:16px}.info{background:var(--bg2);border:1px solid var(--brd);border-radius:7px;padding:13px;font-size:11px;color:var(--t3);line-height:1.7}.db-bar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:8px 14px;background:#0c1520;border:1px solid var(--brd);border-radius:7px;font-size:10px;color:var(--t3);font-family:var(--m)}.db-bar b{color:var(--amber)}.live-tag{display:inline-flex;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;font-family:var(--m);background:#0c2a1c;color:#6ec090;border:1px solid #1a5a3a}.empty-msg{padding:36px;text-align:center;color:var(--t3);font-style:italic}.sel-bar{display:none;align-items:center;gap:10px;padding:10px 16px;background:#1a2a10;border:1px solid #3a5a20;border-radius:7px;font-size:12px;color:#b0d890}.sel-bar b{color:#e8f0a0}.ck{width:15px;height:15px;accent-color:var(--blue);cursor:pointer}@media(max-width:700px){.hdr{padding:10px 14px}.main{padding:10px 14px}.table-wrap{max-height:45vh}}</style></head><body><div class="hdr"><div class="hdr-brand"><div class="hdr-icon">⚓</div><div><h1>FSI Vessel Arrival Monitor v3</h1><p>Expected Arrivals — Bilbao PA + Barcelona OD + Marín PA + VesselFinder</p></div></div><div class="hdr-actions"><span class="live-tag">● LIVE + DB</span><span style="font-size:10px;color:var(--t3);font-family:var(--m)" id="upd"></span><button class="btn btn-primary" onclick="fetchAll()">↻ Refresh</button><button class="btn btn-green" onclick="exportCSV()">↓ CSV</button></div></div><div class="main"><div class="db-bar" id="dbBar">📦 Database: loading...</div><div class="stats-grid" id="stats"></div><div class="loading" id="loadBar"><div class="spinner"></div><span id="loadTxt">Fetching...</span></div><div class="plog" id="plog"></div><div class="sel-bar" id="selBar"><b id="selCount">0</b> vessels selected <button class="btn btn-amber" onclick="genCombinedReq()">📧 Combined Inspection Request</button> <button class="btn" onclick="clearSel()">Clear</button></div><div class="card"><div class="section-head"><span class="section-title">🏗 Ports (<span id="pC">0</span>)</span><button class="btn" onclick="tPicker('port')" id="portPickerBtn">+ Add Ports</button></div><div class="chips-wrap" id="sP"></div><div id="portPicker" style="display:none" class="picker-body"><input class="input" placeholder="Search ports..." oninput="rPP(this.value)" id="pS"><div class="region-bar" id="rBar"></div><div class="picker-scroll" id="pPL"></div></div></div><div class="card"><div class="section-title" style="padding:4px 0">🏴 Flag Filter: <span style="color:var(--blue)">🇲🇹 Malta &nbsp; 🇱🇷 Liberia &nbsp; 🇲🇭 Marshall Islands</span></div></div><div class="filters-bar"><input class="input" style="flex:1 1 200px;min-width:170px;width:auto;font-family:var(--m)" placeholder="🔍 Search vessel name or IMO..." oninput="S.q=this.value;render()"><select class="input" onchange="S.ft=this.value;render()"><option value="all">All Types</option><option>Bulk Carrier</option><option>Container Ship</option><option>Portacontenidors</option><option>General Cargo</option><option>Oil Tanker</option><option>Chemical Tanker</option><option>LPG Tanker</option><option>LNG Tanker</option><option>Tancs</option><option>Car-carrier</option><option>Ro-Ro</option><option>Vehicles Carrier</option><option>Reefer</option></select><select class="input" onchange="S.src=this.value;render()"><option value="all">All Sources</option><option value="live">Live Today</option><option value="db">History Only</option></select></div><div class="table-wrap"><table><thead id="tH"></thead><tbody id="tB"></tbody></table></div><div class="info"><strong style="color:#778899">ℹ️ Data sources:</strong><br>🌟 <b style="color:var(--amber)">Bilbao</b>: Port Authority → <b>68 vessels, 3 weeks ahead</b> (flag, GT, LOA, origin, dest).<br>🌟 <b style="color:var(--amber)">Barcelona</b>: Open Data API → <b>100+ vessels, 7 days</b> (IMO, flag, type, origin, agent, line).<br>🌟 <b style="color:var(--amber)">Marín</b>: Port Authority → <b>~8 vessels, 10 days</b> (name, origin, dest, agent, cargo).<br><b style="color:var(--blue)">Other ports</b>: VesselFinder Expected → 10 per port.<br><span style="color:var(--amber)">📧</span> Tick vessels → <b>combined inspection request</b> per flag.</div></div><script>
-const PORTS=[{id:"ESGIJ",name:"Gijón",vf:"ESGIJ001",region:"Cantabrian",sn:true},{id:"ESAVS",name:"Avilés",vf:"ESAVS001",region:"Cantabrian",sn:true},{id:"ESTAN",name:"Santander",vf:"ESSDR001",region:"Cantabrian",sn:true},{id:"ESBIO",name:"Bilbao",vf:"ESBIO001",region:"Cantabrian",direct:"bilbao"},{id:"ESPAS",name:"Pasajes",vf:"ESPAS001",region:"Cantabrian",sn:true},{id:"FRBAY",name:"Bayonne",vf:"FRBAY001",region:"Cantabrian",sn:true},{id:"ESSCI",name:"San Ciprián",vf:"ESSCI001",region:"Galicia",sn:true},{id:"ESFER",name:"Ferrol",vf:"ESFRO001",region:"Galicia",sn:true},{id:"ESCOR",name:"A Coruña",vf:"ESLCG001",region:"Galicia",sn:true},{id:"ESMRN",name:"Marín",vf:"ESMRN001",region:"Galicia",direct:"marin"},{id:"ESVIL",name:"Vilagarcía",vf:"ESVIL001",region:"Galicia"},{id:"ESVGO",name:"Vigo",vf:"ESVGO001",region:"Galicia",sn:true},{id:"ESBCN",name:"Barcelona",vf:"ESBCN001",region:"Mediterranean",bcn:true}];
+HTML = r"""<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>FSI Arrival Monitor v3</title><link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚓</text></svg>"><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"><style>*{box-sizing:border-box;margin:0;padding:0}:root{--bg:#060b14;--bg2:#0a1220;--brd:#162a42;--brd2:#2a5a8c;--t1:#d8e2ec;--t2:#8899aa;--t3:#4a5a6a;--blue:#5ea8f0;--green:#5cb88a;--amber:#e8b84a;--red:#e06060;--m:'JetBrains Mono',monospace;--s:'DM Sans',system-ui,sans-serif}html{background:var(--bg);color:var(--t1);font-family:var(--s);font-size:13px;line-height:1.5}::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-track{background:var(--bg2)}::-webkit-scrollbar-thumb{background:var(--brd);border-radius:3px}a{color:var(--blue);text-decoration:none}a:hover{text-decoration:underline}@keyframes pulse{0%,100%{opacity:1}50%{opacity:.25}}@keyframes spin{to{transform:rotate(360deg)}}.hdr{background:linear-gradient(180deg,#0c1a2e,var(--bg));border-bottom:1px solid var(--brd);padding:14px 22px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}.hdr-brand{display:flex;align-items:center;gap:10px}.hdr-icon{width:34px;height:34px;border-radius:7px;background:linear-gradient(135deg,#1a4a7c,#0d2a4c);display:flex;align-items:center;justify-content:center;font-size:17px;border:1px solid var(--brd2)}.hdr h1{font-size:15px;font-weight:700;color:#e8f0f8}.hdr p{font-size:10px;color:var(--t3);margin-top:1px}.hdr-actions{display:flex;gap:7px;align-items:center;flex-wrap:wrap}.btn{display:inline-flex;align-items:center;gap:4px;padding:5px 13px;border-radius:5px;font-size:11px;font-weight:600;border:1px solid var(--brd);background:var(--bg2);color:var(--t2);cursor:pointer;transition:all .12s;font-family:var(--s);white-space:nowrap}.btn:hover{border-color:var(--brd2);color:var(--blue)}.btn-green{color:var(--green);border-color:#1a5040}.btn-primary{background:linear-gradient(135deg,#1a4a7c,#0d3060);color:#fff;border-color:var(--brd2)}.btn-amber{color:var(--amber);border-color:#5a4a10}.chip{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:5px;font-size:11px;font-weight:500;border:1px solid var(--brd);background:transparent;color:var(--t3);cursor:pointer;transition:all .12s;font-family:var(--s);white-space:nowrap}.chip:hover{border-color:#3a5a7a;color:var(--t2)}.chip.active{background:#132a48;border-color:var(--brd2);color:var(--blue)}.chip .badge{padding:1px 5px;border-radius:8px;font-size:9px;font-weight:700;background:#0e1e30;color:var(--t3);margin-left:2px}.chip.active .badge{background:#1a3a60;color:#8ec8ff}.card{background:var(--bg2);border:1px solid var(--brd);border-radius:7px;padding:13px 16px}.card-label{font-size:9px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.07em}.card-value{font-size:24px;font-weight:700;font-family:var(--m);margin-top:2px}.input{padding:7px 11px;border-radius:5px;background:var(--bg);border:1px solid var(--brd);color:var(--t1);font-size:12px;outline:none;font-family:var(--s);width:100%}.input:focus{border-color:var(--brd2)}select.input{cursor:pointer;width:auto}.table-wrap{background:var(--bg2);border:1px solid var(--brd);border-radius:7px;overflow:auto;max-height:62vh}table{width:100%;border-collapse:collapse;min-width:1050px}thead th{padding:9px 11px;text-align:left;font-size:9px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.08em;border-bottom:1px solid var(--brd);background:var(--bg);position:sticky;top:0;z-index:2;cursor:pointer;user-select:none;white-space:nowrap}thead th:hover{color:var(--t2)}thead th.sorted{color:var(--blue)}tbody tr{border-bottom:1px solid #0e1a28;transition:background .08s}tbody tr:hover{background:#0b1522}tbody td{padding:9px 11px}tr.stale{opacity:.5}.main{padding:14px 22px;display:flex;flex-direction:column;gap:12px}.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px}.filters-bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.section-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}.section-title{font-size:10px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.06em}.chips-wrap{display:flex;flex-wrap:wrap;gap:5px}.picker-body{margin-top:9px;border-top:1px solid var(--brd);padding-top:9px}.region-bar{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:7px}.region-btn{padding:2px 9px;border-radius:3px;font-size:9px;font-weight:700;border:1px solid var(--brd);background:var(--bg2);color:var(--t3);cursor:pointer;text-transform:uppercase;letter-spacing:.04em}.region-btn.active{background:#132a48;border-color:var(--brd2);color:var(--blue)}.region-group{margin-bottom:7px}.region-group-label{font-size:8px;color:var(--t3);font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:3px;padding-left:2px}.picker-scroll{max-height:200px;overflow-y:auto}.loading{display:none;align-items:center;gap:8px;padding:12px;background:var(--bg2);border:1px solid var(--brd);border-radius:7px;font-size:12px;color:var(--t2)}.spinner{width:16px;height:16px;border:2px solid var(--brd);border-top-color:var(--blue);border-radius:50%;animation:spin .6s linear infinite}.plog{font-size:10px;color:var(--t3);font-family:var(--m);padding:4px 0;min-height:16px}.info{background:var(--bg2);border:1px solid var(--brd);border-radius:7px;padding:13px;font-size:11px;color:var(--t3);line-height:1.7}.db-bar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:8px 14px;background:#0c1520;border:1px solid var(--brd);border-radius:7px;font-size:10px;color:var(--t3);font-family:var(--m)}.db-bar b{color:var(--amber)}.live-tag{display:inline-flex;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;font-family:var(--m);background:#0c2a1c;color:#6ec090;border:1px solid #1a5a3a}.empty-msg{padding:36px;text-align:center;color:var(--t3);font-style:italic}.sel-bar{display:none;align-items:center;gap:10px;padding:10px 16px;background:#1a2a10;border:1px solid #3a5a20;border-radius:7px;font-size:12px;color:#b0d890}.sel-bar b{color:#e8f0a0}.ck{width:15px;height:15px;accent-color:var(--blue);cursor:pointer}@media(max-width:700px){.hdr{padding:10px 14px}.main{padding:10px 14px}.table-wrap{max-height:45vh}}</style></head><body><div class="hdr"><div class="hdr-brand"><div class="hdr-icon">⚓</div><div><h1>FSI Vessel Arrival Monitor v3</h1><p>Expected Arrivals — Bilbao PA + Marín PA + ShipNext + VesselFinder</p></div></div><div class="hdr-actions"><span class="live-tag">● LIVE + DB</span><span style="font-size:10px;color:var(--t3);font-family:var(--m)" id="upd"></span><button class="btn btn-primary" onclick="fetchAll()">↻ Refresh</button><button class="btn btn-green" onclick="exportCSV()">↓ CSV</button></div></div><div class="main"><div class="db-bar" id="dbBar">📦 Database: loading...</div><div class="stats-grid" id="stats"></div><div class="loading" id="loadBar"><div class="spinner"></div><span id="loadTxt">Fetching...</span></div><div class="plog" id="plog"></div><div class="sel-bar" id="selBar"><b id="selCount">0</b> vessels selected <button class="btn btn-amber" onclick="genCombinedReq()">📧 Combined Inspection Request</button> <button class="btn" onclick="clearSel()">Clear</button></div><div class="card"><div class="section-head"><span class="section-title">🏗 Ports (<span id="pC">0</span>)</span><button class="btn" onclick="tPicker('port')" id="portPickerBtn">+ Add Ports</button></div><div class="chips-wrap" id="sP"></div><div id="portPicker" style="display:none" class="picker-body"><input class="input" placeholder="Search ports..." oninput="rPP(this.value)" id="pS"><div class="region-bar" id="rBar"></div><div class="picker-scroll" id="pPL"></div></div></div><div class="card"><div class="section-title" style="padding:4px 0">🏴 Flag Filter: <span style="color:var(--blue)">🇲🇹 Malta &nbsp; 🇱🇷 Liberia &nbsp; 🇲🇭 Marshall Islands</span></div></div><div class="filters-bar"><input class="input" style="flex:1 1 200px;min-width:170px;width:auto;font-family:var(--m)" placeholder="🔍 Search vessel name or IMO..." oninput="S.q=this.value;render()"><select class="input" onchange="S.ft=this.value;render()"><option value="all">All Types</option><option>Bulk Carrier</option><option>Container Ship</option><option>Portacontenidors</option><option>General Cargo</option><option>Oil Tanker</option><option>Chemical Tanker</option><option>LPG Tanker</option><option>LNG Tanker</option><option>Tancs</option><option>Car-carrier</option><option>Ro-Ro</option><option>Vehicles Carrier</option><option>Reefer</option></select><select class="input" onchange="S.src=this.value;render()"><option value="all">All Sources</option><option value="live">Live Today</option><option value="db">History Only</option></select></div><div class="table-wrap"><table><thead id="tH"></thead><tbody id="tB"></tbody></table></div><div class="info"><strong style="color:#778899">ℹ️ Data sources:</strong><br>🌟 <b style="color:var(--amber)">Bilbao</b>: Port Authority → <b>68 vessels, 3 weeks ahead</b> (flag, GT, LOA, origin, dest).<br>🌟 <b style="color:var(--amber)">Marín</b>: Port Authority → <b>~8 vessels, 10 days</b> (name, origin, dest, agent, cargo).<br>🌐 <b style="color:var(--blue)">9 ports</b> (Gijón, Avilés, Santander, Pasajes, Bayonne, San Ciprián, Ferrol, A Coruña, Vigo): ShipNext → all planned vessels.<br>📡 <b style="color:var(--t2)">Marín, Vilagarcía</b>: VesselFinder → 10 per port.<br><span style="color:var(--amber)">📧</span> Tick vessels → <b>combined inspection request</b> per flag.</div></div><script>
+const PORTS=[{id:"ESGIJ",name:"Gijón",vf:"ESGIJ001",region:"Cantabrian",sn:true},{id:"ESAVS",name:"Avilés",vf:"ESAVS001",region:"Cantabrian",sn:true},{id:"ESTAN",name:"Santander",vf:"ESSDR001",region:"Cantabrian",sn:true},{id:"ESBIO",name:"Bilbao",vf:"ESBIO001",region:"Cantabrian",direct:"bilbao"},{id:"ESPAS",name:"Pasajes",vf:"ESPAS001",region:"Cantabrian",sn:true},{id:"FRBAY",name:"Bayonne",vf:"FRBAY001",region:"Cantabrian",sn:true},{id:"ESSCI",name:"San Ciprián",vf:"ESSCI001",region:"Galicia",sn:true},{id:"ESFER",name:"Ferrol",vf:"ESFRO001",region:"Galicia",sn:true},{id:"ESCOR",name:"A Coruña",vf:"ESLCG001",region:"Galicia",sn:true},{id:"ESMRN",name:"Marín",vf:"ESMRN001",region:"Galicia",direct:"marin"},{id:"ESVIL",name:"Vilagarcía",vf:"ESVIL001",region:"Galicia"},{id:"ESVGO",name:"Vigo",vf:"ESVGO001",region:"Galicia",sn:true}];
 const FLAGS=[{c:"MT",n:"Malta",e:"🇲🇹"},{c:"LR",n:"Liberia",e:"🇱🇷"},{c:"MH",n:"Marshall Islands",e:"🇲🇭"}];
 const XMAP={XB:"PT",XA:"DK",XI:"NO"};
 const flagAdmin={MT:{name:"Transport Malta",email:"maritime.surveys@transport.gov.mt",dept:"Merchant Shipping Directorate"},LR:{name:"LISCR (Liberia)",email:"inspection@liscr.com",dept:"Technical Department"},MH:{name:"RMIRS (Marshall Islands)",email:"inspections@register-iri.com",dept:"Maritime Safety Division"}};
@@ -422,7 +394,7 @@ async function loadHistory(){try{const r=await fetch("/api/history");const d=awa
 function updateDbBar(m){const t=S.db.length,r=m?.runs||0,l=m?.lastRun?shortDate(m.lastRun):"never";el("dbBar").innerHTML="📦 DB: <b>"+t+"</b> vessels | Runs: <b>"+r+"</b> | Last: <b>"+l+'</b> | <button class="btn" style="font-size:9px;padding:2px 8px" onclick="clearOld()">🗑 >30d</button>'}
 async function clearOld(){if(!confirm("Remove >30 days old?"))return;const r=await fetch("/api/clearold");const d=await r.json();lg("🗑 "+d.removed+" removed");await loadHistory();buildCombined();render()}
 async function fetchAll(){S.loading=true;S.live=[];S.logs=[];el("loadBar").style.display="flex";await loadHistory();const sp=PORTS.filter(p=>S.ports.includes(p.id));let tA=0;
-const directPorts=[{id:"ESBCN",api:"/api/barcelona",label:"Barcelona OpenData (7d)"},{id:"ESBIO",api:"/api/bilbao",label:"Bilbao Port Authority (3wk)"},{id:"ESMRN",api:"/api/marin",label:"Marín Port Authority"}];
+const directPorts=[{id:"ESBIO",api:"/api/bilbao",label:"Bilbao Port Authority (3wk)"},{id:"ESMRN",api:"/api/marin",label:"Marín Port Authority"}];
 for(const dp of directPorts){if(!S.ports.includes(dp.id))continue;lg("📡 "+dp.label+"...");el("loadTxt").textContent=dp.label+"...";try{const r=await fetch(dp.api);const d=await r.json();if(d.vessels&&d.vessels.length){d.vessels.forEach(v=>{v.portId=dp.id;v.portName=dp.label.split(" ")[0]});S.live.push(...d.vessels);tA+=d.added||0;lg("✓ "+dp.label.split(" ")[0]+": "+d.count+" vessels (+"+( d.added||0)+" new)")}else{lg("⚠ "+dp.label.split(" ")[0]+": "+(d.error||d.note||"0 vessels"))}}catch(e){lg("✗ "+dp.label.split(" ")[0]+": "+e.message)}buildCombined();render()}
 const snPorts=sp.filter(p=>p.sn&&!p.bcn&&!p.direct);
 const vfOnlyPorts=sp.filter(p=>!p.sn&&!p.bcn&&!p.direct);
@@ -432,7 +404,7 @@ for(let i=0;i<vfOnlyPorts.length;i++){const port=vfOnlyPorts[i];lg("📡 VF: "+p
 await loadHistory();buildCombined();S.loading=false;el("loadBar").style.display="none";lg("✅ "+getF().length+" matched | "+S.live.length+" live | +"+tA+" new");el("upd").textContent="Updated "+new Date().toLocaleTimeString("en-GB");render()}
 function getF(){return S.combined.filter(v=>{const fc=v.flagCode||"";if(S.flags.length>0&&!S.flags.includes(fc))return false;const t=v.type||"";if(S.ft!=="all"&&!t.toLowerCase().includes(S.ft.toLowerCase()))return false;if(S.src==="live"&&v._src!=="live")return false;if(S.src==="db"&&v._src!=="db")return false;const pid=v.portId||"";if(S.ports.length>0&&pid&&!S.ports.includes(pid))return false;if(S.q){const s=S.q.toLowerCase();if(!(v.name||"").toLowerCase().includes(s)&&!(v.imo||"").includes(s))return false}return true})}
 function getS(a){const s=S.sb,d=S.sd;return[...a].sort((x,y)=>{let c=0;if(s==="eta")c=(x.eta||x.lastETA||"").localeCompare(y.eta||y.lastETA||"");else if(s==="name")c=(x.name||"").localeCompare(y.name||"");else if(s==="flag")c=(x.flagCode||"").localeCompare(y.flagCode||"");else if(s==="type")c=(x.type||"").localeCompare(y.type||"");else if(s==="port")c=(x.portName||"").localeCompare(y.portName||"");else if(s==="gt")c=(x.gt||0)-(y.gt||0);else if(s==="dwt")c=(x.dwt||0)-(y.dwt||0);return d==="asc"?c:-c})}
-function render(){const f=getF(),so=getS(f);el("stats").innerHTML=[{l:"Matched",v:f.length,c:"var(--blue)"},{l:"Live Today",v:f.filter(v=>v._src==="live").length,c:"var(--green)"},{l:"History",v:f.filter(v=>v._src==="db").length,c:"#aa88cc"},{l:"Direct PA",v:f.filter(v=>["ESBCN","ESBIO","ESMRN"].includes(v.portId)&&v._src==="live").length,c:"var(--amber)"},{l:"VesselFinder",v:f.filter(v=>!["ESBCN","ESBIO","ESMRN"].includes(v.portId)&&v._src==="live").length,c:"var(--blue)"}].map(s=>'<div class="card"><div class="card-label">'+s.l+'</div><div class="card-value" style="color:'+s.c+'">'+s.v+'</div></div>').join("");
+function render(){const f=getF(),so=getS(f);el("stats").innerHTML=[{l:"Matched",v:f.length,c:"var(--blue)"},{l:"Live Today",v:f.filter(v=>v._src==="live").length,c:"var(--green)"},{l:"History",v:f.filter(v=>v._src==="db").length,c:"#aa88cc"},{l:"Direct PA",v:f.filter(v=>["ESBIO","ESMRN"].includes(v.portId)&&v._src==="live").length,c:"var(--amber)"},{l:"VesselFinder",v:f.filter(v=>!["ESBIO","ESMRN"].includes(v.portId)&&v._src==="live").length,c:"var(--blue)"}].map(s=>'<div class="card"><div class="card-label">'+s.l+'</div><div class="card-value" style="color:'+s.c+'">'+s.v+'</div></div>').join("");
 el("sP").innerHTML=S.ports.map(pid=>{const p=PORTS.find(x=>x.id===pid);if(!p)return"";const c=f.filter(v=>v.portId===pid).length;return '<button class="chip active" onclick="tP(\''+pid+'\')">'+(p.bcn||p.direct?'🌟 ':'')+p.name+' <span class="badge">'+c+'</span></button>'}).join("")||"<em style='font-size:11px;color:var(--t3)'>Select ports</em>";el("pC").textContent=S.ports.length;
 // flags always MT/LR/MH - no dynamic rendering needed
 const selCount=[...S.sel].filter(k=>f.some(v=>vKey(v)===k)).length;el("selBar").style.display=selCount>0?"flex":"none";el("selCount").textContent=selCount;
@@ -461,7 +433,7 @@ if __name__ == "__main__":
     print(f"""
 ╔═══════════════════════════════════════════════════════════╗
 ║  ⚓ FSI Vessel Arrival Monitor v3                          ║
-║  Bilbao PA + Barcelona OD + Marín PA + VesselFinder        ║
+║  Bilbao PA + Marín PA + ShipNext + VesselFinder        ║
 ║                                                            ║
 ║  Dashboard:  {url:44s} ║
 ║  Database:   {os.path.basename(DB_FILE):44s} ║

@@ -88,3 +88,21 @@ client-side (user's browser / residential IP), NOT server-side.
 - Flags rarely change → cache effectively permanent
 
 **localStorage key:** fsi9 (bumped from fsi8 to force fresh MT/LR/MH defaults)
+
+---
+
+## v3.5.1 — Googlebot UA for all VesselFinder calls
+**Root cause confirmed:** Server used standard Chrome UA for VF calls → bot detection blocks Render.
+Bilbao PA already used Googlebot UA (bypasses Radware). Same fix applied to ALL VF calls.
+
+**Changes:**
+- Added `UA_BOT = Googlebot/2.1` constant
+- `fetch_vf_expected()` → uses UA_BOT
+- `resolve_flag()` → restored VF call with UA_BOT + parallel threads in `fetch_shipnext()`
+- `MARIN_HDRS` → uses UA_BOT
+- localStorage key bumped: fsi9 → fsi10
+
+**Test results (from sandbox, replicates Render behavior):**
+- Vigo: 27 vessels, 10 MT/LR/MH, 0 empty flags, 2.0s
+- GREEN MOUNTAIN ✓ MH Jun 06
+- Flag resolution: 1-2s per vessel server-side, parallel (25 threads)

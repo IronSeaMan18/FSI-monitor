@@ -1,4 +1,4 @@
-# FSI Vessel Arrival Monitor v3.11.0
+# FSI Vessel Arrival Monitor v3.12.0
 
 Expected-arrival monitor for a Flag State Inspector covering 12 ports in
 northern Spain + Bayonne. Filters to **Malta / Liberia / Marshall Islands / Hong Kong**.
@@ -9,6 +9,10 @@ Start command: `python fsi_monitor.py` — no build step, no dependencies.
 ## IMPORTANT: commit `flags.json`
 It is the IMO->flag cache seed and is what makes flags survive Render restarts.
 It is deliberately **not** gitignored. `fsi_vessels_db.json` IS gitignored.
+
+The same applies to `managers.json` (IMO → ISM manager). Both are hand-built
+caches that exist because the automatic path is blocked — commit them.
+`outreach.json` IS gitignored: it is your own recusal log, not shared state.
 
 ## Endpoints
 | Path | Purpose |
@@ -21,6 +25,10 @@ It is deliberately **not** gitignored. `fsi_vessels_db.json` IS gitignored.
 | `/api/shipnext?pid=&pname=` | ShipNext planned vessels, 9 ports (no flag field) |
 | `/api/localfeed?pid=&pname=` | Serves `local_feed.json` if present (Gijón; see HANDOFF §5) |
 | `/api/saveflag?imo=&fc=` | Persist a resolved flag (validated, no CORS) |
+| `/api/managers` | ISM manager directory (IMO → manager/owner/contact) |
+| `/api/savemanager?imo=&ism=&…` | Store an ISM manager (validated, no CORS) |
+| `/api/outreach` | Recusal log — every manager approach, conflicts flagged |
+| `/api/logoutreach?imo=&…` | Append one approach to the log (no CORS) |
 | `/api/port?vf=&pid=&pname=` | VesselFinder listing — **dead path**, see B-105 |
 | `/api/ping` | Keep-alive + version/queue |
 | `/api/health` | Probes all 9 ShipNext ports, reports flag cache size |

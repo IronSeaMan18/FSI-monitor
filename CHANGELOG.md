@@ -3,6 +3,27 @@
 Newest first. Full root-cause detail for every entry lives in `VERSION.md`;
 bug IDs referenced here are tracked in `BUGS.md`.
 
+## v3.12.0 — Manager inquiry drafts
+Tick vessels → **🏢 Manager Inquiry** drafts a service proposal (pre-PSC
+inspection / ISM internal audit) to the vessel's **ISM manager**, grouped so
+several ships under one manager become a single email. Unlike the flag
+request, this is **not limited to MT/LR/MH/HK** — a new `🌐 All flags` toggle
+shows every arriving vessel (live: 93 across the ShipNext ports, only 22 on
+the tracked four).
+
+Manager identity cannot be resolved automatically — free trackers publish the
+beneficial owner and mislabel it "manager", and the real ISM-manager field is
+paywalled everywhere except login-gated Equasis. So managers are entered once
+and kept in `managers.json` forever; because managers recur across ships,
+coverage compounds. Vessels with no manager on file show two prefilled lookup
+links (the query that works is `<vessel> ISM manager`) plus the Equasis link.
+
+Entries carry a `verified` flag so an aggregator guess is visibly distinct
+from something read off Equasis. Every approach is written to an outreach log,
+marked `conflict: true` when the vessel flies a flag you hold authority under,
+so a later inspection assignment can be declared.
+Verified: 34/34 headless JS tests + live endpoint and validation tests.
+
 ## v3.11.0 — Equasis link per vessel
 Each vessel row (and CSV export) now includes a 🏢 link to Equasis
 (`restricted/ShipInfo?fs=Search&P_IMO=<imo>`) alongside the existing

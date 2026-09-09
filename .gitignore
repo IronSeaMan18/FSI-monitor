@@ -3,3 +3,6 @@ fsi_vessels_db.json.tmp
 __pycache__/
 *.pyc
 _discovery/
+outreach.json
+outreach.json.tmp
+managers.json.tmp

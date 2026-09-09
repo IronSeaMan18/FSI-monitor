@@ -1,9 +1,116 @@
 # FSI Vessel Arrival Monitor — VERSION LOG
-Current production version: **v3.11.0**
+Current production version: **v3.12.0**
 
 Semantics: MAJOR = architecture change | MINOR = feature | PATCH = fix
 Release entries below are **newest first**; standing reference sections
 (data source matrix, standing constraint) are at the end of the file.
+
+## v3.12.0 — ISM manager inquiry + manager directory
+Requested feature: send service proposals (pre-PSC inspection / ISM internal
+audit) to the **managers** of vessels calling at the covered ports, alongside
+the existing inspection requests to flag administrations.
+
+### Root cause of the hard part: manager identity cannot be automated
+The obvious design — resolve IMO -> ISM manager server-side — does not work,
+and the reason is worth recording because it looks solvable and is not.
+
+**Free trackers publish the beneficial owner and label it "manager".** Live
+test on FURNESS VICTORIA (9640621): MarineTraffic and others report
+`FUKUNAGA KAIUN KK`, and Fukunaga's own site corroborates it — they had her
+built at Kawasaki in 2012 and list her in their fleet. All true, and all the
+wrong company. The real chain is:
+
+| Role | Company |
+|---|---|
+| Beneficial owner / had her built | Fukunaga Kaiun (Japan) |
+| Registered owner | East Blue Line SA (Panama SPV) |
+| **ISM manager** (DOC holder, has the DPA) | Viridian Maritime Pte Ltd (Singapore) |
+
+Only the ISM manager holds the DOC and employs the DPA, so only the ISM
+manager is a valid recipient. Sending to the beneficial owner reaches a
+company with no safety-management role in the ship.
+
+**The ISM-manager field is a paid data product industry-wide.** Verified by
+probing: vesseltracker renders `ISM Manager Name / Email / Phone / Website`
+as distinct fields and blanks every one without a subscription; ClassNK's
+register returns 403; marinevesseltraffic's owner/manager/ISM page returns
+403; balticshipping serves no company data at all. Equasis is the free
+exception and is login-gated — same wall as VesselFinder (B-100) and Gijón
+(v3.10.0). MagicPort does expose the ISM-manager role and is reachable, but
+is a single unconfirmed source.
+
+**Consequence:** manager identity is hand-entered, once per vessel, and kept
+forever. Since managers recur across ships far more than ships recur,
+coverage compounds — the tenth vessel under a known manager costs nothing.
+This is the same shape as the `flags.json` seed: a committed cache that
+exists because the automatic path is blocked.
+
+### Search procedure that actually works (2 queries)
+Recorded because the first attempt wasted a dozen calls on vague queries and
+paywalled fetches:
+1. `<vessel name> ISM manager` — the exact field name; routes to MagicPort /
+   the Google overview, which return the ISM company rather than the owner.
+2. `<company> contact` — the company's own site for the address.
+
+Built into the UI: a vessel with no manager on file shows both prefilled
+links plus the Equasis deep link, so the lookup is two clicks and the answer
+is stored permanently.
+
+### Realistic contact target
+Named DPAs are rarely published. Viridian Maritime lists only
+`enquiries@viridianmaritime.com` (verified on their own site); Fukunaga
+publishes only a contact form. A monitored role address is the practical
+target and is more durable than a named person — it survives staff changes.
+
+### Scope: all flags, not the tracked four
+Manager inquiries are commercial work and are not limited to flags under
+which FSI authority is held. `getF()` already skipped flag filtering when
+`S.flags` is empty, but nothing surfaced that — a `🌐 All flags` toggle now
+does. Measured live: 93 vessels across the 9 ShipNext ports, of which only
+22 are MT/LR/MH/HK. **71 vessels (76%) were previously unreachable.**
+
+### Conflict of interest — handled, not designed away
+Soliciting audit work from managers of ships that may later be inspected
+under held flag authority is a real conflict (raised in HANDOFF §8 and never
+resolved). It applies only to MT/LR/MH/HK; for other flags no authority
+exists and there is no conflict. The tool now records every approach in an
+outreach log with `conflict: true` on vessels under held authority, and the
+inquiry modal warns before sending. The log is a memory aid so a later
+inspection assignment can be recognised and declared — it does not decide
+anything.
+
+### Added
+- `managers.json` — committed seed, IMO -> `{ism, ismEmail, contact, owner,
+  source, verified, updated}`. Atomic write, boot-loaded, survives restarts.
+  `verified` separates "read off Equasis" from "inferred from an aggregator";
+  the UI renders unverified entries in amber so a guess is never mistaken
+  for a fact.
+- `outreach.json` — recusal log (gitignored; runtime state).
+- `GET /api/savemanager` — validated (`^\d{7}$` IMO, RFC-ish email, company
+  name 2-90 chars, markup stripped), no CORS, mirroring `/api/saveflag`.
+- `GET /api/managers`, `GET /api/outreach` — read-only.
+- `GET /api/logoutreach` — appends one approach, no CORS.
+- Frontend: `🏢 Manager Inquiry` button, manager-grouped modal, `🌐 All flags`
+  toggle, per-vessel save form with lookup links.
+
+### Verified
+- 34/34 headless JS tests (`node`, stubbed DOM): ETA -> "18 September" incl.
+  Jan/Dec boundaries and invalid input, singular/plural body ("while she's" vs
+  "while they are"), salutation with and without a named contact, multi-vessel
+  grouping, subject lines, conflict warnings naming the LR and MT vessels but
+  not the PA one, mailto construction, save-form rendering.
+- Live endpoint tests: valid save persists to disk and survives reload;
+  malformed email, 2-digit IMO and empty company all rejected **without
+  corrupting the existing entry**; outreach log sets `conflict` true for LR
+  and false for PA; `/api/health` reports 9/9 ShipNext ports, 219 flags,
+  managers cached.
+- Dashboard served and confirmed to contain the new controls (37.3 KB).
+
+### Known limitation
+The seeded `managers.json` entry for 9640621 is marked `verified: false` —
+the Viridian link comes from MagicPort and the Google overview, and could not
+be independently confirmed without an Equasis login. Confirm in Equasis and
+re-save to clear the flag.
 
 ## v3.11.0 — Equasis link added per vessel
 Requested feature: quick access to ISM manager / owner info per vessel.

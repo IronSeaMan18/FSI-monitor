@@ -128,3 +128,29 @@ served by ShipNext with no VF dependency.
 - San Ciprián and Ferrol confirmed to still return complete data (4, 5) with
   zero dependency on VesselFinder
 - No AbortError possible — the request that produced it no longer exists
+
+## v3.10.3 — Stale seed + permanent-blacklist bug fixed
+User reported blank flags on Gijón/Avilés ShipNext vessels (GCL PRAIA MOLE,
+FURNESS VICTORIA, MALYOVITSA, GENCO FREEDOM, MARIA, KENNADI, HERBANIA, GFS PEARL).
+
+Two causes, both fixed:
+1. `flags.json` hadn't been refreshed since 27 Jul (6+ weeks). Re-ran
+   `refresh_flags.py`: 74/74 resolved, seed 145 -> 219 IMOs, 53 on tracked flags
+   (up from 39). Confirmed several of the reported vessels are MT/LR/MH:
+   GCL PRAIA MOLE (MH), GENCO FREEDOM (MH), MALYOVITSA (MT), KENNADI (LR).
+2. Real bug in `queue_flags()`: used a `set()` that permanently excluded any
+   IMO once queued, regardless of outcome — so an IMO that failed VF resolution
+   (which is guaranteed, VF blocks Render) could never be retried again for the
+   life of the process, silently defeating the existing 24h negative-cache TTL.
+   Fixed: now a `{imo: timestamp}` dict, re-queues after `NEG_TTL` (24h).
+
+**Verified:** all 8 vessels from the user's screenshots now resolve correctly
+end-to-end (GCL PRAIA MOLE=MH, FURNESS VICTORIA=PA, MALYOVITSA=MT,
+GENCO FREEDOM=MH, MARIA=CY, KENNADI=LR, HERBANIA=PT, GFS PEARL=CY).
+
+**Standing operational note, restated:** the seed still requires a periodic
+manual `refresh_flags.py` run + push — the automatic background resolver
+cannot succeed on its own because VesselFinder blocks Render's IP (confirmed
+repeatedly since v3.5.1). 6 weeks between refreshes was too long. Consider
+automating this via a scheduled GitHub Action (runs on GitHub's IP, not
+Render's) if recurring manual upkeep becomes a burden.

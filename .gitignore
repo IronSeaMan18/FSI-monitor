@@ -1,0 +1,5 @@
+fsi_vessels_db.json
+fsi_vessels_db.json.tmp
+__pycache__/
+*.pyc
+_discovery/

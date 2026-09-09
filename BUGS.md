@@ -28,10 +28,15 @@
 | ID | Description | Mitigation |
 |---|---|---|
 | B-100 | VesselFinder blocks Render IP | `flags.json` seed + background top-up; non-fatal |
-| B-101 | Vilagarcía absent from ShipNext (VF-only) | needs alternate source |
-| B-102 | ShipNext under-covers Ferrol (missed ANJI FOREVER, new 7-digit IMO) | VF supplement configured |
 | B-103 | Bilbao publishes no IMO -> name keys | flags come inline from PA, so acceptable |
 | B-104 | Render free tier: DB resets on redeploy | flags.json survives; vessel history does not |
+| B-105 | Latent: `/api/port` (VesselFinder listing) still exists and is still the frontend's `else` fallback in `fetchAll()`. No currently configured port reaches it — all 12 have `direct:` or `sn:` — but adding a port with neither would silently reintroduce the ~60 s hang removed in v3.10.2 (B-023/B-024). | Documented only; no code change. If you add a port, give it `direct:` or `sn:`, never rely on the VF fallback. |
+
+### Closed limitations (were listed as open, superseded by later work)
+| ID | Description | Closed by | Resolution |
+|---|---|---|---|
+| B-101 | Vilagarcía absent from ShipNext (was VF-only, "needs alternate source") | **v3.9.0** | Direct PA feed found: `portovilagarcia.es/MDB_BARCOS.php` — 15 fields incl. name, flag, ETA, agent. No VF dependency. 14 vessels, 100% flagged. |
+| B-102 | ShipNext under-covers Ferrol; mitigation read "VF supplement configured" | **v3.10.2** | The VF supplement was **removed, not configured** — it hung ~60s against Render every call (VF IP-blocked since v3.5.1) and contributed zero data while starving the fetch pool. See B-023/B-024. Ferrol is ShipNext-only by design now. **Do not re-add a VF supplement.** A real PA source would need Ferrol PA login credentials (`comercial@apfsc.es`), never obtained. |
 
 ## v3.10.1
 | ID | Sev | Description | Root cause | Fix |

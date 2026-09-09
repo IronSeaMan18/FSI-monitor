@@ -154,3 +154,14 @@ cannot succeed on its own because VesselFinder blocks Render's IP (confirmed
 repeatedly since v3.5.1). 6 weeks between refreshes was too long. Consider
 automating this via a scheduled GitHub Action (runs on GitHub's IP, not
 Render's) if recurring manual upkeep becomes a burden.
+
+## v3.11.0 — Equasis link added per vessel
+Requested feature: quick access to ISM manager / owner info per vessel.
+Verified Equasis's ship page requires a registered login (no public IMO
+lookup) — confirmed via its own support docs. The deep-link pattern
+`restricted/ShipInfo?fs=Search&P_IMO=<imo>` resolves (200, not 404) and
+honors an existing session if the user is already logged in, dropping
+straight to the ship page; otherwise it shows Equasis's own login prompt.
+Added as a 🏢 icon next to the existing VesselFinder 🚢 link in the table,
+and as a new column in the CSV export. Omitted when no IMO is known (Bilbao
+name-only rows), matching the existing VF-link fallback pattern.

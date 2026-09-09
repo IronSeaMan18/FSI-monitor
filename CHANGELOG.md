@@ -17,3 +17,13 @@ hide-past-ETA toggle; dead type filters removed; vKey parity with backend.
 
 ## v3.7.0 — Hong Kong flag added
 MT / LR / MH / **HK**. Flag chips, counts, admin contact, "All 4" reset.
+
+## v3.11.0 — Equasis link per vessel
+Each vessel row (and CSV export) now includes a 🏢 link to Equasis
+(`restricted/ShipInfo?fs=Search&P_IMO=<imo>`) alongside the existing
+VesselFinder 🚢 link — one click to ISM manager / registered owner / PSC
+inspection history for that IMO. Equasis requires a login; the link drops
+straight into the ship page if already signed in, otherwise prompts login
+first (same as visiting Equasis directly). Shown only when an IMO is known
+(Equasis has no public no-login deep link by name).
+Verified: 7/7 (link present/absent correctly, CSV column, exact single render).

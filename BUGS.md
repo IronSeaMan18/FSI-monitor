@@ -58,3 +58,10 @@
 | ID | Sev | Description | Root cause | Fix |
 |---|---|---|---|---|
 | B-106 | **HIGH** | Dashboard shows 0 vessels and never fetches — "showing 0 vessels at all, no searching". Only clue is `PORTS (0)`. | Picker's **None** button (and region toggles) can leave zero ports selected; that is persisted to `localStorage` and restored on reload because `lsMig()` treats `"[]"` as a valid value. `fetchAll()` then builds zero jobs and returns silently; `render()` says "No vessels match.", which reads as a data problem. Pre-existing since the picker was added; surfaced the day after v3.12.0. | Heal at page load only (restore all 12 + log it); `fetchAll()` with zero ports logs an explicit message, clears loading state, rebuilds the table and returns; empty table explains itself. 12/12 headless tests incl. mid-session None (no auto-restore) and recovery. |
+
+## v3.12.2
+| ID | Sev | Description | Root cause | Fix |
+|---|---|---|---|---|
+| B-107 | **HIGH** | Every Spanish-flagged vessel at Avilés shows a blank flag; `flagName` renders as `Espa�A`; accented vessel names corrupt | Avilés CSV is served as cp1252 (`ESPA\xd1A`) but `_pa_rows()` decoded it as UTF-8 with `errors="replace"`, turning Ñ into U+FFFD so `es_flag()` never matched. Since v3.9.0; hidden until All flags exposed ES rows. | Strict UTF-8 with cp1252 fallback. Live-verified: 3/3 Spanish rows -> `ES`, 0 U+FFFD. |
+| B-108 | MED | Resolved non-tracked flags (PA, CY, AG…) show 🏳️ — indistinguishable from an unresolved flag | `flagEmoji()` only mapped the four tracked flags. | Derive emoji from the ISO code; 🏳️ only for empty/invalid. |
+| (B-025) | — | 39 of 77 planned IMOs missing from `flags.json` after 4 days; 12 of them on tracked flags and therefore absent from the default view | Seed staleness — ShipNext horizon rolls faster than manual refreshes | `refresh_flags.py` run, 39/39 resolved, seed 219 -> 258. Durable fix (scheduled GitHub Action) still open. |

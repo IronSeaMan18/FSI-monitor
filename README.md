@@ -1,4 +1,4 @@
-# FSI Vessel Arrival Monitor v3.12.1
+# FSI Vessel Arrival Monitor v3.12.2
 
 Expected-arrival monitor for a Flag State Inspector covering 12 ports in
 northern Spain + Bayonne. Filters to **Malta / Liberia / Marshall Islands / Hong Kong**.

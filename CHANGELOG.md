@@ -3,6 +3,13 @@
 Newest first. Full root-cause detail for every entry lives in `VERSION.md`;
 bug IDs referenced here are tracked in `BUGS.md`.
 
+## v3.12.2 — Blank flags fixed three ways
+Refreshed `flags.json` (219 → 258; 39/39 resolved, **12 of them on your
+flags** and previously invisible). Fixed the Avilés feed decoding — it's
+cp1252, not UTF-8, so `ESPAÑA` had been arriving as `ESPA�A` and every
+Spanish-flagged vessel got a blank flag (B-107). Resolved flags outside
+your four now show their real flag instead of 🏳️ (B-108).
+
 ## v3.12.1 — Empty port selection no longer looks like a broken app (B-106)
 Clicking **None** in the port picker (or toggling every region off) left zero
 ports selected, saved that, and the dashboard reloaded to "No vessels match."

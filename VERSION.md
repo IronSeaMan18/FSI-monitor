@@ -1,9 +1,54 @@
 # FSI Vessel Arrival Monitor — VERSION LOG
-Current production version: **v3.12.1**
+Current production version: **v3.12.2**
 
 Semantics: MAJOR = architecture change | MINOR = feature | PATCH = fix
 Release entries below are **newest first**; standing reference sections
 (data source matrix, standing constraint) are at the end of the file.
+
+## v3.12.2 — Blank flags: stale seed + cp1252 decode bug + emoji for non-tracked flags
+Reported as "a lot of vessels without flag identified" the day after the
+`🌐 All flags` toggle shipped. Three distinct causes; only one was "unknown".
+
+### 1. Seed staleness (most of it) — operational, B-025 pattern
+`flags.json` covered 94% of planned ShipNext IMOs on 9 Sep and **50% (39 of
+77 missing) on 13 Sep**. ShipNext's planned lists roll forward every few
+days; the seed does not. Ran `refresh_flags.py` from a residential IP:
+**39/39 resolved, seed 219 -> 258**, 0 changed, 0 lost.
+
+**12 of the 39 were on tracked flags** (MT 5, LR 3, MH 4) — e.g. FU ZHOU
+WAN (MT), DSI PYXIS (MH), SEAHORSE (MH), SONGA PANTHER (LR), CONTSHIP SKY
+(LR). Under the default filter these vessels were absent from the dashboard
+entirely. A stale seed is not a cosmetic problem; it hides inspectable
+ships. Tracked total 53 -> 65.
+
+Four days from 94% to 50% means a weekly manual run is not enough. The
+scheduled GitHub Action (HANDOFF §4, still unbuilt) is the durable fix.
+
+### 2. B-107 — Avilés CSV decoded as UTF-8, served as cp1252 (code)
+`_pa_rows()` decoded with `utf-8, errors="replace"`. The Avilés feed sends
+`ESPA\xd1A` (cp1252), so every accented flag name became `ESPA\ufffdA`,
+`es_flag()` never matched, and **every Spanish-flagged vessel at Avilés
+came out with a blank flag code** (3 rows on the day). Accented vessel
+names corrupted the same way. Present since v3.9.0; invisible until All
+flags made ES rows visible. Fix: strict UTF-8, cp1252 fallback on
+`UnicodeDecodeError`. Vilagarcía goes through the same helper and is
+covered if it ever does the same.
+
+### 3. B-108 — resolved flags rendered as unresolved (code)
+`flagEmoji()` knew only the four tracked flags and returned 🏳️ for every
+other code, so a resolved `PA` / `CY` / `AG` looked identical to a missing
+flag. Never visible before All flags. Fix: derive the emoji from the ISO
+code (regional-indicator pair); unchanged for the tracked four; still 🏳️
+for empty / `??` / malformed.
+
+### Verified
+- Live Avilés through the real code path: 12 rows, 0 U+FFFD, all 3
+  Spanish rows `flagName='España' flagCode='ES'`, 0 rows with a name but
+  no code.
+- Emoji: 13 cases — the tracked four, PA/CY/AG/ES, and empty/undefined/
+  `??`/3-letter/lowercase all correct.
+- Seed diff validated: +39, 0 changed, 0 lost, 0 malformed entries.
+- Clean boot on 3.12.2, `/api/ping` reports 258 flags.
 
 ## v3.12.1 — Empty port selection no longer kills the dashboard (B-106)
 Reported as "showing 0 vessels at all, no searching" on the live deployment

@@ -14,9 +14,10 @@
 #   2. run refresh_flags.py (VesselFinder from GitHub's IP - NOT Render's)
 #   3. commit + push only if a seed actually changed -> Render redeploys
 #
-# Known risk, stated once: nobody has proven VesselFinder accepts GitHub's
-# runner IPs. The first manual run is the test. If it is blocked, the flags
-# step resolves 0 and says so; the managers step still works.
+# Every run prints one line - 'VESSELFINDER REACHABILITY: OK|BLOCKED|FAILED' -
+# in the 'Refresh seeds' step. Run #1 (13 Sep 2026) was inconclusive: the seed
+# had been refreshed by hand that morning, so there was nothing to resolve.
+# If BLOCKED, the flags half cannot work from GitHub; the managers half still does.
 
 name: refresh-seeds
 
@@ -39,9 +40,9 @@ jobs:
     env:
       LIVE_URL: https://fsi-monitor.onrender.com
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
 

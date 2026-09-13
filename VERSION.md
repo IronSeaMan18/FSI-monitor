@@ -1,9 +1,29 @@
 # FSI Vessel Arrival Monitor — VERSION LOG
-Current production version: **v3.13.0**
+Current production version: **v3.13.1**
 
 Semantics: MAJOR = architecture change | MINOR = feature | PATCH = fix
 Release entries below are **newest first**; standing reference sections
 (data source matrix, standing constraint) are at the end of the file.
+
+## v3.13.1 — Workflow run #1 was inconclusive; made every run self-diagnosing
+Run #1 (13 Sep, `workflow_dispatch`) went green in 27 s and pushed nothing.
+Green here means only "the script exited 0": the seed had been refreshed by
+hand that morning, so `to resolve: 0` and VesselFinder was never exercised.
+Worse, the existing "harvested" lines cannot settle it either — a bot-block
+page comes back HTTP 200 with HTML and simply parses to zero rows.
+
+Added `probe_vesselfinder()`: fetches a known vessel (FURNESS VICTORIA
+9640621) and prints exactly one of
+`VESSELFINDER REACHABILITY: OK | BLOCKED | FAILED | UNEXPECTED` at the top of
+every run, and the end-of-run summary says plainly when flags could not be
+resolved. Verified from a residential IP: `OK (9640621 -> PA as expected)`.
+
+Also bumped `actions/checkout` v4→v5 and `actions/setup-python` v5→v6 to
+clear the "Node.js 20 is deprecated" annotation before it becomes a failure.
+
+**Still open until the next run's log is read:** whether GitHub's IPs are
+blocked. Re-run the workflow and read the first line of the "Refresh seeds"
+step.
 
 ## v3.13.0 — Daily automated seed refresh + manager directory for Gijón/Avilés
 Two things that were "next" for the whole life of the project, done.

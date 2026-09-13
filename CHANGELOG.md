@@ -3,6 +3,12 @@
 Newest first. Full root-cause detail for every entry lives in `VERSION.md`;
 bug IDs referenced here are tracked in `BUGS.md`.
 
+## v3.13.1 — Workflow prints whether VesselFinder is reachable
+Run #1 was green but proved nothing (nothing to resolve that day). Every run
+now starts with one line — `VESSELFINDER REACHABILITY: OK/BLOCKED/FAILED` —
+so the question the workflow exists to answer is answered in its own log.
+Node 20 deprecation warning cleared.
+
 ## v3.13.0 — Daily seed refresh + manager directory for Gijón/Avilés
 A GitHub Action now refreshes `flags.json` every day at 05:00 UTC from
 GitHub's IP (VesselFinder blocks Render's), and pulls any managers you saved

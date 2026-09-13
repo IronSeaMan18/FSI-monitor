@@ -79,6 +79,31 @@ def collect_planned():
     return found
 
 
+def probe_vesselfinder():
+    """v3.13.1: one explicit, unambiguous line in every run's log answering the
+    question the workflow exists to test - can THIS IP reach VesselFinder?
+    A bot-block page still returns HTTP 200 with HTML, so 'harvested' lines
+    below prove nothing on their own. This checks a known vessel resolves to
+    its known flag (FURNESS VICTORIA 9640621 -> PA)."""
+    try:
+        req = urllib.request.Request("https://www.vesselfinder.com/vessels/details/9640621",
+                                     headers={"User-Agent": UA, "Accept": "text/html"})
+        html = urllib.request.urlopen(req, timeout=20).read().decode("utf-8", "replace")
+        if "Radware" in html or "Verifying your browser" in html:
+            print("VESSELFINDER REACHABILITY: BLOCKED (bot-protection page served to this IP)")
+            return False
+        m = re.search(r"flags/4x3/(\w+)\.svg", html)
+        fc = XMAP.get(m.group(1).upper(), m.group(1).upper()) if m else ""
+        if fc == "PA":
+            print("VESSELFINDER REACHABILITY: OK (9640621 -> PA as expected)")
+            return True
+        print(f"VESSELFINDER REACHABILITY: UNEXPECTED (page parsed, flag={fc!r}, expected 'PA') - parser may need attention")
+        return False
+    except Exception as e:
+        print(f"VESSELFINDER REACHABILITY: FAILED ({type(e).__name__}: {e})")
+        return False
+
+
 def harvest_vf_ports(flags):
     """VF port pages list flag + IMO together — free, no per-vessel lookup."""
     got = 0
@@ -171,6 +196,8 @@ def main():
         print()
     flags = load_seed()
     print(f"existing seed: {len(flags)} IMOs\n")
+    vf_ok = probe_vesselfinder()
+    print()
 
     print("collecting planned vessels from ShipNext...")
     planned = collect_planned()
@@ -203,6 +230,9 @@ def main():
             print("  ! low success rate — VesselFinder may be rate-limiting.")
             print("    Wait ~30 min and run again; already-resolved flags are kept.")
 
+    if not vf_ok:
+        print("\n  ! VesselFinder was NOT reachable from this IP - flag resolution could not run.")
+        print("    Managers were still synced. Run refresh_flags.py from a residential IP for flags.")
     counts = {f: sum(1 for v in flags.values() if v == f) for f in TRACKED}
     print(f"\nflags.json now: {len(flags)} IMOs")
     print(f"on your flags:  {counts}  (total {sum(counts.values())})")

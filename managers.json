@@ -1,4 +1,147 @@
 {
+ "1079668": {
+  "contact": "",
+  "ism": "COSCO Shipping Asphalt (Hainan) Co Ltd",
+  "ismEmail": "",
+  "notes": "Chinese state-owned; 21F COSCO Shipping Plaza, 139 Gangwan Lu, Guangzhou. No email published. Bitumen tanker built 2026.",
+  "owner": "Anhaiwan Maritime Co Ltd",
+  "phone": "",
+  "source": "magicport vessel page + company site",
+  "updated": "2026-09-13T16:00:00",
+  "verified": true
+ },
+ "9150509": {
+  "contact": "Mr Mirkovic",
+  "ism": "Wilson Ship Management AS",
+  "ismEmail": "smi@wilsonship.no",
+  "notes": "Stefan Mirkovic, SHEQ Manager +47 48143700. Henrik Orth, Director Ship Management heo@wilsonship.no. Technical Manager Terje Vedøy tve@wilsonship.no. Damsgårdsveien 135, Bergen. ~100-vessel fleet - covers WILSON BREMEN, WILSON HOLLA etc.",
+  "owner": "Wilson ASA",
+  "phone": "+47 55 30 82 00",
+  "source": "wilsonship.no fleet list + magicport company role + contacts page",
+  "updated": "2026-09-13T16:00:00",
+  "verified": true
+ },
+ "9278337": {
+  "contact": "",
+  "ism": "Amasus Support BV",
+  "ismEmail": "info@amasus.nl",
+  "notes": "Amasus Shipping, Abel Tasmanplein 4, Delfzijl. Only general address published. ISM link from a tracker summary, not MagicPort - confirm in Equasis.",
+  "owner": "",
+  "phone": "+31 596 649 800",
+  "source": "tracker summary + amasus.nl",
+  "updated": "2026-09-13T16:00:00",
+  "verified": false
+ },
+ "9295529": {
+  "contact": "Mr Söhl",
+  "ism": "Schiffahrtskontor tom Wörden GmbH & Co. KG",
+  "ismEmail": "stw@navalis.com",
+  "notes": "DPA: Uwe Söhl +49 4141 41 19 621 (24h). Fleet Director Christian Behrmann, Technical Fleet Mgr Marco Kayser, Nautical Fleet Mgr Benjamin Thielemeier. Oldendorf, Germany. Vessel->company link is from a tracker; confirm in Equasis.",
+  "owner": "",
+  "phone": "+49 4144 6190 10",
+  "source": "tracker manager field + magicport company role + tomwoerden.com",
+  "updated": "2026-09-13T16:00:00",
+  "verified": false
+ },
+ "9385881": {
+  "contact": "Mr Verbeek",
+  "ism": "Vertom Bereederungs GmbH & Co. KG",
+  "ismEmail": "daan.verbeek@vertom.nl",
+  "notes": "Same manager as BEAUMAIDEN. Commercial manager Vertom UCS Holding BV.",
+  "owner": "Shinyo Kisen / Sun Birth",
+  "phone": "+31 10 285 84 39",
+  "source": "magicport vessel page + company site",
+  "updated": "2026-09-13T16:00:00",
+  "verified": true
+ },
+ "9401257": {
+  "contact": "Mr Verbeek",
+  "ism": "Vertom Bereederungs GmbH & Co. KG",
+  "ismEmail": "daan.verbeek@vertom.nl",
+  "notes": "Daan Verbeek, Group QHSE Manager (Rotterdam). Bereederung office: Borgwardring 80, 26802 Moormerland, Germany. Group reception receptie@vertom.nl +31 10 285 85 85.",
+  "owner": "Valparola Beaumaiden BV",
+  "phone": "+31 10 285 84 39",
+  "source": "magicport vessel page + company site",
+  "updated": "2026-09-13T16:00:00",
+  "verified": true
+ },
+ "9440253": {
+  "contact": "Mr Conlon",
+  "ism": "Arklow Shipping ULC",
+  "ismEmail": "technical@asl.ie",
+  "notes": "John Conlon, Marine Superintendent / DPA, +353 86 3088836. Technical Director Iain Shirley. North Beach, Arklow, Co. Wicklow.",
+  "owner": "Coastal Shipping PLC",
+  "phone": "+353 402 39901",
+  "source": "magicport vessel page + company site",
+  "updated": "2026-09-13T16:00:00",
+  "verified": true
+ },
+ "9544102": {
+  "contact": "",
+  "ism": "Misuga Kaiun Co Ltd",
+  "ismEmail": "",
+  "notes": "Tokyo HQ (Iidabashi) and Shikokuchuo, Ehime. Contact form only on misuga-kaiun.co.jp. Commercial manager Yamamaru Kisen KK. ~170-vessel manager.",
+  "owner": "Ocean Transit Carrier SA",
+  "phone": "+81 3 3261 6725",
+  "source": "magicport vessel page + company site",
+  "updated": "2026-09-13T16:00:00",
+  "verified": true
+ },
+ "9544891": {
+  "contact": "Ms Kruijer",
+  "ism": "Grönberg Ship Management BV",
+  "ismEmail": "info@gronberg.nl",
+  "notes": "QHSE Manager Rolinda Kruijer; QHSE Coordinator Petra van den Corput; Senior Supt John van Eijkelenborg. Handelskade West 34, Delfzijl. NB: commercial manager is Peak Project Carriers (Norway) - NOT the DOC holder.",
+  "owner": "Peak Belfast BV",
+  "phone": "+31 50 7676027",
+  "source": "magicport vessel page + company site",
+  "updated": "2026-09-13T16:00:00",
+  "verified": true
+ },
+ "9568005": {
+  "contact": "",
+  "ism": "Safe Bulkers Management Ltd",
+  "ismEmail": "",
+  "notes": "Safe Bulkers Tower, 71 Agias Fylaxeos, Limassol. Only directors@safebulkers.cy (holdco) published; safebulkers.com contact page 403s. Technical Manager per LinkedIn: George Chalkias.",
+  "owner": "Staloudi Shipping Corp",
+  "phone": "+357 25887200",
+  "source": "magicport vessel page + company site",
+  "updated": "2026-09-13T16:00:00",
+  "verified": true
+ },
+ "9578751": {
+  "contact": "",
+  "ism": "Briese Heavylift GmbH & Co. KG",
+  "ismEmail": "info@briese.de",
+  "notes": "Briese group, Hafenstrasse 12, 26789 Leer. Only the general address is published. BBC Chartering is the commercial arm.",
+  "owner": "Blue Star Briese Schiffahrts",
+  "phone": "+49 491 925200",
+  "source": "magicport vessel page + company site",
+  "updated": "2026-09-13T16:00:00",
+  "verified": true
+ },
+ "9594456": {
+  "contact": "",
+  "ism": "Istia Maritime Co",
+  "ismEmail": "hsqe@istiamaritime.gr",
+  "notes": "HSQE dept. Also technical@istiamaritime.gr, operations@. Dionissou 132, Maroussi, Athens. 5-vessel bulk fleet.",
+  "owner": "Sea Horse Marine SA",
+  "phone": "+30 210 36 42 044",
+  "source": "magicport vessel page + company site",
+  "updated": "2026-09-13T16:00:00",
+  "verified": true
+ },
+ "9624823": {
+  "contact": "",
+  "ism": "Wijnne & Barends Cargadoors- en Agentuurkantoren BV",
+  "ismEmail": "qhsse@wijnnebarends.com",
+  "notes": "QHSSE dept - site says explicitly: 'ISO and ISM related issues, audits, flag state, port state'. Also technical@wijnnebarends.com. Handelskade Oost 5, Delfzijl. Spliethoff Group.",
+  "owner": "Lady Anneke Rederij",
+  "phone": "+31 596 637 777",
+  "source": "magicport vessel page + company site",
+  "updated": "2026-09-13T16:00:00",
+  "verified": true
+ },
  "9640621": {
   "contact": "",
   "ism": "Viridian Maritime Pte Ltd",
@@ -7,5 +150,71 @@
   "source": "magicport/google - CONFIRM IN EQUASIS",
   "updated": "2026-09-09T00:00:00",
   "verified": false
+ },
+ "9703576": {
+  "contact": "",
+  "ism": "Star Bulk Hellas Inc",
+  "ismEmail": "",
+  "notes": "40 Agiou Konstantinou, Maroussi, Athens. No operational email published (only ir@). Reflagged MH->LR.",
+  "owner": "Blooming Navigation LLC",
+  "phone": "+30 210 6178400",
+  "source": "magicport vessel page + company site",
+  "updated": "2026-09-13T16:00:00",
+  "verified": true
+ },
+ "9742651": {
+  "contact": "",
+  "ism": "Genco-Synergy Bulk Carriers Pvt Ltd",
+  "ismEmail": "",
+  "notes": "Genco / Synergy Marine JV (2024), ISM office Noida & Chennai, India. No email published; Genco Singapore office 16 Raffles Quay #41-05A. Commercial manager Genco Ship Management LLC.",
+  "owner": "Genco Freedom Ltd",
+  "phone": "+65 6329 9190",
+  "source": "magicport vessel page + company site",
+  "updated": "2026-09-13T16:00:00",
+  "verified": true
+ },
+ "9800635": {
+  "contact": "",
+  "ism": "Diana Shipping Services SA",
+  "ismEmail": "",
+  "notes": "Diana Shipping Inc in-house manager. Pendelis 16, Palaio Faliro, Athens. Contact form only on site, no email published.",
+  "owner": "Beru Shipping Co Inc",
+  "phone": "+30 210 9470000",
+  "source": "magicport vessel page + company site",
+  "updated": "2026-09-13T16:00:00",
+  "verified": true
+ },
+ "9835795": {
+  "contact": "",
+  "ism": "Navigation Maritime Bulgare (Navibulgar)",
+  "ismEmail": "head-sepqm@navbul.com",
+  "notes": "Manager DPA/MR/CSO (SEPQM dept). Technical Director: director.technical@navbul.com +359 52 683 324. Navibulgar House, 1 Primorski Blvd, Varna.",
+  "owner": "Malyovitsa Maritime Ltd",
+  "phone": "+359 52 683 790",
+  "source": "magicport vessel page + company site",
+  "updated": "2026-09-13T16:00:00",
+  "verified": true
+ },
+ "9956513": {
+  "contact": "Sr. Merchán",
+  "ism": "Naviera Murueta SAU",
+  "ismEmail": "admon@navieramurueta.com",
+  "notes": "DPA: Juan Jesús Merchán (listed as 'DPA' on navieramurueta.com/contacto). Inspectors dept +34 94 600 40 64. C/ San Vicente 8, Edificio Albia I 9º, Bilbao. Spanish-language. Email from a directory listing, not seen on the site.",
+  "owner": "Vizcaína Balear de Navegación",
+  "phone": "+34 94 600 40 60",
+  "source": "magicport + navieramurueta.com contacto; email from directory (unverified)",
+  "updated": "2026-09-13T16:00:00",
+  "verified": true
+ },
+ "9974008": {
+  "contact": "",
+  "ism": "Kobe Shipmanagement Co Ltd",
+  "ismEmail": "smdept@kobeshipping.co.jp",
+  "notes": "1-8 Nadakita-dori 10-chome, Nada-ku, Kobe. Email from a directory listing, not seen on the company site.",
+  "owner": "Aono Marine / Gleam Line",
+  "phone": "+81 78 861 7286",
+  "source": "magicport vessel page; email from directory (unverified)",
+  "updated": "2026-09-13T16:00:00",
+  "verified": true
  }
 }

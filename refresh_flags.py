@@ -9,11 +9,15 @@ WHY THIS EXISTS
     resolves the missing flags via VesselFinder, and updates flags.json.
 
 USAGE
-    python3 refresh_flags.py
-    git add flags.json && git commit -m "refresh flags" && git push
-    -> Render redeploys with fresh flags.
+    python3 refresh_flags.py                      # flags only
+    python3 refresh_flags.py --live https://fsi-monitor.onrender.com
+                                                  # also pull managers saved via the dashboard
+    git add flags.json managers.json && git commit -m "refresh seeds" && git push
+    -> Render redeploys with fresh seeds.
 
-Run it roughly weekly. Takes ~3 minutes. Pure stdlib, no dependencies.
+Since v3.13.0 this runs automatically every day via
+.github/workflows/refresh-seeds.yml. Run it by hand only to force a refresh.
+Takes ~3 minutes. Pure stdlib, no dependencies.
 """
 import json, os, re, sys, time, urllib.request, urllib.error
 
@@ -117,8 +121,54 @@ def resolve(imo, tries=3):
     return ""
 
 
+MANAGERS = os.path.join(HERE, "managers.json")
+
+
+def pull_live_managers(base_url):
+    """v3.13.0 / B-109: managers saved through the dashboard land on Render's
+    disk, which is wiped on every deploy. Pull them from the live server and
+    merge into the committed managers.json BEFORE anything is pushed, so the
+    redeploy that follows cannot destroy them. Newest `updated` wins."""
+    base_url = base_url.rstrip("/")
+    try:
+        req = urllib.request.Request(base_url + "/api/managers", headers={"User-Agent": UA})
+        live = json.loads(urllib.request.urlopen(req, timeout=60).read()).get("managers", {})
+    except Exception as e:
+        print(f"  ! could not pull live managers from {base_url}: {e} (keeping repo copy)")
+        return 0
+    repo = {}
+    if os.path.exists(MANAGERS):
+        try:
+            with open(MANAGERS, encoding="utf-8") as f:
+                repo = json.load(f)
+        except Exception as e:
+            print(f"  ! managers.json unreadable ({e}); treating as empty")
+    merged, changed = dict(repo), 0
+    for imo, m in (live or {}).items():
+        if not (isinstance(m, dict) and re.match(r"^\d{7}$", imo) and m.get("ism")):
+            continue
+        if imo not in merged or (m.get("updated", "") > merged[imo].get("updated", "")):
+            if merged.get(imo) != m:
+                merged[imo] = m; changed += 1
+    if changed:
+        tmp = MANAGERS + ".tmp"
+        with open(tmp, "w", encoding="utf-8") as f:
+            json.dump(merged, f, indent=1, ensure_ascii=False, sort_keys=True)
+        os.replace(tmp, MANAGERS)
+    print(f"  live managers: {len(live)} | repo: {len(repo)} | merged in: {changed} | now: {len(merged)}")
+    return changed
+
+
 def main():
     print("FSI flag seed refresher\n")
+    live = None
+    for i, a in enumerate(sys.argv):
+        if a == "--live" and i + 1 < len(sys.argv):
+            live = sys.argv[i + 1]
+    if live:
+        print(f"pulling dashboard-saved managers from {live} ...")
+        pull_live_managers(live)
+        print()
     flags = load_seed()
     print(f"existing seed: {len(flags)} IMOs\n")
 

@@ -1,9 +1,88 @@
 # FSI Vessel Arrival Monitor — VERSION LOG
-Current production version: **v3.12.2**
+Current production version: **v3.13.0**
 
 Semantics: MAJOR = architecture change | MINOR = feature | PATCH = fix
 Release entries below are **newest first**; standing reference sections
 (data source matrix, standing constraint) are at the end of the file.
+
+## v3.13.0 — Daily automated seed refresh + manager directory for Gijón/Avilés
+Two things that were "next" for the whole life of the project, done.
+
+### 1. `.github/workflows/refresh-seeds.yml` — daily, 05:00 UTC, plus a manual button
+Closes the operational gap first described in HANDOFF §4 and hit again in
+B-025 and v3.12.2 (94% -> 50% coverage in four days). Steps:
+1. **Pull dashboard-saved managers from the live server first** (`refresh_flags.py
+   --live URL` -> `GET /api/managers`, merged newest-`updated`-wins) — see B-109.
+2. Run `refresh_flags.py` — VesselFinder from GitHub's runner IP, not Render's.
+3. Sanity-check both seeds (7-digit keys, 2-letter flags, non-empty ISM,
+   `flags.json` ≥ 100 entries) and **refuse to commit** if anything is off.
+4. Commit + push only if a seed changed -> Render redeploys with current seeds.
+
+`permissions: contents: write`, no secrets. Concurrency-guarded so two runs
+never race. **Known risk, unproven until the first run:** nobody has shown
+VesselFinder accepts GitHub's IPs. If it does not, the flags step resolves 0
+and says so; the managers step still works. The first `workflow_dispatch`
+run is the test.
+
+Merge logic verified in four cases against the real live server and a
+stubbed one: identical (0 merged), newer live entry wins, new entry added,
+junk keys (`bad`, entry without `ism`) rejected, older live entry ignored.
+
+### 2. B-109 — managers saved through the dashboard were being lost
+`save_managers()` writes `managers.json` on Render's disk, which is ephemeral
+and wiped by every deploy. So anything entered via **Save manager** on the
+live site survived only until the next push — including every push this
+workflow makes. The v3.12.0 seed entry survived only because it was
+committed by hand. Fixed by step 1 above: the live directory is pulled and
+committed before any push. Race window: an entry saved between the 05:00
+pull and the redeploy a minute later is lost; documented, tolerated.
+
+`save_manager()` now also preserves fields it does not own (`phone`,
+`notes`) so a re-save from the UI cannot wipe research done offline.
+Verified live: re-saving 9440253 through `/api/savemanager` kept both.
+
+### 3. `managers.json` — every vessel currently calling Gijón and Avilés
+20 vessels researched (1 -> 20 entries). Method per vessel: MagicPort's
+vessel page for the ISM manager (the only free source that states the DOC
+holder as a distinct field), then the company's own site for contacts.
+`verified: true` only where the ISM identity came from MagicPort's vessel
+page or the company's own fleet list; 17/20. 14 have an email, 7 a named
+DPA/QHSE contact for the salutation, 6 are phone/contact-form only.
+
+Why the method matters — three of the 20 would have gone to the wrong
+company from a tracker's "manager" field:
+| Vessel | Tracker says | DOC holder actually |
+|---|---|---|
+| PEAK BELFAST | Peak Project Carriers (Norway) | **Grönberg Ship Management BV** (Delfzijl) |
+| GCL PRAIA MOLE | (nothing useful) | **Kobe Shipmanagement Co Ltd** — not "GCL" |
+| FURNESS VICTORIA | Fukunaga Kaiun (owner) | **Viridian Maritime** (v3.12.0) |
+
+Best-case contacts found: Navibulgar `head-sepqm@navbul.com` (Manager
+DPA/MR/CSO), Wijnne & Barends `qhsse@` ("ISO and ISM related issues, audits,
+flag state, port state" — their words), Arklow `technical@asl.ie` with John
+Conlon named as Marine Superintendent/DPA, Naviera Murueta's DPA named on
+their contacts page, Vertom's Group QHSE Manager by name and direct line,
+Wilson's SHEQ Manager, Director Ship Management and Technical Manager all
+with direct emails. Worst case: Japanese and Chinese managers (Misuga, COSCO
+Asphalt) and the big Greek/US listed owners (Star Bulk, Diana, Safe Bulkers,
+Genco) publish phone numbers or contact forms only.
+
+Out of scope: FRANCISCO DE PAULA NAVARRO (9098581) is a 30 m Spanish
+government research vessel, not a commercial target. Left out of the
+directory deliberately so it keeps prompting as unknown rather than
+carrying a fake manager.
+
+Two entries are `verified: false` and say so in their notes: AVILA (vessel ->
+Tom Wörden link is from a tracker; the company itself is an ISM manager and
+published a named DPA) and EEMS DOLLARD (Amasus, from a tracker summary).
+
+### Verified
+- 34/34 manager suite, 12/12 B-106 suite, clean boot on 3.13.0 with 20
+  managers loaded; modal renders "Dear Mr Conlon," with the DPA note and
+  Wilson's phone from real directory data; the research vessel still prompts
+  as unknown.
+- Workflow file structure checked; the sanity-check step run locally against
+  the committed seeds: 258 flags / 20 managers, 0 malformed.
 
 ## v3.12.2 — Blank flags: stale seed + cp1252 decode bug + emoji for non-tracked flags
 Reported as "a lot of vessels without flag identified" the day after the

@@ -3,6 +3,20 @@
 Newest first. Full root-cause detail for every entry lives in `VERSION.md`;
 bug IDs referenced here are tracked in `BUGS.md`.
 
+## v3.13.0 — Daily seed refresh + manager directory for Gijón/Avilés
+A GitHub Action now refreshes `flags.json` every day at 05:00 UTC from
+GitHub's IP (VesselFinder blocks Render's), and pulls any managers you saved
+through the dashboard into the repo first — previously those were silently
+wiped on every deploy (B-109). Manual button: Actions → refresh-seeds → Run
+workflow. First run also proves whether VesselFinder accepts GitHub's IPs.
+
+`managers.json` now covers all 20 vessels currently calling Gijón and
+Avilés: ISM manager confirmed via MagicPort's vessel page, contacts from the
+companies' own sites — 14 with an email, 7 with a named DPA/QHSE person so
+the draft opens "Dear Mr Conlon" rather than "Dear Sirs". Cards now show
+phone and research notes. FRANCISCO DE PAULA NAVARRO left out on purpose:
+it's a Spanish government research vessel.
+
 ## v3.12.2 — Blank flags fixed three ways
 Refreshed `flags.json` (219 → 258; 39/39 resolved, **12 of them on your
 flags** and previously invisible). Fixed the Avilés feed decoding — it's

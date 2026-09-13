@@ -65,3 +65,9 @@
 | B-107 | **HIGH** | Every Spanish-flagged vessel at Avilés shows a blank flag; `flagName` renders as `Espa�A`; accented vessel names corrupt | Avilés CSV is served as cp1252 (`ESPA\xd1A`) but `_pa_rows()` decoded it as UTF-8 with `errors="replace"`, turning Ñ into U+FFFD so `es_flag()` never matched. Since v3.9.0; hidden until All flags exposed ES rows. | Strict UTF-8 with cp1252 fallback. Live-verified: 3/3 Spanish rows -> `ES`, 0 U+FFFD. |
 | B-108 | MED | Resolved non-tracked flags (PA, CY, AG…) show 🏳️ — indistinguishable from an unresolved flag | `flagEmoji()` only mapped the four tracked flags. | Derive emoji from the ISO code; 🏳️ only for empty/invalid. |
 | (B-025) | — | 39 of 77 planned IMOs missing from `flags.json` after 4 days; 12 of them on tracked flags and therefore absent from the default view | Seed staleness — ShipNext horizon rolls faster than manual refreshes | `refresh_flags.py` run, 39/39 resolved, seed 219 -> 258. Durable fix (scheduled GitHub Action) still open. |
+
+## v3.13.0
+| ID | Sev | Description | Root cause | Fix |
+|---|---|---|---|---|
+| B-109 | **HIGH** | Managers saved through the dashboard's **Save manager** form vanish on the next deploy | `save_managers()` writes to `managers.json` on Render's ephemeral disk (same class as B-104). Every push — including the daily seed refresh — wipes it. Shipped in v3.12.0 without noticing. | Daily workflow pulls `/api/managers` from the live server and merges it into the committed `managers.json` **before** pushing. `save_manager()` also preserves fields it doesn't own (`phone`, `notes`). |
+| (B-025) | — | Seed decayed 94% -> 50% in four days; manual refresh cannot keep pace | ShipNext horizon rolls faster than any manual cadence | `.github/workflows/refresh-seeds.yml` daily at 05:00 UTC. First run must confirm VesselFinder accepts GitHub's IPs. |

@@ -1,9 +1,59 @@
 # FSI Vessel Arrival Monitor — VERSION LOG
-Current production version: **v3.12.0**
+Current production version: **v3.12.1**
 
 Semantics: MAJOR = architecture change | MINOR = feature | PATCH = fix
 Release entries below are **newest first**; standing reference sections
 (data source matrix, standing constraint) are at the end of the file.
+
+## v3.12.1 — Empty port selection no longer kills the dashboard (B-106)
+Reported as "showing 0 vessels at all, no searching" on the live deployment
+the day after v3.12.0 shipped. Not a regression — v3.12.0 touches nothing
+in port selection — but it surfaced now and it was a real defect.
+
+### Root cause
+The port picker has a red **None** button (`S.ports=[]`), and region buttons
+that *deselect* a region when it is already fully selected. Either path can
+leave zero ports selected. That state is then persisted to `localStorage`
+(`fsi13_p = "[]"`) and restored on every reload, where `lsMig()` treats the
+truthy string `"[]"` as a valid saved value rather than falling back to the
+default. `fetchAll()` then filters `PORTS` down to nothing, builds zero
+jobs, and returns — no loading bar, no requests, no error panel. `render()`
+shows "No vessels match.", which reads as a data problem. The only clue was
+`PORTS (0)` in the picker header.
+
+Diagnosed by elimination: the live server was healthy (every endpoint
+returned data, and in a clean browser the page showed 176 vessels), but its
+`meta.runs` was 0 — the user's browser had loaded the page and never sent a
+single data request. Reproduced headlessly with `fsi13_p="[]"`: 0 fetches.
+
+### Fix
+- **Heal at page load only.** If the saved selection is empty when the page
+  opens, restore all 12 ports, persist, and log "No ports were selected —
+  restored all 12". Not mid-session: after clicking None to pick a subset
+  the user must not be fought.
+- **Never silent.** `fetchAll()` with zero ports now logs "No ports selected
+  — open + Add Ports and choose ports, or All", clears the loading state,
+  rebuilds the table (dropping stale live rows), and returns. The empty
+  table says the same instead of "No vessels match."
+- **None** stays — it is the right way to pick two or three ports.
+
+Also repaired the module docstring, which had been silently corrupted by
+successive global version bumps into "v3.11.0 fixes all 19 audited weak
+points. See PLAN-v3.11.0.md" — a file that does not exist; the hardening
+was v3.8.0. Rewritten to list the actual sources with no version-pinned
+sentence to rot again.
+
+### Verified
+- 12/12 headless (node, stubbed DOM + localStorage): load with `[]` restores
+  12 ports and persists them, 14 fetches issued, restore message survives
+  `fetchAll`'s log reset, rows render; mid-session None does not
+  auto-restore, Refresh with 0 ports issues no fetches and leaves no stuck
+  spinner, status line and table both explain; picking Vigo resumes fetching.
+- Regression: 34/34 manager-inquiry suite, normal 12-port load issues 16
+  fetches with no exception, all-flags state renders.
+- One assertion initially failed and exposed a real gap: the early return
+  skipped `buildCombined()`, so stale live rows outlived the port
+  deselection. Fixed.
 
 ## v3.12.0 — ISM manager inquiry + manager directory
 Requested feature: send service proposals (pre-PSC inspection / ISM internal

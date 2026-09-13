@@ -3,6 +3,15 @@
 Newest first. Full root-cause detail for every entry lives in `VERSION.md`;
 bug IDs referenced here are tracked in `BUGS.md`.
 
+## v3.12.1 — Empty port selection no longer looks like a broken app (B-106)
+Clicking **None** in the port picker (or toggling every region off) left zero
+ports selected, saved that, and the dashboard reloaded to "No vessels match."
+with no fetching and no explanation. Now: an empty saved selection is
+restored to all 12 on page load (and says so), and refreshing with zero ports
+tells you to add ports instead of staying silent. **None** still works for
+picking a subset — it just isn't a trap any more. Not a v3.12.0 regression;
+it was always there.
+
 ## v3.12.0 — Manager inquiry drafts
 Tick vessels → **🏢 Manager Inquiry** drafts a service proposal (pre-PSC
 inspection / ISM internal audit) to the vessel's **ISM manager**, grouped so

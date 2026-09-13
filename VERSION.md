@@ -21,9 +21,18 @@ resolved. Verified from a residential IP: `OK (9640621 -> PA as expected)`.
 Also bumped `actions/checkout` v4→v5 and `actions/setup-python` v5→v6 to
 clear the "Node.js 20 is deprecated" annotation before it becomes a failure.
 
-**Still open until the next run's log is read:** whether GitHub's IPs are
-blocked. Re-run the workflow and read the first line of the "Refresh seeds"
-step.
+**Resolved by run #2 (13 Sep 2026, 14:5x UTC):**
+`VESSELFINDER REACHABILITY: OK (9640621 -> PA as expected)` — **GitHub's
+runner IPs are not blocked.** The daily flags refresh will work. Same run:
+managers pull `live 20 | repo 20 | merged 0`, ShipNext 77 planned / 77 known /
+0 to resolve (seed had been hand-refreshed that morning). The legacy
+VesselFinder port-page harvest reported `Marín FAILED (HTTPError)`; those
+listings have been paywalled since v3.9.0 and the step contributes nothing
+either way — left in place, noted here.
+
+The standing operational note repeated in v3.8.0, v3.10.3 and v3.12.2 —
+"the seed still requires a periodic manual `refresh_flags.py` run" — no
+longer applies.
 
 ## v3.13.0 — Daily automated seed refresh + manager directory for Gijón/Avilés
 Two things that were "next" for the whole life of the project, done.

@@ -124,11 +124,12 @@ TTL that was supposed to allow retries. Now a `{imo: timestamp}` dict. If you
 see similar "tracked forever, never retried" patterns elsewhere, they're
 worth a second look.
 
-**Possible future improvement, not yet built:** a scheduled GitHub Action
-that runs `refresh_flags.py` on GitHub's own IP (not blocked, not the user's
-laptop) and commits automatically. This was proposed to the user but not
-built — mentioning it here in case they ask for it, since it would close this
-operational gap permanently.
+**Built in v3.13.0, proven in v3.13.1:** `.github/workflows/refresh-seeds.yml`
+runs `refresh_flags.py --live <render url>` daily at 05:00 UTC on GitHub's
+runners. Run #2 confirmed `VESSELFINDER REACHABILITY: OK` from GitHub's IP.
+It also pulls managers saved through the dashboard into `managers.json`
+before pushing (B-109). Manual runs are no longer needed; the "Run workflow"
+button exists to force one.
 
 ---
 
@@ -204,8 +205,12 @@ new mapping.
 - **San Ciprián / Ferrol** — could move off ShipNext-only to a real PA feed
   if the user gets Ferrol PA login credentials (comercial@apfsc.es). Not
   pursued because it needs the user to make contact.
-- **`flags.json` staleness** — needs periodic `refresh_flags.py` runs. A
-  GitHub Action to automate this was discussed but not built (see §4).
+- ~~**`flags.json` staleness**~~ — closed in v3.13.0/v3.13.1: daily GitHub
+  Action, VesselFinder confirmed reachable from GitHub's IP (see §4).
+- **Manager inquiries built in v3.12.0** — `managers.json` directory, `🏢
+  Manager Inquiry` button, recusal log; v3.13.0 filled it for every vessel
+  calling Gijón/Avilés. The COI point below was handled by logging approaches
+  under held-authority flags as declarable, not by avoiding them.
 - **Equasis integration is link-only** (v3.11.0) — each vessel row has a
   link into Equasis's ISM-manager/owner page, but it requires the user's own
   login and nothing is scraped automatically. A fuller "vessel manager

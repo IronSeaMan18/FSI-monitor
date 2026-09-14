@@ -1,9 +1,82 @@
 # FSI Vessel Arrival Monitor — VERSION LOG
-Current production version: **v3.13.1**
+Current production version: **v3.14.0**
 
 Semantics: MAJOR = architecture change | MINOR = feature | PATCH = fix
 Release entries below are **newest first**; standing reference sections
 (data source matrix, standing constraint) are at the end of the file.
+
+## v3.14.0 — The manager directory maintains itself; keep-alive; tests in-repo
+User: "keep always info about managers for the vessels arriving into Gijón
+and Avilés. Today we have new ones and info is empty." Six new vessels had
+appeared overnight; the v3.13.0 directory was a snapshot, not a process.
+
+### 1. ISM manager auto-resolution (MagicPort), daily
+MagicPort's vessel pages carry a JSON-LD sentence — `"ISM Manager of NAME
+(IMO 1234567) is COMPANY."` — and `magicport.ai/vessels?search=<IMO>` returns
+the vessel's page slug. Two plain fetches, no login, no API key. Wrapped as
+`resolve_manager(imo)` in `refresh_flags.py`; the daily workflow runs it for
+every IMO planned at Gijón and Avilés (ShipNext + Avilés PA CSV, cp1252-safe)
+that has no manager on file, writing `verified: false, source:
+magicport-auto`. Politeness cap 40/run, 2 s pacing. The page's own IMO is
+checked against the query — a name collision in search results is refused
+rather than mis-attributed.
+
+**Validation:** 3/3 hand-verified entries (BBC BAHRAIN, PEAK BELFAST, GCL
+PRAIA MOLE) reproduced exactly. Of the first 5 new vessels resolved, 3 would
+have gone to the wrong company by name-guessing: GCL KRISHNA → Anglo-Eastern
+(its sister GCL PRAIA MOLE is Kobe); NORD PLATINUM → Donnelly Tanker
+Management (not Norden); COMBI DOCK I → HG Dry (Harren Group).
+
+### 2. Contacts propagate between sister vessels
+Managers recur across ships far more than ships recur. `propagate_contacts()`
+copies email / contact / phone / notes from the freshest entry under the
+same ISM company into siblings whose fields are empty — never overwriting.
+Company matching folds legal-form suffixes and diacritics, because MagicPort
+writes `VERTOM BEREEDERUNGS GMBH` where a human wrote `Vertom Bereederungs
+GmbH & Co. KG`, and `GRONBERG` for `Grönberg`; the first attempt matched 0
+until this was fixed. Live result: BBC BRISBANE inherited Briese's contact,
+VERTOM ANETTE inherited Vertom's Group QHSE Manager. Only genuinely new
+companies need a human.
+
+### 3. Today's six, filled by hand
+| Vessel | ISM manager | Contact |
+|---|---|---|
+| COMBI DOCK I | HG Dry (Harren Group) | **Capt. Jacek Hausler, Director QHSE & DPA**, `dpa@harren-group.com` |
+| BBC BRISBANE | Briese Heavylift | inherited `info@briese.de` |
+| GCL KRISHNA | Anglo-Eastern | HQ phone only; site hides emails |
+| NORD PLATINUM | Donnelly Tanker Mgmt (Hartmann Group) | `mail@donnellytanker.com.cy` (directory) |
+| RUMA | Ership SAU | `adm.mad@ership.com` (directory) — **has a Gijón delegation** |
+| GAS AEGEAN | Benelux Overseas | `info@benelux-ship.com` (verified) |
+| HERBEIRA | Navigasa (A Coruña) | `navigasa@navigasa.com` (directory) |
+
+FRANCISCO DE PAULA NAVARRO (9098581) added as an explicit non-target — a
+30 m IEO research vessel — so the dashboard stops asking for a manager.
+
+### 4. UI: known manager, no email
+The card now offers one-click "find contact" and "LinkedIn" searches for the
+company, so the only manual step left is one click and a paste.
+
+### 5. `.github/workflows/keep-alive.yml`
+Hits `/api/ping` every 5 min from GitHub so the Render free instance does not
+spin down; the dashboard's own ping (B-014) only runs while a tab is open.
+GitHub's scheduler drifts, so this is "almost always awake"; Render Starter
+is the hard fix. Side effect: the in-memory DB (B-104) survives, so Runs /
+History accumulate.
+
+### 6. `tests/` — headless suites now live in the repo
+The 34-test manager-inquiry suite existed only in a scratch directory and was
+lost between sessions. Both suites (`test_manager_inquiry.js`,
+`test_ports_b106.js`) plus `extract.py` and `run.sh` are now committed.
+`tests/run.sh` = py_compile + node --check + both suites. 38/38 + 12/12.
+
+### Verified
+- `resolve_manager`: 3/3 controls exact; 8/8 new IMOs resolved; research
+  vessel correctly not found.
+- Company matching: 8/8 cases incl. suffix and diacritic differences and
+  three deliberate non-matches (Kobe Shipmanagement ≠ Kobe Shipping, Star
+  Bulk Hellas ≠ Starbulk SA).
+- Clean boot on 3.14.0, 29 managers; all four of today's new vessels render
+  complete cards from real data.
 
 ## v3.13.1 — Workflow run #1 was inconclusive; made every run self-diagnosing
 Run #1 (13 Sep, `workflow_dispatch`) went green in 27 s and pushed nothing.

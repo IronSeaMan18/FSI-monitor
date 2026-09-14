@@ -3,6 +3,15 @@
 Newest first. Full root-cause detail for every entry lives in `VERSION.md`;
 bug IDs referenced here are tracked in `BUGS.md`.
 
+## v3.14.0 — Manager directory maintains itself
+Every day the workflow now looks up the ISM manager (via MagicPort) for any
+vessel planned at Gijón or Avilés that isn't on file, and copies contact
+details between sister vessels under the same manager. Only genuinely new
+companies need a human — and the card gives you the two search links for
+that. Today's six new vessels filled by hand (COMBI DOCK I opens "Dear Capt.
+Hausler" — Harren's Director QHSE & DPA). Keep-alive workflow so Render
+doesn't sleep. Test suites moved into `tests/`.
+
 ## v3.13.1 — Workflow prints whether VesselFinder is reachable
 Run #1 was green but proved nothing (nothing to resolve that day). Every run
 now starts with one line — `VESSELFINDER REACHABILITY: OK/BLOCKED/FAILED` —

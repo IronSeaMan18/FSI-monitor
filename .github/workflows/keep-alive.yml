@@ -1,0 +1,37 @@
+# v3.13.2 — keep the Render free-tier service awake
+#
+# Render spins a free web service down after 15 min idle; the next visitor
+# pays a ~30 s cold start. The dashboard pings itself every 10 min (B-014)
+# but only while a tab is open - i.e. never when it matters. This hits
+# /api/ping every 5 min from GitHub instead. Public repo => runner minutes
+# are free. GitHub's scheduler can drift 5-15 min under load, so this is
+# "almost always awake", not a guarantee; when it slips, the pinger eats the
+# cold start rather than the user. Render Starter ($7/mo) is the hard fix.
+#
+# Side effect worth having: the in-memory vessel DB (B-104) stops being
+# wiped every 15 min, so Runs / History actually accumulate.
+
+name: keep-alive
+
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch: {}
+
+permissions: {}
+
+concurrency:
+  group: keep-alive
+  cancel-in-progress: true
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Ping /api/ping (wakes the service if asleep)
+        run: |
+          t0=$(date +%s)
+          out=$(curl -sS -m 90 --retry 2 --retry-delay 5 https://fsi-monitor.onrender.com/api/ping) || { echo "ping FAILED"; exit 1; }
+          echo "response: $out"
+          echo "took: $(( $(date +%s) - t0 ))s  (>10s means it was asleep and just woke)"

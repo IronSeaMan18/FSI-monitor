@@ -10,6 +10,17 @@
   "updated": "2026-09-13T16:00:00",
   "verified": true
  },
+ "9098581": {
+  "contact": "",
+  "ism": "Instituto Español de Oceanografía (IEO-CSIC) — government research vessel, NOT a commercial target",
+  "ismEmail": "",
+  "notes": "30 m oceanographic research vessel (built 1987, Viudes, Barcelona), Spanish flag. Not in MagicPort. Listed here only so the dashboard stops asking for a manager.",
+  "owner": "Gobierno de España",
+  "phone": "",
+  "source": "manual",
+  "updated": "2026-09-14T12:00:00",
+  "verified": true
+ },
  "9150509": {
   "contact": "Mr Mirkovic",
   "ism": "Wilson Ship Management AS",
@@ -54,6 +65,17 @@
   "updated": "2026-09-13T16:00:00",
   "verified": true
  },
+ "9400473": {
+  "contact": "Capt. Hausler",
+  "ism": "HG DRY GMBH & CO KG",
+  "ismEmail": "dpa@harren-group.com",
+  "notes": "HG Dry is a Harren Group entity. Capt. Jacek Hausler, Director QHSE & DPA (dpa@harren-group.com). Director Fleet Management Jan-Hendrik Dammann fleetmanagement@harren-group.com. MD Bulkers/MPP Capt. Joachim Zeppenfeld. Hermann-Hollerith-Str. 10, 28355 Bremen. Commercial: Harren & Partner Ship Mgmt.",
+  "owner": "MERKUR 74 SCHIFFFAHRTS",
+  "phone": "+49 421 46 86-0",
+  "source": "magicport-auto + harren-group.com team page",
+  "updated": "2026-09-14T12:00:00",
+  "verified": true
+ },
  "9401257": {
   "contact": "Mr Verbeek",
   "ism": "Vertom Bereederungs GmbH & Co. KG",
@@ -64,6 +86,17 @@
   "source": "magicport vessel page + company site",
   "updated": "2026-09-13T16:00:00",
   "verified": true
+ },
+ "9439216": {
+  "contact": "",
+  "ism": "NAVIGASA",
+  "ismEmail": "navigasa@navigasa.com",
+  "notes": "Naviera de Galicia SA - family company, A Coruña (Payo Gómez 7, 2ª). President Darío Amor Edreira. Spanish-flagged since 2024. Email from press/directory listing. ETA shown is stale (15 Aug) - vessel appears to be a regular caller.",
+  "owner": "NAVIGASA",
+  "phone": "+34 981 17 30 58",
+  "source": "magicport-auto; email from directory (unverified)",
+  "updated": "2026-09-14T12:00:00",
+  "verified": false
  },
  "9440253": {
   "contact": "Mr Conlon",
@@ -98,6 +131,17 @@
   "updated": "2026-09-13T16:00:00",
   "verified": true
  },
+ "9545209": {
+  "contact": "",
+  "ism": "BENELUX OVERSEAS INC",
+  "ismEmail": "info@benelux-ship.com",
+  "notes": "48 Possidonos Ave, Glyfada, Athens. Only general address published (verified on benelux-ship.com). Gas carrier - LPG.",
+  "owner": "CLARIN NAVIGATION CORP",
+  "phone": "+30 210 898 0446",
+  "source": "magicport-auto + benelux-ship.com",
+  "updated": "2026-09-14T12:00:00",
+  "verified": true
+ },
  "9568005": {
   "contact": "",
   "ism": "Safe Bulkers Management Ltd",
@@ -119,6 +163,17 @@
   "source": "magicport vessel page + company site",
   "updated": "2026-09-13T16:00:00",
   "verified": true
+ },
+ "9578763": {
+  "contact": "",
+  "ism": "BRIESE HEAVYLIFT GMBH & CO KG",
+  "ismEmail": "info@briese.de",
+  "notes": "Briese group, Hafenstrasse 12, 26789 Leer. Only the general address is published. BBC Chartering is the commercial arm.",
+  "owner": "BRIESETAL BRIESE SCHIFFAHRTS",
+  "phone": "+49 491 925200",
+  "source": "magicport-auto +contacts from sibling",
+  "updated": "2026-09-14T20:52:22",
+  "verified": false
  },
  "9594456": {
   "contact": "",
@@ -149,6 +204,17 @@
   "owner": "East Blue Line SA",
   "source": "magicport/google - CONFIRM IN EQUASIS",
   "updated": "2026-09-09T00:00:00",
+  "verified": false
+ },
+ "9652387": {
+  "contact": "",
+  "ism": "ERSHIP SAU",
+  "ismEmail": "adm.mad@ership.com",
+  "notes": "Ership Grupo, Lagasca 88, Madrid. HAS A GIJÓN DELEGATION (also Marín, Huelva, Funchal) - local contact worth using. 9-vessel fleet. Email from directory; site publishes only a contact form.",
+  "owner": "ERSHIP INTERNACIONAL SA",
+  "phone": "+34 914 263 400",
+  "source": "magicport-auto; email from directory (unverified)",
+  "updated": "2026-09-14T12:00:00",
   "verified": false
  },
  "9703576": {
@@ -195,6 +261,28 @@
   "updated": "2026-09-13T16:00:00",
   "verified": true
  },
+ "9906013": {
+  "contact": "",
+  "ism": "DONNELLY TANKER MANAGEMENT-CYP",
+  "ismEmail": "mail@donnellytanker.com.cy",
+  "notes": "Hartmann Group company (Hartmann House, 32 Miltonos St, 3050 Limassol). Email from a directory listing; company site has a broken TLS cert. Commercial: Norden. Owner: Norden Asset Management A/S.",
+  "owner": "NORDEN ASSET MANAGEMENT A/S",
+  "phone": "+357 2558 5435",
+  "source": "magicport-auto; email from directory (unverified)",
+  "updated": "2026-09-14T12:00:00",
+  "verified": false
+ },
+ "9939931": {
+  "contact": "",
+  "ism": "ANGLO-EASTERN SHIP MANAGEMENT",
+  "ismEmail": "",
+  "notes": "World's largest third-party manager; HQ 17/F Kingston International Centre, 19 Wang Chiu Rd, Kowloon Bay, HK. European offices Antwerp/Hamburg/Athens/Glasgow. Emails not exposed on site (JS-rendered) - use the contact form or phone. Commercial: ArcelorMittal Shipping. NOTE: sister GCL PRAIA MOLE is Kobe Shipmanagement - different DOC holder.",
+  "owner": "COMSEA S8 INTERNATIONAL SHIP",
+  "phone": "+852 3940 7000",
+  "source": "magicport-auto + angloeastern.com",
+  "updated": "2026-09-14T12:00:00",
+  "verified": false
+ },
  "9956513": {
   "contact": "Sr. Merchán",
   "ism": "Naviera Murueta SAU",
@@ -205,6 +293,17 @@
   "source": "magicport + navieramurueta.com contacto; email from directory (unverified)",
   "updated": "2026-09-13T16:00:00",
   "verified": true
+ },
+ "9972763": {
+  "contact": "Mr Verbeek",
+  "ism": "VERTOM BEREEDERUNGS GMBH",
+  "ismEmail": "daan.verbeek@vertom.nl",
+  "notes": "Commercial manager: VERTOM ANETTE CV",
+  "owner": "VERTOM ANETTE BV",
+  "phone": "+31 10 285 84 39",
+  "source": "magicport-auto +contacts from sibling",
+  "updated": "2026-09-14T20:51:07",
+  "verified": false
  },
  "9974008": {
   "contact": "",

@@ -12,6 +12,7 @@ USAGE
     python3 refresh_flags.py                      # flags only
     python3 refresh_flags.py --live https://fsi-monitor.onrender.com
                                                   # also pull managers saved via the dashboard
+    python3 refresh_flags.py --no-managers      # skip the MagicPort manager step
     git add flags.json managers.json && git commit -m "refresh seeds" && git push
     -> Render redeploys with fresh seeds.
 
@@ -184,6 +185,142 @@ def pull_live_managers(base_url):
     return changed
 
 
+# --- v3.14.0: ISM manager auto-resolution (MagicPort) ----------------------
+# MagicPort's vessel pages carry a JSON-LD sentence "ISM Manager of NAME (IMO
+# 1234567) is COMPANY." - the only free source that states the DOC holder as
+# its own field. Trackers publish the beneficial owner and label it "manager";
+# 3 of the first 5 auto-resolved vessels would have gone to the wrong company
+# by name (GCL KRISHNA -> Anglo-Eastern, not Kobe; NORD PLATINUM -> Donnelly,
+# not Norden). Validated against 3 hand-verified entries: 3/3 exact.
+MGR_PORTS = {"Gijón": "58238f70821bd20e38598a87", "Avilés": "58206e746c69920ef8543580"}
+AVILES_CSV = "https://www.puertoaviles.es/es-ES/Servicios/Buques-en-el-Puerto/movimientos.csv"
+MGR_MAX_PER_RUN = 40          # politeness cap; ~2 fetches + 2 s per vessel
+
+
+def collect_manager_targets():
+    """IMO -> name for every vessel planned at the manager-tracked ports."""
+    found = {}
+    for pname, sn in MGR_PORTS.items():
+        try:
+            req = urllib.request.Request(f"https://shipnext.com/api/v1/ports/{sn}/planned-vessels",
+                                         headers={"User-Agent": UA})
+            data = json.loads(urllib.request.urlopen(req, timeout=20).read())
+            for v in data.get("data", []):
+                imo = str(v.get("imo") or "").strip()
+                if re.match(r"^\d{7}$", imo):
+                    found[imo] = (v.get("name") or "").strip().upper()
+        except Exception as e:
+            print(f"  {pname:14s} FAILED ({type(e).__name__})")
+    try:   # Avilés PA CSV: col 5 name, col 17 IMO; cp1252 (B-107)
+        req = urllib.request.Request(AVILES_CSV, headers={"User-Agent": UA, "Accept": "*/*"})
+        raw = urllib.request.urlopen(req, timeout=20).read()
+        try: txt = raw.decode("utf-8")
+        except UnicodeDecodeError: txt = raw.decode("cp1252", errors="replace")
+        for line in txt.replace("\r", "\n").split("\n"):
+            r = line.split(";")
+            if len(r) < 22: continue
+            imo = re.sub(r"\D", "", r[17] or "")
+            if len(imo) == 7 and imo not in found:
+                found[imo] = re.sub(r"\s+", " ", r[5]).strip().upper()
+    except Exception as e:
+        print(f"  Avilés CSV     FAILED ({type(e).__name__})")
+    return found
+
+
+def _mp_get(url):
+    req = urllib.request.Request(url, headers={"User-Agent": UA, "Accept": "text/html"})
+    return urllib.request.urlopen(req, timeout=25).read().decode("utf-8", "replace")
+
+
+def resolve_manager(imo):
+    """IMO -> {ism, commercial, owner} from MagicPort, or None. Refuses a page
+    whose own IMO differs (name collisions in search results)."""
+    import html as _html
+    h = _mp_get("https://magicport.ai/vessels?search=" + imo)
+    m = re.search(r"/vessels/[a-z-]+/[a-z0-9-]+-mmsi-\d+", h)
+    if not m: return None
+    t = _html.unescape(_mp_get("https://magicport.ai" + m.group(0)))
+    def grab(label):
+        mm = re.search(label + r" of [^(]+\(IMO (\d{7})\) is ([^.]+?)\.", t)
+        return (mm.group(1), mm.group(2).strip()) if mm else (None, None)
+    page_imo, ism = grab("ISM Manager")
+    if page_imo != imo or not ism: return None
+    return {"ism": ism, "commercial": grab("Commercial Manager")[1] or "",
+            "owner": grab("Registered Owner")[1] or ""}
+
+
+_LEGAL = {"GMBH","CO","KG","BV","B","V","AS","A","S","SA","SAU","LTD","LIMITED","INC","PTE","LLC",
+          "ULC","PLC","NV","AG","SPA","SRL","CORP","COMPANY","THE","AND","OF","KK","CO.,LTD","SAS","OY","AB","DOO"}
+def _norm_co(n):
+    """Company key that survives MagicPort's truncation/legal-form differences:
+    'Vertom Bereederungs GmbH & Co. KG' == 'VERTOM BEREEDERUNGS GMBH',
+    'Grönberg' == 'GRONBERG'."""
+    import unicodedata
+    n = "".join(c for c in unicodedata.normalize("NFKD", n or "") if not unicodedata.combining(c))
+    toks = [t for t in re.sub(r"[^A-Z0-9]+", " ", n.upper()).split() if t not in _LEGAL]
+    return " ".join(toks)
+
+def _same_co(a, b):
+    a, b = _norm_co(a), _norm_co(b)
+    if not a or not b: return False
+    return a == b or a.startswith(b + " ") or b.startswith(a + " ") or (len(a) >= 12 and (a in b or b in a))
+
+
+def propagate_contacts(managers):
+    """Managers recur across ships. For each ISM company, take the freshest
+    entry that has contact details and copy them into siblings whose fields
+    are empty. Never overwrites a non-empty field."""
+    donors = [m for m in managers.values()
+              if m.get("ism") and (m.get("ismEmail") or m.get("phone") or m.get("notes") or m.get("contact"))]
+    n = 0
+    for imo, m in managers.items():
+        cands = [d for d in donors if d is not m and _same_co(d.get("ism"), m.get("ism"))]
+        if not cands: continue
+        src = max(cands, key=lambda d: d.get("updated", ""))
+        changed = False
+        for f in ("ismEmail", "contact", "phone", "notes"):
+            if not m.get(f) and src.get(f):
+                m[f] = src[f]; changed = True
+        if changed:
+            m["source"] = (m.get("source") or "") + " +contacts from sibling"
+            n += 1
+    return n
+
+
+def refresh_managers():
+    print("manager directory (Gijón + Avilés)...")
+    managers = {}
+    if os.path.exists(MANAGERS):
+        with open(MANAGERS, encoding="utf-8") as f:
+            managers = json.load(f)
+    targets = collect_manager_targets()
+    todo = [i for i in targets if not managers.get(i, {}).get("ism")]
+    print(f"  planned: {len(targets)} | on file: {len(targets)-len(todo)} | to resolve: {len(todo)}")
+    ok = 0
+    for n, imo in enumerate(todo[:MGR_MAX_PER_RUN], 1):
+        try:
+            r = resolve_manager(imo)
+        except Exception as e:
+            print(f"  {targets[imo][:28]:28s} {imo}  FAILED ({type(e).__name__})"); r = None
+        if r:
+            managers[imo] = {"ism": r["ism"], "ismEmail": "", "contact": "", "owner": r["owner"],
+                             "phone": "", "notes": ("Commercial manager: " + r["commercial"]) if r["commercial"] and _norm_co(r["commercial"]) != _norm_co(r["ism"]) else "",
+                             "source": "magicport-auto", "verified": False,
+                             "updated": time.strftime("%Y-%m-%dT%H:%M:%S")}
+            ok += 1
+            print(f"  {targets[imo][:28]:28s} {imo}  -> {r['ism']}")
+        else:
+            print(f"  {targets[imo][:28]:28s} {imo}  not found on MagicPort")
+        time.sleep(2)
+    prop = propagate_contacts(managers)
+    tmp = MANAGERS + ".tmp"
+    with open(tmp, "w", encoding="utf-8") as f:
+        json.dump(managers, f, indent=1, ensure_ascii=False, sort_keys=True)
+    os.replace(tmp, MANAGERS)
+    print(f"  resolved {ok}/{len(todo[:MGR_MAX_PER_RUN])} | contacts propagated to {prop} | directory now {len(managers)}")
+    return ok
+
+
 def main():
     print("FSI flag seed refresher\n")
     live = None
@@ -193,6 +330,9 @@ def main():
     if live:
         print(f"pulling dashboard-saved managers from {live} ...")
         pull_live_managers(live)
+        print()
+    if "--no-managers" not in sys.argv:
+        refresh_managers()
         print()
     flags = load_seed()
     print(f"existing seed: {len(flags)} IMOs\n")

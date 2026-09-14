@@ -1,4 +1,4 @@
-# FSI Vessel Arrival Monitor v3.13.1
+# FSI Vessel Arrival Monitor v3.14.0
 
 Expected-arrival monitor for a Flag State Inspector covering 12 ports in
 northern Spain + Bayonne. Filters to **Malta / Liberia / Marshall Islands / Hong Kong**.
@@ -12,7 +12,9 @@ It is deliberately **not** gitignored. `fsi_vessels_db.json` IS gitignored.
 
 The same applies to `managers.json` (IMO → ISM manager). Both are hand-built
 caches that exist because the automatic path is blocked — commit them.
-Since v3.13.0 `.github/workflows/refresh-seeds.yml` refreshes both daily.
+Since v3.13.0 `.github/workflows/refresh-seeds.yml` refreshes both daily; since
+v3.14.0 it also resolves ISM managers for Gijón/Avilés vessels via MagicPort.
+`keep-alive.yml` pings the service every 5 min. Run `tests/run.sh` before pushing.
 `outreach.json` IS gitignored: it is your own recusal log, not shared state.
 
 ## Endpoints

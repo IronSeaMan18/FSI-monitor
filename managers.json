@@ -1,4 +1,15 @@
 {
+ "1051707": {
+  "contact": "",
+  "ism": "IDEA DENIZCILIK AS",
+  "ismEmail": "",
+  "notes": "Commercial manager: KAAN SHIPPING LTD",
+  "owner": "KAAN SHIPPING LTD",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-09-15T09:45:28",
+  "verified": false
+ },
  "1079668": {
   "contact": "",
   "ism": "COSCO Shipping Asphalt (Hainan) Co Ltd",
@@ -52,6 +63,28 @@
   "phone": "+49 4144 6190 10",
   "source": "tracker manager field + magicport company role + tomwoerden.com",
   "updated": "2026-09-13T16:00:00",
+  "verified": false
+ },
+ "9313682": {
+  "contact": "",
+  "ism": "HS SERVICE GMBH & CO KG",
+  "ismEmail": "",
+  "notes": "Commercial manager: HS BEREEDERUNGS GMBH & CO KG",
+  "owner": "RUHRTAL SCHIFFHARTS UG",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-09-15T09:45:25",
+  "verified": false
+ },
+ "9352341": {
+  "contact": "",
+  "ism": "AMAZSA SPAIN SLU",
+  "ismEmail": "",
+  "notes": "",
+  "owner": "BRENS SHIPPING SOCIEDADE",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-09-15T09:45:15",
   "verified": false
  },
  "9385881": {
@@ -109,6 +142,17 @@
   "updated": "2026-09-13T16:00:00",
   "verified": true
  },
+ "9542178": {
+  "contact": "",
+  "ism": "GLOBAL PACIFIC SHIPPING JSC",
+  "ismEmail": "",
+  "notes": "Commercial manager: ASIA PACIFIC SHIPPING CO LTD",
+  "owner": "ASIA PACIFIC SHIPPING CO LTD",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-09-15T09:45:31",
+  "verified": false
+ },
  "9544102": {
   "contact": "",
   "ism": "Misuga Kaiun Co Ltd",
@@ -141,6 +185,17 @@
   "source": "magicport-auto + benelux-ship.com",
   "updated": "2026-09-14T12:00:00",
   "verified": true
+ },
+ "9557379": {
+  "contact": "",
+  "ism": "JEB BEREEDERUNGS GMBH",
+  "ismEmail": "",
+  "notes": "",
+  "owner": "JEB 2 PARTNERSHIP GMBH & CO KG",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-09-15T09:45:21",
+  "verified": false
  },
  "9568005": {
   "contact": "",
@@ -227,6 +282,17 @@
   "source": "magicport vessel page + company site",
   "updated": "2026-09-13T16:00:00",
   "verified": true
+ },
+ "9736066": {
+  "contact": "",
+  "ism": "MARFIN MANAGEMENT SAM",
+  "ismEmail": "",
+  "notes": "",
+  "owner": "TOPAL NAVIGATION CO INC",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-09-15T09:45:18",
+  "verified": false
  },
  "9742651": {
   "contact": "",

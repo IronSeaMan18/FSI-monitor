@@ -208,6 +208,17 @@
   "updated": "2026-09-13T16:00:00",
   "verified": true
  },
+ "9503536": {
+  "contact": "",
+  "ism": "EEMS WERKEN BV",
+  "ismEmail": "",
+  "notes": "Commercial manager: KORNET & ZONEN BV",
+  "owner": "SEA BV",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-09-17T09:47:54",
+  "verified": false
+ },
  "9539365": {
   "contact": "",
   "ism": "NSC SHIPPING GMBH & CIE KG",
@@ -347,6 +358,17 @@
   "phone": "+34 914 263 400",
   "source": "magicport-auto; email from directory (unverified)",
   "updated": "2026-09-14T12:00:00",
+  "verified": false
+ },
+ "9697844": {
+  "contact": "",
+  "ism": "ANGLO-EASTERN SHIP MANAGEMENT",
+  "ismEmail": "",
+  "notes": "Commercial manager: FEDNAV LTD",
+  "owner": "FEDERAL ATLANTIC LTD",
+  "phone": "+852 3940 7000",
+  "source": "magicport-auto +contacts from sibling",
+  "updated": "2026-09-17T09:47:57",
   "verified": false
  },
  "9703576": {

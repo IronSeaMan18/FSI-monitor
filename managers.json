@@ -65,6 +65,17 @@
   "updated": "2026-09-16T09:39:10",
   "verified": false
  },
+ "9169031": {
+  "contact": "",
+  "ism": "MSC SHIPMANAGEMENT LTD",
+  "ismEmail": "",
+  "notes": "Commercial manager: MSC MEDITERRANEAN SHIPPING CO",
+  "owner": "MARYLENA SHIPPING LTD",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-09-18T09:21:23",
+  "verified": false
+ },
  "9278337": {
   "contact": "",
   "ism": "Amasus Support BV",
@@ -118,6 +129,28 @@
   "phone": "",
   "source": "magicport-auto",
   "updated": "2026-09-16T09:39:25",
+  "verified": false
+ },
+ "9344320": {
+  "contact": "",
+  "ism": "ERSHIP SAU",
+  "ismEmail": "adm.mad@ership.com",
+  "notes": "Ership Grupo, Lagasca 88, Madrid. HAS A GIJÓN DELEGATION (also Marín, Huelva, Funchal) - local contact worth using. 9-vessel fleet. Email from directory; site publishes only a contact form.",
+  "owner": "CECILIA MARITIME SA",
+  "phone": "+34 914 263 400",
+  "source": "magicport-auto +contacts from sibling",
+  "updated": "2026-09-18T09:21:29",
+  "verified": false
+ },
+ "9346718": {
+  "contact": "",
+  "ism": "NAVIGIA SHIPMANAGEMENT BV",
+  "ismEmail": "",
+  "notes": "",
+  "owner": "VEENDIJK II BV",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-09-18T09:21:26",
   "verified": false
  },
  "9352341": {
@@ -207,6 +240,17 @@
   "source": "magicport vessel page + company site",
   "updated": "2026-09-13T16:00:00",
   "verified": true
+ },
+ "9442184": {
+  "contact": "",
+  "ism": "EXMAR SHIPMANAGEMENT BV",
+  "ismEmail": "",
+  "notes": "Commercial manager: EXMAR MARINE SA",
+  "owner": "EXMAR SMALL-SCALE LPG BV",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-09-18T09:21:20",
+  "verified": false
  },
  "9503536": {
   "contact": "",

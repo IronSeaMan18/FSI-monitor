@@ -175,6 +175,17 @@
   "updated": "2026-09-16T09:39:19",
   "verified": false
  },
+ "9376050": {
+  "contact": "",
+  "ism": "JENS U WALLER GMBH",
+  "ismEmail": "",
+  "notes": "",
+  "owner": "WILHELM II JENS UND WALLER",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-09-19T09:08:55",
+  "verified": false
+ },
  "9385881": {
   "contact": "Mr Verbeek",
   "ism": "Vertom Bereederungs GmbH & Co. KG",
@@ -383,6 +394,17 @@
   "source": "magicport vessel page + company site",
   "updated": "2026-09-13T16:00:00",
   "verified": true
+ },
+ "9638795": {
+  "contact": "Mr Conlon",
+  "ism": "ARKLOW SHIPPING NEDERLAND BV",
+  "ismEmail": "technical@asl.ie",
+  "notes": "John Conlon, Marine Superintendent / DPA, +353 86 3088836. Technical Director Iain Shirley. North Beach, Arklow, Co. Wicklow.",
+  "owner": "GLENTHORNE SHIPPING LTD",
+  "phone": "+353 402 39901",
+  "source": "magicport-auto +contacts from sibling",
+  "updated": "2026-09-19T09:08:52",
+  "verified": false
  },
  "9640621": {
   "contact": "",

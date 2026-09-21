@@ -186,6 +186,17 @@
   "updated": "2026-09-20T09:34:29",
   "verified": false
  },
+ "9360489": {
+  "contact": "",
+  "ism": "JUNQUERA MARITIMA SL",
+  "ismEmail": "",
+  "notes": "",
+  "owner": "NAVINORTE SA",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-09-21T10:22:29",
+  "verified": false
+ },
  "9360491": {
   "contact": "",
   "ism": "JUNQUERA MARITIMA SL",
@@ -285,6 +296,28 @@
   "updated": "2026-09-18T09:21:20",
   "verified": false
  },
+ "9454814": {
+  "contact": "",
+  "ism": "HANSA SHIP MANAGEMENT OU",
+  "ismEmail": "",
+  "notes": "Commercial manager: HANSA SHIPPING LTD-MTA",
+  "owner": "HS KENDRA OU",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-09-21T10:22:26",
+  "verified": false
+ },
+ "9474620": {
+  "contact": "",
+  "ism": "WALLEM SHIPMANAGEMENT LTD",
+  "ismEmail": "",
+  "notes": "Commercial manager: HARROGATE INVESTMENTS INC",
+  "owner": "HARROGATE INVESTMENTS INC",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-09-21T10:22:19",
+  "verified": false
+ },
  "9503536": {
   "contact": "",
   "ism": "EEMS WERKEN BV",
@@ -360,6 +393,17 @@
   "phone": "",
   "source": "magicport-auto",
   "updated": "2026-09-15T09:45:21",
+  "verified": false
+ },
+ "9558000": {
+  "contact": "",
+  "ism": "CARISBROOKE SHIPPING LTD",
+  "ismEmail": "",
+  "notes": "Commercial manager: VERTOM SHIPPING & TRADING BV",
+  "owner": "CARISBROOKE SHIPPING #2 BV",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-09-21T10:22:16",
   "verified": false
  },
  "9568005": {
@@ -481,6 +525,17 @@
   "updated": "2026-09-15T09:45:18",
   "verified": false
  },
+ "9741865": {
+  "contact": "",
+  "ism": "NORD GMBH REEDEREI",
+  "ismEmail": "",
+  "notes": "",
+  "owner": "NORDTAJO MBH & CO KG",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-09-21T10:22:22",
+  "verified": false
+ },
  "9742651": {
   "contact": "",
   "ism": "Genco-Synergy Bulk Carriers Pvt Ltd",
@@ -578,6 +633,17 @@
   "phone": "",
   "source": "magicport-auto",
   "updated": "2026-09-16T09:39:32",
+  "verified": false
+ },
+ "9994682": {
+  "contact": "",
+  "ism": "SYNERGY PACIFIC PVT LTD",
+  "ismEmail": "",
+  "notes": "Commercial manager: MAERSK TANKERS MR K/S",
+  "owner": "EVER BRIGHT SHIPPING SA",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-09-21T10:22:13",
   "verified": false
  }
 }

@@ -43,6 +43,17 @@
   "updated": "2026-09-14T12:00:00",
   "verified": true
  },
+ "9124419": {
+  "contact": "Mr Mirkovic",
+  "ism": "WILSON SHIP MANAGEMENT AS",
+  "ismEmail": "smi@wilsonship.no",
+  "notes": "Commercial manager: WILSON EUROCARRIERS AS",
+  "owner": "WILSON SHIPOWNING AS",
+  "phone": "+47 55 30 82 00",
+  "source": "magicport-auto +contacts from sibling",
+  "updated": "2026-09-22T09:36:34",
+  "verified": false
+ },
  "9150509": {
   "contact": "Mr Mirkovic",
   "ism": "Wilson Ship Management AS",
@@ -74,6 +85,17 @@
   "phone": "",
   "source": "magicport-auto",
   "updated": "2026-09-18T09:21:23",
+  "verified": false
+ },
+ "9213595": {
+  "contact": "",
+  "ism": "BALTNAUTIC SHIPMANAGEMENT LTD",
+  "ismEmail": "",
+  "notes": "",
+  "owner": "CARIBBEAN SHIPPING LTD",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-09-22T09:36:44",
   "verified": false
  },
  "9278337": {
@@ -175,6 +197,17 @@
   "updated": "2026-09-20T09:34:32",
   "verified": false
  },
+ "9356878": {
+  "contact": "",
+  "ism": "HS SERVICE GMBH & CO KG",
+  "ismEmail": "",
+  "notes": "Commercial manager: EMSTRANS SCHEEPVAART MGMT",
+  "owner": "EMSTAL SCHIFFAHRTS UG",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-09-22T09:36:37",
+  "verified": false
+ },
  "9359325": {
   "contact": "",
   "ism": "MSC SHIPMANAGEMENT LTD",
@@ -206,6 +239,17 @@
   "phone": "",
   "source": "magicport-auto",
   "updated": "2026-09-16T09:39:19",
+  "verified": false
+ },
+ "9361354": {
+  "contact": "",
+  "ism": "MARIN SHIP MANAGEMENT",
+  "ismEmail": "",
+  "notes": "Commercial manager: KGJS CEMENT AS",
+  "owner": "JT CEMENT AS",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-09-22T09:36:41",
   "verified": false
  },
  "9376050": {
@@ -404,6 +448,17 @@
   "phone": "",
   "source": "magicport-auto",
   "updated": "2026-09-21T10:22:16",
+  "verified": false
+ },
+ "9559614": {
+  "contact": "",
+  "ism": "EEMS WERKEN BV",
+  "ismEmail": "",
+  "notes": "Commercial manager: KORNET & ZONEN BV",
+  "owner": "SOLAR BV",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-09-22T09:36:47",
   "verified": false
  },
  "9568005": {

@@ -1,4 +1,15 @@
 {
+ "1027988": {
+  "contact": "",
+  "ism": "ASP SHIPS INDIA PVT LTD",
+  "ismEmail": "",
+  "notes": "Commercial manager: ABO SHOTEN LTD",
+  "owner": "ABO SHOTEN/ASL OCEAN",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-09-23T09:42:07",
+  "verified": false
+ },
  "1051707": {
   "contact": "",
   "ism": "IDEA DENIZCILIK AS",
@@ -20,6 +31,17 @@
   "source": "magicport vessel page + company site",
   "updated": "2026-09-13T16:00:00",
   "verified": true
+ },
+ "8012267": {
+  "contact": "",
+  "ism": "ERSHIP SAU",
+  "ismEmail": "adm.mad@ership.com",
+  "notes": "Commercial manager: TUDELA VEGUIN",
+  "owner": "TUDELA VEGUIN",
+  "phone": "+34 914 263 400",
+  "source": "magicport-auto +contacts from sibling",
+  "updated": "2026-09-23T09:42:01",
+  "verified": false
  },
  "9001849": {
   "contact": "",
@@ -340,6 +362,17 @@
   "updated": "2026-09-18T09:21:20",
   "verified": false
  },
+ "9443762": {
+  "contact": "",
+  "ism": "ERSHIP SAU",
+  "ismEmail": "adm.mad@ership.com",
+  "notes": "Commercial manager: TUDELA VEGUIN",
+  "owner": "TUDELA VEGUIN",
+  "phone": "+34 914 263 400",
+  "source": "magicport-auto +contacts from sibling",
+  "updated": "2026-09-23T09:41:58",
+  "verified": false
+ },
  "9454814": {
   "contact": "",
   "ism": "HANSA SHIP MANAGEMENT OU",
@@ -492,6 +525,17 @@
   "phone": "+49 491 925200",
   "source": "magicport-auto +contacts from sibling",
   "updated": "2026-09-14T20:52:22",
+  "verified": false
+ },
+ "9580211": {
+  "contact": "",
+  "ism": "AKAYLAR DENIZ NAKLIYAT SANAYI",
+  "ismEmail": "",
+  "notes": "",
+  "owner": "PERUMA SHIPPING & TRADING INC",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-09-23T09:42:04",
   "verified": false
  },
  "9594456": {

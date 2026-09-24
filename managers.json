@@ -109,6 +109,17 @@
   "updated": "2026-09-18T09:21:23",
   "verified": false
  },
+ "9201970": {
+  "contact": "",
+  "ism": "WESTEWIND SCHEEPVAART",
+  "ismEmail": "",
+  "notes": "Commercial manager: WAGENBORG SHIPPING BV",
+  "owner": "WESTSTRATE J L",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-09-24T09:41:11",
+  "verified": false
+ },
  "9213595": {
   "contact": "",
   "ism": "BALTNAUTIC SHIPMANAGEMENT LTD",
@@ -272,6 +283,17 @@
   "phone": "",
   "source": "magicport-auto",
   "updated": "2026-09-22T09:36:41",
+  "verified": false
+ },
+ "9361744": {
+  "contact": "",
+  "ism": "POT SCHEEPVAART",
+  "ismEmail": "",
+  "notes": "",
+  "owner": "",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-09-24T09:41:17",
   "verified": false
  },
  "9376050": {
@@ -560,6 +582,17 @@
   "updated": "2026-09-13T16:00:00",
   "verified": true
  },
+ "9638769": {
+  "contact": "Mr Conlon",
+  "ism": "ARKLOW SHIPPING NEDERLAND BV",
+  "ismEmail": "technical@asl.ie",
+  "notes": "John Conlon, Marine Superintendent / DPA, +353 86 3088836. Technical Director Iain Shirley. North Beach, Arklow, Co. Wicklow.",
+  "owner": "GLENTHORNE SHIPPING LTD",
+  "phone": "+353 402 39901",
+  "source": "magicport-auto +contacts from sibling",
+  "updated": "2026-09-24T09:41:14",
+  "verified": false
+ },
  "9638795": {
   "contact": "Mr Conlon",
   "ism": "ARKLOW SHIPPING NEDERLAND BV",
@@ -667,6 +700,17 @@
   "source": "magicport vessel page + company site",
   "updated": "2026-09-13T16:00:00",
   "verified": true
+ },
+ "9879052": {
+  "contact": "",
+  "ism": "FLAGSHIP MANAGEMENT CO BV",
+  "ismEmail": "",
+  "notes": "",
+  "owner": "ECKO SHIP 2 BV",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-09-24T09:41:20",
+  "verified": false
  },
  "9906013": {
   "contact": "",

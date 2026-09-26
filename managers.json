@@ -241,6 +241,17 @@
   "updated": "2026-09-20T09:34:32",
   "verified": false
  },
+ "9354052": {
+  "contact": "",
+  "ism": "FLORENCE SHIPPING & MARINE",
+  "ismEmail": "",
+  "notes": "",
+  "owner": "DIVINA SHIPPING & TRADING LTD",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-09-26T09:40:52",
+  "verified": false
+ },
  "9356878": {
   "contact": "",
   "ism": "HS SERVICE GMBH & CO KG",
@@ -603,6 +614,17 @@
   "source": "magicport vessel page + company site",
   "updated": "2026-09-13T16:00:00",
   "verified": true
+ },
+ "9624847": {
+  "contact": "",
+  "ism": "WIJNNE & BARENDS CARGADOORS",
+  "ismEmail": "qhsse@wijnnebarends.com",
+  "notes": "QHSSE dept - site says explicitly: 'ISO and ISM related issues, audits, flag state, port state'. Also technical@wijnnebarends.com. Handelskade Oost 5, Delfzijl. Spliethoff Group.",
+  "owner": "LADY AMALIA REDERIJ",
+  "phone": "+31 596 637 777",
+  "source": "magicport-auto +contacts from sibling",
+  "updated": "2026-09-26T09:40:49",
+  "verified": false
  },
  "9638769": {
   "contact": "Mr Conlon",

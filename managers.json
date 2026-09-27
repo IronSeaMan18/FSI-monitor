@@ -252,6 +252,17 @@
   "updated": "2026-09-26T09:40:52",
   "verified": false
  },
+ "9354466": {
+  "contact": "",
+  "ism": "JENS U WALLER GMBH",
+  "ismEmail": "",
+  "notes": "",
+  "owner": "TTS SCHIFFFAHRTS GMBH & CO KG",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-09-27T10:20:24",
+  "verified": false
+ },
  "9356878": {
   "contact": "",
   "ism": "HS SERVICE GMBH & CO KG",
@@ -765,6 +776,17 @@
   "phone": "",
   "source": "magicport-auto",
   "updated": "2026-09-24T09:41:20",
+  "verified": false
+ },
+ "9880233": {
+  "contact": "",
+  "ism": "ANGLO-EASTERN SHIP MANAGEMENT",
+  "ismEmail": "",
+  "notes": "Commercial manager: OCEAN TRANSIT CARRIER SA",
+  "owner": "OCEAN TRANSIT CARRIER SA",
+  "phone": "+852 3940 7000",
+  "source": "magicport-auto +contacts from sibling",
+  "updated": "2026-09-27T10:20:27",
   "verified": false
  },
  "9906013": {

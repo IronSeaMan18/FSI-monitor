@@ -54,6 +54,17 @@
   "updated": "2026-09-16T09:39:22",
   "verified": false
  },
+ "9014705": {
+  "contact": "Mr Mirkovic",
+  "ism": "WILSON SHIP MANAGEMENT AS",
+  "ismEmail": "smi@wilsonship.no",
+  "notes": "Commercial manager: WILSON EUROCARRIERS AS",
+  "owner": "WILSON SHIPOWNING AS",
+  "phone": "+47 55 30 82 00",
+  "source": "magicport-auto +contacts from sibling",
+  "updated": "2026-09-29T11:02:39",
+  "verified": false
+ },
  "9060687": {
   "contact": "Mr Mirkovic",
   "ism": "WILSON SHIP MANAGEMENT AS",
@@ -120,6 +131,17 @@
   "updated": "2026-09-18T09:21:23",
   "verified": false
  },
+ "9180839": {
+  "contact": "",
+  "ism": "WAGENBORG SHIPPING BV",
+  "ismEmail": "",
+  "notes": "",
+  "owner": "WAGENBORG REDERIJ BV",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-09-29T11:02:30",
+  "verified": false
+ },
  "9201970": {
   "contact": "",
   "ism": "WESTEWIND SCHEEPVAART",
@@ -142,6 +164,17 @@
   "updated": "2026-09-22T09:36:44",
   "verified": false
  },
+ "9261516": {
+  "contact": "",
+  "ism": "CHRISTIANIA SHIP MANAGEMENT",
+  "ismEmail": "",
+  "notes": "",
+  "owner": "CHRISTIANIASHIP A/S",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-09-29T11:02:33",
+  "verified": false
+ },
  "9278337": {
   "contact": "",
   "ism": "Amasus Support BV",
@@ -162,6 +195,17 @@
   "phone": "+49 4144 6190 10",
   "source": "tracker manager field + magicport company role + tomwoerden.com",
   "updated": "2026-09-13T16:00:00",
+  "verified": false
+ },
+ "9300489": {
+  "contact": "",
+  "ism": "ERSHIP SAU",
+  "ismEmail": "adm.mad@ership.com",
+  "notes": "Commercial manager: TUDELA VEGUIN",
+  "owner": "CECILIA MARITIME SA",
+  "phone": "+34 914 263 400",
+  "source": "magicport-auto +contacts from sibling",
+  "updated": "2026-09-29T11:02:36",
   "verified": false
  },
  "9313682": {
@@ -459,6 +503,17 @@
   "phone": "",
   "source": "magicport-auto",
   "updated": "2026-09-21T10:22:19",
+  "verified": false
+ },
+ "9489558": {
+  "contact": "",
+  "ism": "ROBIJN",
+  "ismEmail": "",
+  "notes": "Commercial manager: WAGENBORG SHIPPING BV",
+  "owner": "WAGENBORG SHIPOWNERS 4 BV",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-09-29T11:02:27",
   "verified": false
  },
  "9503536": {
@@ -843,6 +898,17 @@
   "source": "magicport vessel page; email from directory (unverified)",
   "updated": "2026-09-13T16:00:00",
   "verified": true
+ },
+ "9985942": {
+  "contact": "",
+  "ism": "EASTAWAY FRANCE",
+  "ismEmail": "",
+  "notes": "",
+  "owner": "EASTAWAY FRANCE",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-09-29T11:02:18",
+  "verified": false
  },
  "9988279": {
   "contact": "",

@@ -21,6 +21,17 @@
   "updated": "2026-09-15T09:45:28",
   "verified": false
  },
+ "1069508": {
+  "contact": "",
+  "ism": "DELFT SCHIFFAHRT GMBH & CO KG",
+  "ismEmail": "",
+  "notes": "",
+  "owner": "16 LEDA BETEILIGUNGS GMBH",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-09-30T10:52:43",
+  "verified": false
+ },
  "1079668": {
   "contact": "",
   "ism": "COSCO Shipping Asphalt (Hainan) Co Ltd",
@@ -140,6 +151,17 @@
   "phone": "",
   "source": "magicport-auto",
   "updated": "2026-09-29T11:02:30",
+  "verified": false
+ },
+ "9192650": {
+  "contact": "",
+  "ism": "BOECKMANS SHIP MANAGEMENT BV",
+  "ismEmail": "",
+  "notes": "Commercial manager: BOECKMANS BELGIE NV",
+  "owner": "BOECKMANS SHIPPING NV",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-09-30T10:52:47",
   "verified": false
  },
  "9201970": {
@@ -822,6 +844,17 @@
   "updated": "2026-09-13T16:00:00",
   "verified": true
  },
+ "9852925": {
+  "contact": "",
+  "ism": "NAVIOS TECHNICAL MANAGEMENT SA",
+  "ismEmail": "",
+  "notes": "",
+  "owner": "TAKANAWA LINE/TOYO KAIUN",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-09-30T10:52:37",
+  "verified": false
+ },
  "9879052": {
   "contact": "",
   "ism": "FLAGSHIP MANAGEMENT CO BV",
@@ -876,6 +909,17 @@
   "source": "magicport + navieramurueta.com contacto; email from directory (unverified)",
   "updated": "2026-09-13T16:00:00",
   "verified": true
+ },
+ "9966867": {
+  "contact": "",
+  "ism": "APEX SHIP MANAGEMENT PTE LTD",
+  "ismEmail": "",
+  "notes": "Commercial manager: OKOUCHI KAIUN KK",
+  "owner": "INTERSKY SHIPPING CORP",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-09-30T10:52:31",
+  "verified": false
  },
  "9972763": {
   "contact": "Mr Verbeek",

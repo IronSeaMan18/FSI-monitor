@@ -274,6 +274,17 @@
   "updated": "2026-09-18T09:21:29",
   "verified": false
  },
+ "9344409": {
+  "contact": "",
+  "ism": "VIYA SHIP MANAGEMENT CO",
+  "ismEmail": "",
+  "notes": "",
+  "owner": "UNITED DREAM LTD",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-10-01T11:19:08",
+  "verified": false
+ },
  "9346718": {
   "contact": "",
   "ism": "NAVIGIA SHIPMANAGEMENT BV",
@@ -417,6 +428,17 @@
   "updated": "2026-09-13T16:00:00",
   "verified": true
  },
+ "9395276": {
+  "contact": "",
+  "ism": "MERIAURA OY",
+  "ismEmail": "",
+  "notes": "",
+  "owner": "MERIAURA OY",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-10-01T11:19:17",
+  "verified": false
+ },
  "9396701": {
   "contact": "",
   "ism": "RIX SHIPMANAGEMENT SIA",
@@ -514,6 +536,17 @@
   "phone": "",
   "source": "magicport-auto",
   "updated": "2026-09-21T10:22:26",
+  "verified": false
+ },
+ "9470844": {
+  "contact": "",
+  "ism": "DEVAL MARINE GEMI",
+  "ismEmail": "",
+  "notes": "",
+  "owner": "CSD SHIPPING LTD",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-10-01T11:19:14",
   "verified": false
  },
  "9474620": {

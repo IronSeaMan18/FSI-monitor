@@ -1,4 +1,15 @@
 {
+ "1022275": {
+  "contact": "",
+  "ism": "EMS SHIPMANAGEMENT GMBH & CO",
+  "ismEmail": "",
+  "notes": "",
+  "owner": "1 EMS SCHIFFFAHRTS GMBH & CO",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-10-02T10:51:21",
+  "verified": false
+ },
  "1027988": {
   "contact": "",
   "ism": "ASP SHIPS INDIA PVT LTD",
@@ -52,6 +63,17 @@
   "phone": "+34 914 263 400",
   "source": "magicport-auto +contacts from sibling",
   "updated": "2026-09-23T09:42:01",
+  "verified": false
+ },
+ "9001837": {
+  "contact": "",
+  "ism": "HAV SHIP MANAGEMENT AS",
+  "ismEmail": "",
+  "notes": "Commercial manager: HAV CHARTERING AS",
+  "owner": "HAV BULK AS",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-10-02T10:51:17",
   "verified": false
  },
  "9001849": {

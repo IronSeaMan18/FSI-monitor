@@ -351,6 +351,17 @@
   "updated": "2026-09-26T09:40:52",
   "verified": false
  },
+ "9354375": {
+  "contact": "",
+  "ism": "EASTAWAY SHIP MANAGEMENT PTE",
+  "ismEmail": "",
+  "notes": "",
+  "owner": "GREENLEAF SHIPPING LTD",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-10-03T10:10:59",
+  "verified": false
+ },
  "9354466": {
   "contact": "",
   "ism": "JENS U WALLER GMBH",
@@ -580,6 +591,17 @@
   "phone": "",
   "source": "magicport-auto",
   "updated": "2026-09-21T10:22:19",
+  "verified": false
+ },
+ "9489546": {
+  "contact": "",
+  "ism": "CONCURRENT SHIPMANAGEMENT BV",
+  "ismEmail": "",
+  "notes": "Commercial manager: WAGENBORG SHIPPING BV",
+  "owner": "EEMS BEHEER XVII BV",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-10-03T10:11:09",
   "verified": false
  },
  "9489558": {
@@ -974,6 +996,17 @@
   "phone": "",
   "source": "magicport-auto",
   "updated": "2026-09-30T10:52:31",
+  "verified": false
+ },
+ "9968229": {
+  "contact": "",
+  "ism": "LUBECA MARINE GERMANY GMBH",
+  "ismEmail": "",
+  "notes": "",
+  "owner": "BIRKHOLM SCHIFFAHRT GMBH & CO",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-10-03T10:11:05",
   "verified": false
  },
  "9972763": {

@@ -472,6 +472,17 @@
   "updated": "2026-10-01T11:19:17",
   "verified": false
  },
+ "9396543": {
+  "contact": "",
+  "ism": "NOVELTY SHIPMANAGEMENT SA",
+  "ismEmail": "",
+  "notes": "Commercial manager: NAVITRAMP FREIGHT AGENCY LTD",
+  "owner": "ANNETTA NAVIGATION LTD-MAI",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-10-04T10:51:57",
+  "verified": false
+ },
  "9396701": {
   "contact": "",
   "ism": "RIX SHIPMANAGEMENT SIA",
@@ -833,6 +844,17 @@
   "updated": "2026-09-14T12:00:00",
   "verified": false
  },
+ "9675731": {
+  "contact": "",
+  "ism": "MISUGA KAIUN CO LTD",
+  "ismEmail": "",
+  "notes": "Tokyo HQ (Iidabashi) and Shikokuchuo, Ehime. Contact form only on misuga-kaiun.co.jp. Commercial manager Yamamaru Kisen KK. ~170-vessel manager.",
+  "owner": "ASUKA KISEN/JOLLY FELLOW",
+  "phone": "+81 3 3261 6725",
+  "source": "magicport-auto +contacts from sibling",
+  "updated": "2026-10-04T10:52:10",
+  "verified": false
+ },
  "9697844": {
   "contact": "",
   "ism": "ANGLO-EASTERN SHIP MANAGEMENT",
@@ -866,6 +888,17 @@
   "updated": "2026-09-13T16:00:00",
   "verified": true
  },
+ "9713935": {
+  "contact": "",
+  "ism": "SAFE BULKERS MANAGEMENT LTD",
+  "ismEmail": "",
+  "notes": "Safe Bulkers Tower, 71 Agias Fylaxeos, Limassol. Only directors@safebulkers.cy (holdco) published; safebulkers.com contact page 403s. Technical Manager per LinkedIn: George Chalkias.",
+  "owner": "SHIKOKUOKTO SHIPPING CORP",
+  "phone": "+357 25887200",
+  "source": "magicport-auto +contacts from sibling",
+  "updated": "2026-10-04T10:52:06",
+  "verified": false
+ },
  "9736066": {
   "contact": "",
   "ism": "MARFIN MANAGEMENT SAM",
@@ -898,6 +931,17 @@
   "source": "magicport vessel page + company site",
   "updated": "2026-09-13T16:00:00",
   "verified": true
+ },
+ "9772527": {
+  "contact": "Mr Conlon",
+  "ism": "ARKLOW SHIPPING NEDERLAND BV",
+  "ismEmail": "technical@asl.ie",
+  "notes": "John Conlon, Marine Superintendent / DPA, +353 86 3088836. Technical Director Iain Shirley. North Beach, Arklow, Co. Wicklow.",
+  "owner": "AVOCA SHIPPING BV",
+  "phone": "+353 402 39901",
+  "source": "magicport-auto +contacts from sibling",
+  "updated": "2026-10-04T10:52:03",
+  "verified": false
  },
  "9800635": {
   "contact": "",

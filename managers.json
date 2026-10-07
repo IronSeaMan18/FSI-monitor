@@ -32,6 +32,17 @@
   "updated": "2026-09-15T09:45:28",
   "verified": false
  },
+ "1066984": {
+  "contact": "",
+  "ism": "KASUGA SHIPPING CO LTD",
+  "ismEmail": "",
+  "notes": "",
+  "owner": "KASUGA SHIPPING/LIBERO PANAMA",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-10-07T11:29:34",
+  "verified": false
+ },
  "1069508": {
   "contact": "",
   "ism": "DELFT SCHIFFAHRT GMBH & CO KG",
@@ -140,6 +151,17 @@
   "phone": "+47 55 30 82 00",
   "source": "magicport-auto +contacts from sibling",
   "updated": "2026-09-22T09:36:34",
+  "verified": false
+ },
+ "9145140": {
+  "contact": "",
+  "ism": "WILSON SHIP MANAGEMENT AS",
+  "ismEmail": "",
+  "notes": "Commercial manager: WILSON EUROCARRIERS AS",
+  "owner": "WILSON SHIPOWNING AS",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-10-07T11:29:50",
   "verified": false
  },
  "9150509": {
@@ -329,6 +351,17 @@
   "updated": "2026-10-01T11:19:08",
   "verified": false
  },
+ "9344497": {
+  "contact": "",
+  "ism": "WILSON SHIP MANAGEMENT AS",
+  "ismEmail": "",
+  "notes": "Commercial manager: WILSON EUROCARRIERS AS",
+  "owner": "WILSON SHIPOWNING AS",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-10-07T11:29:56",
+  "verified": false
+ },
  "9346718": {
   "contact": "",
   "ism": "NAVIGIA SHIPMANAGEMENT BV",
@@ -482,6 +515,17 @@
   "source": "magicport vessel page + company site",
   "updated": "2026-09-13T16:00:00",
   "verified": true
+ },
+ "9390147": {
+  "contact": "",
+  "ism": "WESSELS REEDEREI GMBH & CO KG",
+  "ismEmail": "",
+  "notes": "Commercial manager: WILSON EUROCARRIERS AS",
+  "owner": "WILSON SHIPOWNING AS",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-10-07T11:29:44",
+  "verified": false
  },
  "9395276": {
   "contact": "",
@@ -659,6 +703,17 @@
   "updated": "2026-09-17T09:47:54",
   "verified": false
  },
+ "9513622": {
+  "contact": "",
+  "ism": "BRIESE HEAVYLIFT GMBH & CO KG",
+  "ismEmail": "info@briese.de",
+  "notes": "Briese group, Hafenstrasse 12, 26789 Leer. Only the general address is published. BBC Chartering is the commercial arm.",
+  "owner": "CRUX BRIESE SCHIFFAHRTS",
+  "phone": "+49 491 925200",
+  "source": "magicport-auto +contacts from sibling",
+  "updated": "2026-10-07T11:29:53",
+  "verified": false
+ },
  "9539365": {
   "contact": "",
   "ism": "NSC SHIPPING GMBH & CIE KG",
@@ -791,6 +846,17 @@
   "updated": "2026-09-23T09:42:04",
   "verified": false
  },
+ "9590668": {
+  "contact": "",
+  "ism": "PERTAMINA INTERNATIONAL SHPG",
+  "ismEmail": "",
+  "notes": "",
+  "owner": "PERTAMINA INTERNATIONAL SHPG",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-10-07T11:29:37",
+  "verified": false
+ },
  "9594456": {
   "contact": "",
   "ism": "Istia Maritime Co",
@@ -909,6 +975,17 @@
   "source": "magicport vessel page + company site",
   "updated": "2026-09-13T16:00:00",
   "verified": true
+ },
+ "9708265": {
+  "contact": "",
+  "ism": "STELLAR NAVIGATION LTD",
+  "ismEmail": "",
+  "notes": "Commercial manager: STELLAR ALAZANI CO LTD",
+  "owner": "STELLAR ALAZANI CO LTD",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-10-07T11:29:40",
+  "verified": false
  },
  "9713935": {
   "contact": "",
@@ -1029,6 +1106,17 @@
   "phone": "+357 2558 5435",
   "source": "magicport-auto; email from directory (unverified)",
   "updated": "2026-09-14T12:00:00",
+  "verified": false
+ },
+ "9933456": {
+  "contact": "",
+  "ism": "MANISA TECH SRL",
+  "ismEmail": "",
+  "notes": "Commercial manager: MANISA BULK SRL",
+  "owner": "MANISA BULK SRL",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-10-07T11:29:47",
   "verified": false
  },
  "9939931": {

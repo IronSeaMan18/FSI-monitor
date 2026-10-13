@@ -285,6 +285,17 @@
   "updated": "2026-09-22T09:36:44",
   "verified": false
  },
+ "9252929": {
+  "contact": "",
+  "ism": "BOECKMANS SHIP MANAGEMENT BV",
+  "ismEmail": "",
+  "notes": "Commercial manager: BOECKMANS BELGIE NV",
+  "owner": "BOECKMANS SHIPPING NV",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-10-13T12:26:21",
+  "verified": false
+ },
  "9261516": {
   "contact": "",
   "ism": "CHRISTIANIA SHIP MANAGEMENT",
@@ -714,6 +725,17 @@
   "updated": "2026-09-23T09:41:58",
   "verified": false
  },
+ "9454802": {
+  "contact": "",
+  "ism": "HANSA SHIP MANAGEMENT OU",
+  "ismEmail": "",
+  "notes": "Commercial manager: HANSA SHIPPING LTD-MTA",
+  "owner": "HS KAIRE OU",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-10-13T12:26:24",
+  "verified": false
+ },
  "9454814": {
   "contact": "",
   "ism": "HANSA SHIP MANAGEMENT OU",
@@ -988,6 +1010,17 @@
   "source": "magicport vessel page + company site",
   "updated": "2026-09-13T16:00:00",
   "verified": true
+ },
+ "9620994": {
+  "contact": "",
+  "ism": "ATLANTIS MANAGEMENT INC",
+  "ismEmail": "",
+  "notes": "",
+  "owner": "ATLANTIS TRADE SHIPPING CO LTD",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-10-13T12:26:14",
+  "verified": false
  },
  "9624823": {
   "contact": "",
@@ -1282,6 +1315,17 @@
   "phone": "+852 3940 7000",
   "source": "magicport-auto + angloeastern.com",
   "updated": "2026-09-14T12:00:00",
+  "verified": false
+ },
+ "9947225": {
+  "contact": "",
+  "ism": "NAVIOS DRY CARGO MANAGEMENT",
+  "ismEmail": "",
+  "notes": "",
+  "owner": "SANSHIN KAIUN/EASTERN CROSS",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-10-13T12:26:17",
   "verified": false
  },
  "9956513": {

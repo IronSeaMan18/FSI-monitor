@@ -65,6 +65,17 @@
   "updated": "2026-09-13T16:00:00",
   "verified": true
  },
+ "1092842": {
+  "contact": "",
+  "ism": "MANISA TECH SRL",
+  "ismEmail": "",
+  "notes": "Commercial manager: MANISA ECOLUTION SRL",
+  "owner": "MANISA ECOLUTION SRL",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-10-14T09:54:18",
+  "verified": false
+ },
  "1140546": {
   "contact": "",
   "ism": "VEGA-REEDEREI GMBH & CO KG",
@@ -923,6 +934,17 @@
   "updated": "2026-09-21T10:22:16",
   "verified": false
  },
+ "9558024": {
+  "contact": "",
+  "ism": "CARISBROOKE SHIPPING LTD",
+  "ismEmail": "",
+  "notes": "Commercial manager: VERTOM SHIPPING & TRADING BV",
+  "owner": "CARISBROOKE SHIPPING #2 BV",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-10-14T09:54:12",
+  "verified": false
+ },
  "9559614": {
   "contact": "",
   "ism": "EEMS WERKEN BV",
@@ -932,6 +954,17 @@
   "phone": "",
   "source": "magicport-auto",
   "updated": "2026-09-22T09:36:47",
+  "verified": false
+ },
+ "9559640": {
+  "contact": "",
+  "ism": "EXECUTIVE SHIP MANAGEMENT",
+  "ismEmail": "",
+  "notes": "Commercial manager: OCEANGAS SERVICES AUSTRALIA",
+  "owner": "FOUR SHRINE CORP",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-10-14T09:54:08",
   "verified": false
  },
  "9568005": {
@@ -1227,6 +1260,17 @@
   "phone": "",
   "source": "magicport-auto",
   "updated": "2026-10-11T11:10:43",
+  "verified": false
+ },
+ "9816763": {
+  "contact": "",
+  "ism": "GASLOG LNG SERVICES LTD",
+  "ismEmail": "",
+  "notes": "",
+  "owner": "GASLOG HELLAS-1 ENE",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-10-14T09:54:15",
   "verified": false
  },
  "9835795": {

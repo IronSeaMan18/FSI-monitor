@@ -47,11 +47,22 @@
   "contact": "",
   "ism": "DELFT SCHIFFAHRT GMBH & CO KG",
   "ismEmail": "",
-  "notes": "",
+  "notes": "Commercial manager: BRIESE SCHIFFAHRTS GMBH & CO",
   "owner": "16 LEDA BETEILIGUNGS GMBH",
   "phone": "",
-  "source": "magicport-auto",
+  "source": "magicport-auto +contacts from sibling",
   "updated": "2026-09-30T10:52:43",
+  "verified": false
+ },
+ "1069546": {
+  "contact": "",
+  "ism": "DELFT SCHIFFAHRT GMBH & CO KG",
+  "ismEmail": "",
+  "notes": "Commercial manager: BRIESE SCHIFFAHRTS GMBH & CO",
+  "owner": "19 LEDA BETEILIGUNGS GMBH",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-10-15T09:34:51",
   "verified": false
  },
  "1079668": {
@@ -846,6 +857,17 @@
   "updated": "2026-10-09T11:38:06",
   "verified": false
  },
+ "9518426": {
+  "contact": "",
+  "ism": "NAMAR DENIZCILIK TASIMACILIK",
+  "ismEmail": "",
+  "notes": "",
+  "owner": "NAMAR SHIPPING LTD-MAI",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-10-15T09:34:42",
+  "verified": false
+ },
  "9539365": {
   "contact": "",
   "ism": "NSC SHIPPING GMBH & CIE KG",
@@ -1117,6 +1139,17 @@
   "phone": "+34 914 263 400",
   "source": "magicport-auto; email from directory (unverified)",
   "updated": "2026-09-14T12:00:00",
+  "verified": false
+ },
+ "9664160": {
+  "contact": "",
+  "ism": "ADALINE DENIZCILIK SANAYI",
+  "ismEmail": "",
+  "notes": "Commercial manager: ADALADY SHIPPING LTD",
+  "owner": "ADALADY SHIPPING LTD",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-10-15T09:34:45",
   "verified": false
  },
  "9675731": {
@@ -1426,6 +1459,17 @@
   "source": "magicport vessel page; email from directory (unverified)",
   "updated": "2026-09-13T16:00:00",
   "verified": true
+ },
+ "9975387": {
+  "contact": "",
+  "ism": "ANGLO-EASTERN SHIP MANAGEMENT",
+  "ismEmail": "",
+  "notes": "Commercial manager: FEDNAV LTD",
+  "owner": "FEDERAL TRIDENT LTD",
+  "phone": "+852 3940 7000",
+  "source": "magicport-auto +contacts from sibling",
+  "updated": "2026-10-15T09:34:48",
+  "verified": false
  },
  "9985942": {
   "contact": "",

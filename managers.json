@@ -76,6 +76,17 @@
   "updated": "2026-09-13T16:00:00",
   "verified": true
  },
+ "1090284": {
+  "contact": "",
+  "ism": "MASTERMIND SHIPMANAGEMENT LTD",
+  "ismEmail": "",
+  "notes": "",
+  "owner": "TAMELO SHIPPING CO LTD",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-10-17T08:58:58",
+  "verified": false
+ },
  "1092842": {
   "contact": "",
   "ism": "MANISA TECH SRL",
@@ -107,6 +118,17 @@
   "phone": "+34 914 263 400",
   "source": "magicport-auto +contacts from sibling",
   "updated": "2026-09-23T09:42:01",
+  "verified": false
+ },
+ "8128884": {
+  "contact": "",
+  "ism": "HAV SHIP MANAGEMENT AS",
+  "ismEmail": "",
+  "notes": "Commercial manager: HAV CHARTERING AS",
+  "owner": "HAV BULK AS",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-10-17T08:58:55",
   "verified": false
  },
  "9001837": {
@@ -1022,6 +1044,17 @@
   "updated": "2026-10-14T09:54:08",
   "verified": false
  },
+ "9566552": {
+  "contact": "",
+  "ism": "SEACOAST LTD",
+  "ismEmail": "",
+  "notes": "",
+  "owner": "SEACOAST LTD",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-10-17T08:58:52",
+  "verified": false
+ },
  "9568005": {
   "contact": "",
   "ism": "Safe Bulkers Management Ltd",
@@ -1271,6 +1304,17 @@
   "phone": "+357 25887200",
   "source": "magicport-auto +contacts from sibling",
   "updated": "2026-10-04T10:52:06",
+  "verified": false
+ },
+ "9719769": {
+  "contact": "",
+  "ism": "THOME CROATIA DOO",
+  "ismEmail": "",
+  "notes": "Commercial manager: HAFNIA POOLS PTE LTD",
+  "owner": "HAFNIA CHEM SHIPHOLDING PTE",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-10-17T08:58:49",
   "verified": false
  },
  "9736066": {
@@ -1546,6 +1590,17 @@
   "phone": "",
   "source": "magicport-auto",
   "updated": "2026-09-21T10:22:13",
+  "verified": false
+ },
+ "9995894": {
+  "contact": "",
+  "ism": "GERDES SHIPPING VERWALTUNGS",
+  "ismEmail": "",
+  "notes": "Commercial manager: HOLGER G GERDES SCHIFFAHRTS",
+  "owner": "HOLGER G GERDES SCHIFFAHRTS",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-10-17T08:59:01",
   "verified": false
  }
 }

@@ -747,6 +747,17 @@
   "updated": "2026-09-16T09:39:16",
   "verified": false
  },
+ "9433339": {
+  "contact": "",
+  "ism": "JENS U WALLER GMBH",
+  "ismEmail": "",
+  "notes": "",
+  "owner": "MB1 JENS & WALLER GMBH",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-10-18T09:18:25",
+  "verified": false
+ },
  "9433365": {
   "contact": "",
   "ism": "ALPHA SHIPPING CO SIA",
@@ -866,6 +877,17 @@
   "phone": "",
   "source": "magicport-auto",
   "updated": "2026-09-29T11:02:27",
+  "verified": false
+ },
+ "9491927": {
+  "contact": "",
+  "ism": "SEAQUEST SHIPMANAGEMENT DOO",
+  "ismEmail": "",
+  "notes": "Commercial manager: POOL-CARRIERS MBH & CO KG",
+  "owner": "BLUE TUNE LTD",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-10-18T09:18:28",
   "verified": false
  },
  "9503536": {
@@ -1568,6 +1590,17 @@
   "phone": "",
   "source": "magicport-auto",
   "updated": "2026-09-29T11:02:18",
+  "verified": false
+ },
+ "9985954": {
+  "contact": "",
+  "ism": "V SHIPS FRANCE SAS",
+  "ismEmail": "",
+  "notes": "Commercial manager: EASTAWAY SHIP MANAGEMENT PTE",
+  "owner": "EASTAWAY FRANCE",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-10-18T09:18:22",
   "verified": false
  },
  "9988279": {

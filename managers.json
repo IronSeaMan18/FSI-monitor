@@ -208,6 +208,17 @@
   "updated": "2026-09-14T12:00:00",
   "verified": true
  },
+ "9106912": {
+  "contact": "",
+  "ism": "HAV SHIP MANAGEMENT AS",
+  "ismEmail": "",
+  "notes": "Commercial manager: HAV CHARTERING AS",
+  "owner": "HAV KATTEGAT AS",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-10-19T10:28:23",
+  "verified": false
+ },
  "9124419": {
   "contact": "Mr Mirkovic",
   "ism": "WILSON SHIP MANAGEMENT AS",
@@ -923,6 +934,17 @@
   "updated": "2026-10-10T10:55:39",
   "verified": false
  },
+ "9518086": {
+  "contact": "",
+  "ism": "DIANA SHIPPING SERVICES SA",
+  "ismEmail": "",
+  "notes": "Diana Shipping Inc in-house manager. Pendelis 16, Palaio Faliro, Athens. Contact form only on site, no email published.",
+  "owner": "TUVALU SHIPPING CO INC",
+  "phone": "+30 210 9470000",
+  "source": "magicport-auto +contacts from sibling",
+  "updated": "2026-10-19T10:28:26",
+  "verified": false
+ },
  "9518206": {
   "contact": "",
   "ism": "MISUGA KAIUN CO LTD",
@@ -943,6 +965,17 @@
   "phone": "",
   "source": "magicport-auto",
   "updated": "2026-10-15T09:34:42",
+  "verified": false
+ },
+ "9523952": {
+  "contact": "",
+  "ism": "CARISBROOKE SHIPPING LTD",
+  "ismEmail": "",
+  "notes": "Commercial manager: VERTOM SHIPPING & TRADING BV",
+  "owner": "CARISBROOKE SHIPPING #1 BV",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-10-19T10:28:20",
   "verified": false
  },
  "9539365": {

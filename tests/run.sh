@@ -2,7 +2,7 @@
 # Headless regression suites (node + stubbed DOM). No browser, no network.
 set -e
 cd "$(dirname "$0")/.."
-python3 -m py_compile fsi_monitor.py refresh_flags.py local_sync.py && echo "py_compile: OK"
+python3 -m py_compile fsi_monitor.py refresh_flags.py && echo "py_compile: OK"
 python3 tests/extract.py full > /tmp/fsi_full.js
 python3 tests/extract.py mi   > /tmp/fsi_mi.js
 node --check /tmp/fsi_full.js && echo "node --check: OK"

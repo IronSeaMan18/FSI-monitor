@@ -321,6 +321,101 @@ def refresh_managers():
     return ok
 
 
+# =========================================================================
+# Bilbao cross-check: name + LOA -> IMO / flag  (writes names.json)
+# Bilbao PA publishes no IMO and its flag can be stale (e.g. ALICANTE: PA says
+# MT, AIS/MMSI 538 = MH). Same matching rule as before: exact name, real
+# 7-digit IMO, LOA within +-2 m; anything ambiguous is left unresolved.
+# =========================================================================
+import html as _htmllib, urllib.parse as _up
+NAMES = os.path.join(HERE, "names.json")
+LIVE_BILBAO = "https://fsi-monitor.onrender.com/api/bilbao"   # Render can reach Bilbao PA
+
+def _norm(s):
+    return re.sub(r"[^A-Z0-9]+", " ", (s or "").upper()).strip()
+
+def _toint(s):
+    m = re.search(r"\d+", re.split(r"[,.]", str(s or ""))[0])
+    return int(m.group()) if m else None
+
+def _vf_search(name, page=1):
+    url = "https://www.vesselfinder.com/vessels?name=" + _up.quote_plus(name) + (f"&page={page}" if page > 1 else "")
+    h = urllib.request.urlopen(urllib.request.Request(url, headers={"User-Agent": UA}), timeout=25).read().decode("utf-8", "replace")
+    pm = re.search(r"page\s*\d+\s*/\s*(\d+)", h)
+    rows = []
+    for chunk in re.split(r"<tr[^>]*>", h):
+        im = re.search(r"/vessels/details/(\d+)", chunk); fl = re.search(r"flags/4x3/(\w+)\.svg", chunk)
+        nm = re.search(r'class="slna">([^<]+)<', chunk)
+        if not (im and fl and nm):
+            continue
+        vals = dict(re.findall(r'<td class="v([3-6])[^>]*>([^<]*)</td>', chunk))
+        lm = re.match(r"\s*(\d+)\s*/\s*\d+", vals.get("6", ""))
+        ty = re.search(r'class="slty">([^<]+)<', chunk)
+        fc = fl.group(1).upper()
+        rows.append({"imo": im.group(1), "flag": XMAP.get(fc, fc), "name": _htmllib.unescape(nm.group(1)).strip(),
+                     "vtype": _htmllib.unescape(ty.group(1)).strip() if ty else "", "built": vals.get("3", "").strip(),
+                     "gt": _toint(vals.get("4")), "dwt": _toint(vals.get("5")), "loa": int(lm.group(1)) if lm else None})
+    return rows, int(pm.group(1)) if pm else 1
+
+def _resolve(name, loa, cache):
+    key = f"{_norm(name)}|{loa or ''}"
+    c = cache.get(key)
+    if c and c.get("status") == "ok":
+        return c
+    if c and c.get("status") in ("none", "ambiguous") and time.time() - c.get("ts", 0) < 3 * 86400:
+        return c
+    cands, pages, p = [], 1, 1
+    while p <= min(pages, 6):
+        try:
+            rows, pages = _vf_search(name, p)
+        except Exception as e:
+            return {"status": "error", "note": type(e).__name__}
+        cands += [r for r in rows if len(r["imo"]) == 7 and _norm(r["name"]) == _norm(name)]
+        p += 1
+        time.sleep(2.5)
+    near = [r for r in cands if r["loa"] and loa and abs(r["loa"] - loa) <= 2]
+    if len(near) == 1:
+        r = near[0]
+        res = {"status": "ok", "imo": r["imo"], "flag": r["flag"], "vtype": r["vtype"], "gt": r["gt"],
+               "dwt": r["dwt"], "built": r["built"], "loaVF": r["loa"], "ts": time.time()}
+    else:
+        res = {"status": "ambiguous" if len(near) > 1 else "none",
+               "note": f"{len(cands)} exact-name hits, {len(near)} within 2 m", "ts": time.time()}
+    cache[key] = res
+    return res
+
+def bilbao_crosscheck(flags):
+    print("\nBilbao flag cross-check (name + LOA -> IMO / AIS flag)...")
+    try:
+        data = json.loads(urllib.request.urlopen(urllib.request.Request(LIVE_BILBAO, headers={"User-Agent": UA}), timeout=90).read())
+        vessels = data.get("vessels", [])
+    except Exception as e:
+        print(f"  could not load Bilbao list from the live dashboard ({type(e).__name__}); skipped")
+        return
+    cache = {}
+    if os.path.exists(NAMES):
+        try:
+            cache = json.load(open(NAMES, encoding="utf-8"))
+        except Exception:
+            pass
+    ok = conflicts = 0
+    for n, v in enumerate(vessels, 1):
+        loa = _toint(v.get("loa"))
+        pa_flag = v.get("flagPA") or v.get("flagCode", "")
+        r = _resolve(v.get("name", ""), loa, cache)
+        if r.get("status") == "ok":
+            ok += 1
+            flags[r["imo"]] = r["flag"]
+            if pa_flag and r["flag"] != pa_flag:
+                conflicts += 1
+                print(f"  CONFLICT  {v['name'][:24]:24s} port says {pa_flag}, AIS/VF says {r['flag']}  (IMO {r['imo']})")
+        if n % 10 == 0:
+            json.dump(cache, open(NAMES, "w", encoding="utf-8"), indent=1, ensure_ascii=False)
+    json.dump(cache, open(NAMES, "w", encoding="utf-8"), indent=1, ensure_ascii=False)
+    print(f"  {ok}/{len(vessels)} Bilbao vessels matched to IMO; {conflicts} flag conflict(s); names.json saved")
+
+
+
 def main():
     print("FSI flag seed refresher\n")
     live = None
@@ -373,10 +468,13 @@ def main():
     if not vf_ok:
         print("\n  ! VesselFinder was NOT reachable from this IP - flag resolution could not run.")
         print("    Managers were still synced. Run refresh_flags.py from a residential IP for flags.")
+    if vf_ok:
+        bilbao_crosscheck(flags)        # v3.15.0: names.json - Bilbao PA flags vs AIS (B-029)
+        save_seed(flags)
     counts = {f: sum(1 for v in flags.values() if v == f) for f in TRACKED}
     print(f"\nflags.json now: {len(flags)} IMOs")
     print(f"on your flags:  {counts}  (total {sum(counts.values())})")
-    print("\nNext:  git add flags.json && git commit -m 'refresh flags' && git push")
+    print("\nNext:  git add flags.json names.json && git commit -m 'refresh flags' && git push")
 
 
 if __name__ == "__main__":

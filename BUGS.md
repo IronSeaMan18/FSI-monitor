@@ -71,3 +71,14 @@
 |---|---|---|---|---|
 | B-109 | **HIGH** | Managers saved through the dashboard's **Save manager** form vanish on the next deploy | `save_managers()` writes to `managers.json` on Render's ephemeral disk (same class as B-104). Every push — including the daily seed refresh — wipes it. Shipped in v3.12.0 without noticing. | Daily workflow pulls `/api/managers` from the live server and merges it into the committed `managers.json` **before** pushing. `save_manager()` also preserves fields it doesn't own (`phone`, `notes`). |
 | (B-025) | — | Seed decayed 94% -> 50% in four days; manual refresh cannot keep pace | ShipNext horizon rolls faster than any manual cadence | `.github/workflows/refresh-seeds.yml` daily at 05:00 UTC. First run must confirm VesselFinder accepts GitHub's IPs. |
+
+## v3.15.0
+| ID | Sev | Description | Root cause | Fix |
+|---|---|---|---|---|
+| B-110 | **CRIT** | "Broken completely": manager directory gone, flags halved | 23 Oct web upload of an older chat package overwrote fsi_monitor.py v3.14.0 and flags.json (two development lines, no merge) | v3.14.0 restored from cb3876f; chat fixes ported on top; flags unioned (816). Rule added to HANDOFF §9: always start from the repo HEAD |
+| B-026 | **HIGH** | Avilés vessels blank flag although feed says "Is. Marshall" (ASL ARK, MYRTO) | exact-string lookup; source uses abbreviation | `_fold()` normalisation; unmapped names logged |
+| B-029 | **HIGH** | ALICANTE shown MT (really MH); WILSON GOOLE BB (really BS) | Bilbao PA publishes stale flags | names.json cross-check vs AIS; "⚠ port: XX"; filter matches either |
+| B-030 | HIGH | Vilagarcía HTTP 503 | feed host moved to portovilagarcia.es | URL updated |
+| B-031 | MED | Gijón PCS feed could never produce data | Posidonia is a JS app | feature removed |
+| B-111 | LOW | tests/test_ports_b106.js 2 failures from mid-Oct | fixed September fixture ETAs hidden by Hide-past | fixtures relative to today |
+

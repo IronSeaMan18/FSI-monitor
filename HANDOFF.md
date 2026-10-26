@@ -1,6 +1,6 @@
 # HANDOFF.md — Read this file first
 
-You are picking up **FSI Vessel Arrival Monitor**, currently **v3.11.0**, from a
+You are picking up **FSI Vessel Arrival Monitor**, currently **v3.15.0**, from a
 long-running Claude.ai chat session. This document exists so you don't have to
 rediscover things that were already found the hard way — several of them cost
 real debugging time. Read this fully before touching code.
@@ -27,9 +27,9 @@ All files in this delivery go at the **repo root** (no subfolders):
 | `fsi_monitor.py` | The entire application — Python stdlib HTTP server + inline HTML/CSS/JS dashboard. One file, no framework, no build step. |
 | `flags.json` | **Committed, not gitignored.** IMO → flag-code cache. This is load-bearing — see §4. |
 | `refresh_flags.py` | Standalone script, run manually/periodically from a non-Render machine. Rebuilds `flags.json`. See §4. |
-| `local_sync.py` | Standalone script for sources that block *all* datacenter IPs outright (not just Render) — currently targets Gijón's Posidonia port-call system. See §5. |
+| `names.json` | **Committed.** Name + LOA → IMO / AIS flag for Bilbao (no IMO in source). Built by `refresh_flags.py` (daily workflow). Used to give Bilbao rows an IMO and to detect stale port-authority flags (§11). |
 | `Procfile`, `requirements.txt`, `runtime.txt` | Render deploy config. `requirements.txt` is intentionally near-empty — stdlib only. |
-| `.gitignore` | Excludes `fsi_vessels_db.json` (runtime DB, regenerated) and `_discovery/` (local_sync.py debug dumps). **Does not** exclude `flags.json`. |
+| `.gitignore` | Excludes `fsi_vessels_db.json` (runtime DB, regenerated). **Does not** exclude `flags.json`. |
 | `VERSION.md` | Full version history, v3.0.0 → v3.11.0, with root-cause analysis for every fix. Read this before assuming something is a fresh bug — it may be documented already. |
 | `BUGS.md` | Bug tracker, IDs B-001 through B-025, fixed and open. |
 | `CHANGELOG.md` | Shorter, user-facing changes per version. |
@@ -52,7 +52,7 @@ GET /api/marin           -> Marín Port Authority scrape (no flags)
 GET /api/aviles          -> Avilés Port Authority CSV (has IMO + flag)
 GET /api/vilagarcia      -> Vilagarcía Port Authority feed (has flag, no IMO)
 GET /api/shipnext?pid=&pname=  -> ShipNext planned-vessels API (9 ports, no flag)
-GET /api/localfeed?pid=&pname= -> reads local_feed.json if present (see §5)
+GET /api/santander       -> Santander Port Authority berthings (flag inline)
 GET /api/saveflag?imo=&fc=     -> persist a resolved flag to the DB cache
 GET /api/history         -> full DB dump (vessels + meta + flag count)
 GET /api/clearold        -> purge vessels unseen >30 days
@@ -64,7 +64,7 @@ The browser's `fetchAll()` (in the inline `<script>`) fans out to whichever of
 these apply to the 12 configured ports, in parallel (concurrency 4), merges
 results into `S.combined`, and renders the table. Each port object in the JS
 `PORTS` array declares its own sourcing (`direct:`, `sn:`, `vfsupp:`,
-`localfeed:`) — read that array first when asking "where does port X's data
+`direct:` + `sn:` = merged) — read that array first when asking "where does port X's data
 come from."
 
 The Python side keeps an **in-memory DB** (`_DB`, guarded by `_DB_LOCK`),
@@ -133,48 +133,30 @@ button exists to force one.
 
 ---
 
-## 5. The other blocked source: Gijón's own systems
+## 5. Gijón Posidonia (PCS) — investigated and dropped (v3.15.0)
+`gijon.posidoniaport.com` returns 403 to every datacenter IP (AWS load balancer).
+A page saved from the user's own browser (Oct 2026) proved it is a JavaScript app
+(GISWEB/requirejs): the HTML holds only empty containers; data is fetched later.
+Neither server- nor laptop-side scraping of the page can work. `local_sync.py`,
+`local_feed.json` and `/api/localfeed` were removed. Not pursued (user's choice):
+the site's data endpoint (browser dev tools) or its "atraques RISP" open-data
+download. Gijón stays on ShipNext.
 
-Two more sources refuse **all** datacenter IPs (not just Render's — confirmed
-from this project's own sandbox too, so it's a genuine IP-tier block, not
-Render-specific):
-
-| Host | Symptom |
-|---|---|
-| `gijon.posidoniaport.com` | 403 on every path, including `/robots.txt`. `Server: awselb/2.0` — blocked at the AWS load balancer, before any app logic runs. |
-| `www.puertogijon.es` | 503 on every path, every User-Agent. |
-
-`local_sync.py` exists for this: run from a machine that isn't blocked (the
-user's laptop works, since they can see these pages in a normal browser),
-writes `local_feed.json`, commit + push, server reads it via
-`/api/localfeed?pid=ESGIJ`.
-
-**Status: unfinished.** The Posidonia parser in `local_sync.py` was written
-**blind** — nobody has actually seen the page's real structure, since it
-can't be inspected from any datacenter context available in this project.
-It uses a generic table/JSON-endpoint detector and a `--discover` mode that
-dumps raw pages to `_discovery/` for manual inspection. If the user runs
-`local_sync.py --discover` and shares the output, the parser can be tuned to
-the actual layout. As of this handoff, that loop has not been closed — this
-is genuinely open work, not a "should already work" item.
-
----
-
-## 6. Port-by-port source map (current, v3.11.0)
+## 6. Port-by-port source map (current, v3.15.0)
 
 | Port ID | Name | Source(s) | Notes |
 |---|---|---|---|
-| ESGIJ | Gijón | ShipNext + local_feed (unfinished, see §5) | |
+| ESGIJ | Gijón | ShipNext | Posidonia dropped (§5) |
 | ESAVS | Avilés | PA CSV (`movimientos.csv`) + ShipNext, merged/deduped | CSV has IMO+flag+GT+callsign |
-| ESTAN | Santander | ShipNext | |
-| ESBIO | Bilbao | Direct PA scrape (Googlebot UA bypasses Radware) | Has flags inline; ~65 vessels, 3wk horizon — deliberately NOT on ShipNext, PA gives more/better data |
+| ESTAN | Santander | **PA page** `puertosantander.es/es/buques-en-el-puerto` + ShipNext, merged by name | PA: berthings with flag ISO, agent, berth, start/end (`etdISO`); no IMO; tugs on >20-day berths skipped |
+| ESBIO | Bilbao | Direct PA scrape (Googlebot UA bypasses Radware) | Has flags inline; ~65 vessels, 3wk horizon — deliberately NOT on ShipNext, PA gives more/better data **Flag cross-check via names.json (§11).** |
 | ESPAS | Pasajes | ShipNext | |
 | FRBAY | Bayonne (France) | ShipNext | Only non-Spanish port |
 | ESSCI | San Ciprián | ShipNext only | VF supplement was tried and removed in v3.10.2 — see below |
 | ESFER | Ferrol | ShipNext only | Same as above. Ferrol PA (apfsc.es) requires a login (comercial@apfsc.es) for vessel data — never obtained, would let San Ciprián+Ferrol move to a real PA source if pursued |
 | ESCOR | A Coruña | ShipNext | |
 | ESMRN | Marín | Direct PA scrape | No IMO, no flag in source — genuinely nothing to match against; open limitation |
-| ESVIL | Vilagarcía | Direct PA feed (`MDB_BARCOS.php`) | Has flag (Spanish country names, see `ES_FLAGS` map), no IMO |
+| ESVIL | Vilagarcía | Direct PA feed (`MDB_BARCOS.php`) | Has flag (Spanish country names, see `ES_FLAGS` map), no IMO Feed host is `portovilagarcia.es` (no www) since Oct 2026. |
 | ESVGO | Vigo | ShipNext | |
 
 **Do not re-add a VF-based "supplement" job for San Ciprián/Ferrol.** This was
@@ -199,7 +181,7 @@ new mapping.
 
 ## 8. Known open items (not yet done, not forgotten)
 
-- **Gijón/Posidonia parser** — see §5, needs `--discover` output from the user.
+- **Gijón Posidonia** — dropped (§5).
 - **Marín has no IMO or flag in its source** — genuinely no matching key
   available from the current feed; would need a different source entirely.
 - **San Ciprián / Ferrol** — could move off ShipNext-only to a real PA feed
@@ -225,6 +207,11 @@ new mapping.
 ---
 
 ## 9. Working conventions established over this project (please continue them)
+
+- **ALWAYS start from the repo HEAD — never from an older package/zip.** On 23 Oct
+  2026 a Claude.ai chat package (older base) was uploaded through the GitHub web UI
+  and silently replaced v3.14.0 (B-110). Any session — chat or Claude Code — must
+  `git pull` / read the current files first and port changes onto them.
 
 - **SDD approach, explicitly requested by the user.** Every change gets: a
   version bump (semver: MAJOR = architecture change, MINOR = feature,
@@ -279,3 +266,12 @@ open('/tmp/app.js','w').write(c[c.find('<script>')+8:c.rfind('</script>')])
 "
 node --check /tmp/app.js
 ```
+
+
+## 11. Flag-conflict logic (v3.15.0)
+When two sources disagree on a flag, the AIS/VesselFinder flag (MMSI-backed) is
+primary (`flagCode`); the other is kept in `flagPA` + `flagNote`; the table shows
+"⚠ port: XX"; the flag filter matches EITHER flag so a vessel on a tracked flag is
+never hidden. Verify in Equasis before contacting an administration. Bilbao is
+checked server-side via `names.json`; port-authority vs ShipNext twins are merged
+in the browser (`buildCombined`).

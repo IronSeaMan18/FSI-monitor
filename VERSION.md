@@ -1,9 +1,50 @@
 # FSI Vessel Arrival Monitor — VERSION LOG
-Current production version: **v3.14.0**
+Current production version: **v3.15.0**
 
 Semantics: MAJOR = architecture change | MINOR = feature | PATCH = fix
 Release entries below are **newest first**; standing reference sections
 (data source matrix, standing constraint) are at the end of the file.
+
+## v3.15.0 — Merge: restores v3.14.0 after accidental overwrite + Santander, Bilbao flag cross-check, flag-name fix
+### What happened (23 Oct 2026)
+Two development lines existed: Claude Code in this repo (v3.12.0 manager inquiry →
+v3.14.0) and a Claude.ai chat that kept shipping zip packages from an older base.
+The chat's v3.12.0 package was uploaded via the GitHub web UI ("Add files via upload",
+de81ef8). It **replaced fsi_monitor.py v3.14.0 (81 KB, manager directory) with an
+older 66 KB file** and cut flags.json 756 → 283. User saw "it's broken completely".
+### v3.15.0 = v3.14.0 (restored, cb3876f) + the chat's fixes ported on top
+1. **B-026 flag-name folding** — Avilés now writes `IS. MARSHALL`; exact lookup missed
+   it (ASL ARK, MYRTO blank). `_fold()` strips accents and expands `IS.`/`STA.`/`STO.`/
+   `REP.`; extra entries (KN, VG…); unmapped names are logged. Avilés falls back to the
+   IMO flag cache.
+2. **Vilagarcía feed moved** to `https://portovilagarcia.es/MDB_BARCOS.php` (no www);
+   old host 301/503.
+3. **Santander port authority** (`/api/santander`): vessels at berth + scheduled
+   berthings with flag, agent, berth, start/end (`etdISO`). Merged with ShipNext by
+   name (IMO record kept, PA fields + flag difference added). In-port vessels stay
+   visible until departure with Hide-past on.
+4. **B-029 Bilbao flag cross-check.** Bilbao PA publishes stale flags: ALICANTE PA MT,
+   MMSI 538010257 = MH; WILSON GOOLE PA BB, MMSI 311001764 = BS. New committed
+   `names.json` (name + LOA → IMO/flag; exact name, real IMO, LOA ±2 m; never guesses),
+   built by `refresh_flags.py` (now also in the daily workflow). 54/60 Bilbao vessels
+   get an IMO. AIS flag primary; port flag kept in `flagPA`, row shows "⚠ port: XX";
+   the flag filter matches either flag.
+5. **Gijón Posidonia removed** — a page saved from the user's browser proved it is a
+   JS app (empty containers, data loaded later). `local_sync.py`, `/api/localfeed` and
+   the Gijón `localfeed` job are gone.
+6. **Dedupe** — SN+ skip is IMO-only; `buildCombined` merges a no-IMO port-authority
+   twin into the IMO record (fills agent/berth/etd, records flag difference).
+7. **flags.json** = union of v3.14.0 (756), repo HEAD (331) and chat refresh (364):
+   **816 IMOs**, 0 malformed, 0 changed values. Workflow commits `names.json` too.
+8. **Tests** — `tests/test_ports_b106.js` fixtures used fixed September ETAs, so
+   Hide-past emptied the table after mid-October (2 failures on untouched v3.14.0
+   too). Fixtures now relative to today. `tests/run.sh` no longer compiles local_sync.
+### Verified
+tests/run.sh: manager inquiry 38/38, ports/B-106 12/12. Merged server 9/9 (version,
+ALICANTE MH/port MT, WILSON GOOLE BS/port BB, Bilbao IMOs 54/60, Santander 16 flagged,
+Avilés 18/18 flagged, Vilagarcía new host, managers endpoint 174, localfeed 404).
+Frontend 9/9 (merge, conflict marker, either-flag filter, in-port visibility).
+Real data all 12 ports: 180 vessels, 40 on MT/LR/MH/HK, 0 errors.
 
 ## v3.14.0 — The manager directory maintains itself; keep-alive; tests in-repo
 User: "keep always info about managers for the vessels arriving into Gijón

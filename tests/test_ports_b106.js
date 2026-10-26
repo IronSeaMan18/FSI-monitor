@@ -7,6 +7,8 @@ global.window=global;
 const V=[{name:"CAPE CORFU",imo:"9857432",flagCode:"CY",portId:"ESVGO",portName:"Vigo",etaISO:"2026-09-12T22:00",eta:"12 Sep, 22:00"},
          {name:"FURNESS VICTORIA",imo:"9640621",flagCode:"PA",portId:"ESGIJ",portName:"Gijón",etaISO:"2026-09-18T08:00",eta:"18 Sep, 08:00"},
          {name:"SEA EAGLE",imo:"9111111",flagCode:"LR",portId:"ESAVS",portName:"Avilés",etaISO:"2026-09-13T06:00",eta:"13 Sep, 06:00"}];
+// v3.15.0: fixture ETAs must stay in the future, or Hide-past-ETA (default on) empties the table
+V.forEach((v,i)=>{v.etaISO=new Date(Date.now()+(i+2)*864e5).toISOString().slice(0,16)});
 let nfetch=0;global.fetch=(u)=>{if(!/history|managers/.test(String(u)))nfetch++;return Promise.resolve({ok:true,json:()=>Promise.resolve(String(u).includes("history")?{vessels:{},meta:{runs:1}}:String(u).includes("managers")?{managers:{}}:{vessels:V,count:V.length})})};
 global.setInterval=()=>0;global.setTimeout=(f,t)=>{if(t===undefined||t<100)f();return 0};global.alert=m=>console.log("  ALERT:",m);
 global.AbortSignal={timeout:()=>({})};global.URL={createObjectURL:()=>""};global.Blob=class{};global.navigator={clipboard:{writeText(){}}};

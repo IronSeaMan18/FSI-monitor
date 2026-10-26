@@ -3,6 +3,14 @@
 Newest first. Full root-cause detail for every entry lives in `VERSION.md`;
 bug IDs referenced here are tracked in `BUGS.md`.
 
+## v3.15.0 — Restored v3.14.0 + Santander + Bilbao flag cross-check
+The 23 Oct web upload had replaced v3.14.0 with an older file (manager directory
+gone, flags 756 → 283). Restored, then added: Santander port-authority berthings;
+Bilbao flags checked against AIS — ALICANTE is Marshall Islands (port says Malta),
+WILSON GOOLE is Bahamas (port says Barbados), shown as "⚠ port: XX"; Avilés
+"Is. Marshall" now recognised; Vilagarcía feed address fixed; dead Gijón Posidonia
+feed removed. flags.json 816 IMOs.
+
 ## v3.14.0 — Manager directory maintains itself
 Every day the workflow now looks up the ISM manager (via MagicPort) for any
 vessel planned at Gijón or Avilés that isn't on file, and copies contact

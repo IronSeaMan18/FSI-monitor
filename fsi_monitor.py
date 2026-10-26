@@ -1,23 +1,27 @@
 #!/usr/bin/env python3
 """
-FSI Vessel Arrival Monitor v3.12.0 — Hardened
-=============================================
+FSI Vessel Arrival Monitor v3.15.0
+==================================
 Local:  python fsi_monitor.py          -> http://localhost:8090
 Cloud:  set PORT env var (Render auto-sets it)
 
-Data Sources:
-  Bilbao PA    - ~65 vessels, 3 weeks ahead (Googlebot UA bypass, incl. flags)
-  Marin PA     - ~10 vessels, 10 days
-  ShipNext     - 9 ports, all planned vessels (no flags; resolved via VF)
-  VesselFinder - Marin/Vilagarcia + flag resolution + supplement
+Data Sources (see VERSION.md for the history of each):
+  Bilbao PA     - ~60 vessels, 3 weeks ahead (Googlebot UA bypass, flags inline)
+  Aviles PA     - CSV with IMO + flag, merged with ShipNext
+  Vilagarcia PA - feed with flag, no IMO
+  Marin PA      - ~10 vessels, 10 days (no IMO, no flag)
+  ShipNext      - 9 ports, all planned vessels (no flag field)
+  flags.json    - committed IMO->flag seed; VesselFinder is IP-blocked from Render
+  managers.json - committed IMO->ISM manager directory (hand-entered, see v3.12.0)
 
-v3.12.0 fixes all 19 audited weak points. See PLAN-v3.12.0.md.
+Full version history with root causes: VERSION.md. Bug tracker: BUGS.md.
 """
 import http.server, json, os, re, unicodedata, socketserver, sys, threading, time, urllib.request, urllib.error
 from datetime import datetime, timedelta, timezone
 from urllib.parse import urlparse, parse_qs, unquote
+import html as htmllib
 
-VERSION = "3.12.0"
+VERSION = "3.15.0"
 PORT = int(os.environ.get("PORT", 8090))
 HOST = "0.0.0.0"
 
@@ -226,7 +230,9 @@ def merge_into_db(db, vessels, port_id, port_name, source_tag):
                 rec["lastSeen"] = now
                 rec["name"] = name or rec.get("name", "")
                 # FIX #10: volatile fields ALWAYS refresh (ETA is the point of the tool)
-                for fld in ("eta", "etaISO", "flagCode", "flagName", "origin", "dest", "agent", "line"):
+                rec["flagPA"] = v.get("flagPA", ""); rec["flagNote"] = v.get("flagNote", "")
+                if v.get("imo") and not rec.get("imo"): rec["imo"] = v["imo"]
+                for fld in ("eta", "etaISO", "etdISO", "flagCode", "flagName", "origin", "dest", "agent", "line"):
                     nv = v.get(fld)
                     if nv not in (None, "", 0):
                         rec[fld] = nv
@@ -244,7 +250,8 @@ def merge_into_db(db, vessels, port_id, port_name, source_tag):
                     "portId": port_id, "portName": port_name,
                     "firstSeen": now, "lastSeen": now,
                     "eta": v.get("eta", ""), "lastETA": v.get("eta", ""),
-                    "etaISO": v.get("etaISO", ""),
+                    "etaISO": v.get("etaISO", ""), "etdISO": v.get("etdISO", ""),
+                    "flagPA": v.get("flagPA", ""), "flagNote": v.get("flagNote", ""),
                     "gt": v.get("gt", 0), "dwt": v.get("dwt", 0),
                     "built": v.get("built", ""), "loa": v.get("loa", ""), "beam": v.get("beam", ""),
                     "origin": v.get("origin", ""), "dest": v.get("dest", ""),
@@ -275,6 +282,138 @@ def save_flag(imo, fc, flush=True):
         db["flags"][imo] = fc
     if flush:
         save_db()
+    return True
+
+# --- v3.12.0: ISM manager directory + outreach (recusal) log -------------
+# Manager identity CANNOT be resolved automatically: Equasis needs a login and
+# every other source paywalls the ISM-manager field (free trackers publish the
+# BENEFICIAL OWNER and mislabel it "manager" - see VERSION.md v3.12.0). So each
+# entry is hand-entered once and kept forever; managers recur across ships far
+# more than ships recur, so coverage compounds.
+MGR_FILE      = os.path.join(SCRIPT_DIR, "managers.json")   # committed, like flags.json
+OUTREACH_FILE = os.path.join(DATA_DIR, "outreach.json")     # runtime, gitignored
+
+MY_FLAGS = ("MT", "LR", "MH", "HK")   # flags under which FSI authority is held
+
+_MGR = None
+_MGR_LOCK = threading.RLock()
+_OUT = None
+_OUT_LOCK = threading.RLock()
+
+def _clean_co(v, n=90):
+    """Company/person free text: strip markup, collapse space, cap length."""
+    if not v: return ""
+    t = re.sub(r"<[^>]+>", " ", str(v))
+    t = re.sub(r"\s+", " ", t).strip()
+    return t[:n]
+
+_EMAIL_RE = re.compile(r"^[^@\s,;]+@[^@\s,;]+\.[A-Za-z]{2,}$")
+
+def load_managers():
+    """IMO -> {ism, ismEmail, contact, owner, source, verified, updated}."""
+    global _MGR
+    with _MGR_LOCK:
+        if _MGR is not None:
+            return _MGR
+        m = {}
+        if os.path.exists(MGR_FILE):
+            try:
+                with open(MGR_FILE, "r", encoding="utf-8") as f:
+                    d = json.load(f)
+                if isinstance(d, dict):
+                    m = {k: v for k, v in d.items() if isinstance(v, dict)}
+                log(f"managers.json loaded: {len(m)} vessels")
+            except Exception as e:
+                log(f"managers.json load failed: {e}")
+        else:
+            log("managers.json absent - starting empty")
+        _MGR = m
+        return _MGR
+
+def save_managers():
+    """Atomic write, same tmp+os.replace pattern as the DB (B-002)."""
+    with _MGR_LOCK:
+        if _MGR is None: return
+        tmp = MGR_FILE + ".tmp"
+        try:
+            with open(tmp, "w", encoding="utf-8") as f:
+                json.dump(_MGR, f, indent=1, ensure_ascii=False, sort_keys=True)
+            os.replace(tmp, MGR_FILE)
+        except Exception as e:
+            log(f"managers.json save error: {e}")
+            try: os.remove(tmp)
+            except Exception: pass
+
+def get_manager(imo):
+    if not imo: return {}
+    with _MGR_LOCK:
+        return load_managers().get(imo, {})
+
+def save_manager(imo, ism="", ism_email="", contact="", owner="", source="", verified=False):
+    """Validated write. ISM manager is mandatory; everything else optional.
+
+    `verified` records provenance: True = read off Equasis / the company's own
+    site, False = inferred from an aggregator and still to be confirmed. The
+    UI shows unverified entries differently so a guess is never mistaken for
+    a fact.
+    """
+    if not re.match(r"^\d{7}$", imo or ""):
+        return False
+    ism = _clean_co(ism)
+    if len(ism) < 2:
+        return False
+    em = _clean_co(ism_email, 120)
+    if em and not _EMAIL_RE.match(em):
+        return False
+    with _MGR_LOCK:
+        load_managers()
+        rec = dict(_MGR.get(imo, {}))          # v3.13.0: keep phone/notes etc. researched offline
+        rec.update({"ism": ism, "ismEmail": em,
+                    "contact": _clean_co(contact), "owner": _clean_co(owner),
+                    "source": _clean_co(source, 60), "verified": bool(verified),
+                    "updated": datetime.now().isoformat(timespec="seconds")})
+        _MGR[imo] = rec
+    save_managers()
+    return True
+
+def load_outreach():
+    """Recusal log: every manager approach, so a later inspection assignment
+    for that manager can be recognised and declared."""
+    global _OUT
+    with _OUT_LOCK:
+        if _OUT is not None:
+            return _OUT
+        o = []
+        if os.path.exists(OUTREACH_FILE):
+            try:
+                with open(OUTREACH_FILE, "r", encoding="utf-8") as f:
+                    d = json.load(f)
+                if isinstance(d, list): o = d
+            except Exception as e:
+                log(f"outreach.json load failed: {e}")
+        _OUT = o
+        return _OUT
+
+def log_outreach(imo, vessel, flag, port, manager, email):
+    """Append one approach. conflict=True when the vessel flies a flag under
+    which FSI authority is held - those are the ones needing a declaration."""
+    with _OUT_LOCK:
+        load_outreach()
+        _OUT.append({"ts": datetime.now().isoformat(timespec="seconds"),
+                     "imo": _clean_co(imo, 7), "vessel": _clean_co(vessel),
+                     "flag": _clean_co(flag, 2).upper(), "port": _clean_co(port),
+                     "manager": _clean_co(manager), "email": _clean_co(email, 120),
+                     "conflict": _clean_co(flag, 2).upper() in MY_FLAGS})
+        tmp = OUTREACH_FILE + ".tmp"
+        try:
+            with open(tmp, "w", encoding="utf-8") as f:
+                json.dump(_OUT, f, indent=1, ensure_ascii=False)
+            os.replace(tmp, OUTREACH_FILE)
+        except Exception as e:
+            log(f"outreach.json save error: {e}")
+            try: os.remove(tmp)
+            except Exception: pass
+            return False
     return True
 
 def fetch_flag_vf(imo):
@@ -471,6 +610,24 @@ def fetch_bilbao():
         seen[k] = len(uniq); uniq.append(v)
     if len(uniq) != len(vessels):
         log(f"Bilbao: collapsed {len(vessels)-len(uniq)} duplicate rows")
+    conflicts = 0
+    for v in uniq:
+        r = name_lookup(v["name"], v["loa"])
+        if not r:
+            continue
+        v["imo"] = r["imo"]
+        if not v["type"] and r.get("vtype"): v["type"] = r["vtype"]
+        if not v["dwt"] and r.get("dwt"): v["dwt"] = r["dwt"]
+        if not v["built"] and r.get("built"): v["built"] = str(r["built"])
+        vf = r.get("flag", "")
+        if vf and v["flagCode"] and vf != v["flagCode"]:
+            v["flagPA"], v["flagCode"] = v["flagCode"], vf
+            v["flagNote"] = f"Port authority lists {v['flagPA']}; AIS/VesselFinder shows {vf}"
+            conflicts += 1
+        elif vf and not v["flagCode"]:
+            v["flagCode"] = vf
+    if conflicts:
+        log(f"Bilbao: {conflicts} flag conflict(s) port authority vs AIS")
     log(f"Bilbao: {len(uniq)} vessels parsed")
     return uniq
 
@@ -565,15 +722,18 @@ def es_flag(name):
     return fc
 
 AVILES_CSV = "https://www.puertoaviles.es/es-ES/Servicios/Buques-en-el-Puerto/movimientos.csv"
-VILAG_URL  = "https://www.portovilagarcia.es/MDB_BARCOS.php"
+VILAG_URL  = "https://portovilagarcia.es/MDB_BARCOS.php"
 
 def _pa_rows(url, timeout=20):
     req = urllib.request.Request(url, headers={"User-Agent": UA, "Accept": "*/*"})
     data = urllib.request.urlopen(req, timeout=timeout).read()
+    # B-107: Aviles serves cp1252 (ESPA\xd1A), not UTF-8. Decoding as UTF-8 with
+    # errors="replace" turned every accented flag name into U+FFFD, so es_flag()
+    # never matched ESPANA and every Spanish-flagged vessel came out blank.
     try:
         raw = data.decode("utf-8")
     except UnicodeDecodeError:
-        raw = data.decode("cp1252", errors="replace")     # Aviles CSV is Latin-1
+        raw = data.decode("cp1252", errors="replace")
     return [l.split(";") for l in raw.replace("\r", "\n").split("\n") if l.strip()]
 
 def fetch_aviles():
@@ -628,60 +788,71 @@ def fetch_vilagarcia():
     return out
 
 
-LOCAL_FEED = os.path.join(SCRIPT_DIR, "local_feed.json")
-
-def fetch_localfeed(port_id=None):
-    """Vessels collected by local_sync.py from sources that block datacenter IPs
-    (Posidonia Gijón, puertogijon.es). Committed to the repo; read-only here."""
-    if not os.path.exists(LOCAL_FEED):
-        return []
-    try:
-        with open(LOCAL_FEED, encoding="utf-8") as f:
-            payload = json.load(f)
-    except Exception as e:
-        log(f"local_feed read error: {e}")
-        return []
-    out = []
-    for v in payload.get("vessels", []):
-        if port_id and v.get("portId") != port_id:
-            continue
-        name = clean_name(v.get("name", ""))
-        if not name:
-            continue
-        imo = re.sub(r"\D", "", v.get("imo", "") or "")
-        imo = imo if len(imo) == 7 else ""
-        iso, disp = parse_eta(v.get("eta", ""))
-        out.append({
-            "name": name, "imo": imo, "type": (v.get("type") or "").strip(),
-            "eta": disp or (v.get("eta") or ""), "etaISO": iso,
-            "flagCode": v.get("flagCode") or get_flag(imo), "flagName": "",
-            "gt": _toint(v.get("gt")), "dwt": _toint(v.get("dwt")),
-            "built": str(v.get("built") or ""), "loa": str(v.get("loa") or ""), "beam": "",
-            "origin": (v.get("origin") or "").strip(),
-            "dest": (v.get("berth") or v.get("dest") or "").strip(),
-            "agent": (v.get("agent") or "").strip(), "line": (v.get("line") or "").strip(),
-        })
-    age = payload.get("generated", "?")
-    log(f"local_feed: {len(out)} vessels (generated {age})")
-    return out
-
 def _toint(x):
     m = re.search(r"\d+", str(x or ""))
     return int(m.group()) if m else 0
 
-def local_feed_meta():
-    """Age of local_feed.json so the dashboard can warn when the PCS sync is stale."""
-    if not os.path.exists(LOCAL_FEED):
-        return {"feedGenerated": None, "feedAgeHours": None}
-    try:
-        with open(LOCAL_FEED, encoding="utf-8") as f:
-            p = json.load(f)
-        ep = p.get("generatedEpoch")
-        age = (time.time() - float(ep)) / 3600 if ep else None
-        return {"feedGenerated": p.get("generated"), "feedAgeHours": round(age, 1) if age is not None else None}
-    except Exception as e:
-        log(f"local_feed meta error: {e}")
-        return {"feedGenerated": None, "feedAgeHours": None}
+# --- names.json: name + LOA -> IMO / flag (built by refresh_flags.py) -------
+NAMES_FILE = os.path.join(SCRIPT_DIR, "names.json")
+_NAMES = None
+
+def _nkey(name, loa):
+    return re.sub(r"[^A-Z0-9]+", " ", (name or "").upper()).strip() + "|" + str(_toint(loa) or "")
+
+def name_lookup(name, loa):
+    """Cross-check for sources without IMO (Bilbao): exact name + LOA resolved offline."""
+    global _NAMES
+    if _NAMES is None:
+        try:
+            with open(NAMES_FILE, encoding="utf-8") as f:
+                _NAMES = json.load(f)
+        except Exception:
+            _NAMES = {}
+        log(f"names.json: {sum(1 for v in _NAMES.values() if v.get('status') == 'ok')} resolved name+LOA entries")
+    r = _NAMES.get(_nkey(name, loa))
+    return r if r and r.get("status") == "ok" else None
+
+# --- Santander Port Authority: vessels at berth + scheduled berthings -----
+SANTANDER_URL = "https://www.puertosantander.es/es/buques-en-el-puerto"
+
+def fetch_santander():
+    """Table grouped by berth: Registro | Buque y procedencia | Bandera | Inicio | Final | Consignatario."""
+    req = urllib.request.Request(SANTANDER_URL, headers={"User-Agent": UA, "Accept": "text/html"})
+    html = urllib.request.urlopen(req, timeout=20).read().decode("utf-8", errors="replace")
+    html = re.sub(r"<!--[\s\S]*?-->", "", html)
+    tb = re.search(r"<table[\s\S]*?</table>", html, re.I)
+    if not tb:
+        log("Santander: no table found")
+        return []
+    out, berth = [], ""
+    for tr in re.findall(r"<tr[^>]*>([\s\S]*?)</tr>", tb.group(), re.I):
+        th = re.findall(r"<th[^>]*colspan[^>]*>([\s\S]*?)</th>", tr, re.I)
+        if th:
+            berth = re.sub(r"<[^>]+>|\s+", " ", th[0]).strip()
+            continue
+        cells = [re.sub(r"\s+", " ", htmllib.unescape(re.sub(r"<[^>]+>", " ", x))).strip()
+                 for x in re.findall(r"<td[^>]*>([\s\S]*?)</td>", tr, re.I)]
+        if len(cells) < 6:
+            continue
+        m = re.match(r"^(.*?)\s*\(([^)]*)\)\s*$", cells[1])
+        name = clean_name(m.group(1) if m else cells[1])
+        if not name:
+            continue
+        iso, disp = parse_eta(cells[3].replace(" - ", " "))
+        etd, _ = parse_eta(cells[4].replace(" - ", " "))
+        try:   # skip harbour craft on long-term berths (tugs etc.)
+            if iso and etd and (datetime.fromisoformat(etd) - datetime.fromisoformat(iso)).days > 20:
+                continue
+        except Exception:
+            pass
+        fc = cells[2].strip().upper()
+        fc = XMAP.get(fc, fc) if re.fullmatch(r"[A-Z]{2}", fc) else ""
+        out.append({"name": name, "imo": "", "type": "", "eta": disp, "etaISO": iso, "etdISO": etd,
+                    "flagCode": fc, "flagName": "", "gt": 0, "dwt": 0, "built": "", "loa": "",
+                    "beam": "", "origin": m.group(2) if m else "", "dest": berth,
+                    "agent": cells[5].title(), "line": ""})
+    log(f"Santander: {len(out)} vessels parsed")
+    return out
 
 # --- HTTP server ----------------------------------------------------------
 class Handler(http.server.BaseHTTPRequestHandler):
@@ -699,16 +870,14 @@ class Handler(http.server.BaseHTTPRequestHandler):
         try: self.wfile.write(body)
         except Exception: pass
 
-    def _fetch_endpoint(self, fn, pid, pname, tag, extra=None, **kw):
+    def _fetch_endpoint(self, fn, pid, pname, tag, **kw):
         """Shared wrapper: FIX #3 (bump_run) + FIX #7 (typed errors)."""
         try:
             vs = fn(**kw)
             db = load_db()
             a, u = merge_into_db(db, vs, pid, pname, tag)
             bump_run(); save_db()
-            resp = {"vessels": vs, "count": len(vs), "added": a, "updated": u}
-            if extra: resp.update(extra())
-            self._json(200, resp)
+            self._json(200, {"vessels": vs, "count": len(vs), "added": a, "updated": u})
         except urllib.error.HTTPError as e:
             log(f"{tag} {pid}: HTTP {e.code}")
             self._json(200, {"error": f"HTTP {e.code}", "vessels": [], "count": 0})
@@ -730,7 +899,8 @@ class Handler(http.server.BaseHTTPRequestHandler):
 
         elif p.path == "/api/ping":                    # FIX #16: keep-alive
             self._json(200, {"ok": True, "version": VERSION,
-                             "queue": len(_resolve_q), "localFeed": local_feed_meta(),
+                             "managers": len(load_managers()),
+                             "queue": len(_resolve_q),
                              "flags": len(load_db().get("flags", {}))})
 
         elif p.path == "/api/port":
@@ -751,10 +921,8 @@ class Handler(http.server.BaseHTTPRequestHandler):
         elif p.path == "/api/bilbao":
             self._fetch_endpoint(fetch_bilbao, "ESBIO", "Bilbao", "BIO-PA")
 
-        elif p.path == "/api/localfeed":
-            pid = q.get("pid", [""])[0] or None
-            nm  = unquote(q.get("pname", [""])[0]) or "Local"
-            self._fetch_endpoint(fetch_localfeed, pid or "ESGIJ", nm, "LOCAL", extra=local_feed_meta, port_id=pid)
+        elif p.path == "/api/santander":
+            self._fetch_endpoint(fetch_santander, "ESTAN", "Santander", "SDR-PA")
 
         elif p.path == "/api/aviles":
             self._fetch_endpoint(fetch_aviles, "ESAVS", "Avilés", "AVS-PA")
@@ -770,6 +938,31 @@ class Handler(http.server.BaseHTTPRequestHandler):
             fc  = q.get("fc", [""])[0]
             ok = bool(re.match(r"^\d{7}$", imo)) and save_flag(imo, fc)
             self._json(200, {"imo": imo, "flagCode": fc, "saved": ok}, cors=None)
+
+        elif p.path == "/api/savemanager":             # v3.12.0: validated, no CORS
+            imo = q.get("imo", [""])[0]
+            ok = save_manager(imo,
+                              ism=q.get("ism", [""])[0],
+                              ism_email=q.get("email", [""])[0],
+                              contact=q.get("contact", [""])[0],
+                              owner=q.get("owner", [""])[0],
+                              source=q.get("source", [""])[0],
+                              verified=q.get("verified", ["0"])[0] == "1")
+            self._json(200, {"imo": imo, "saved": ok, "manager": get_manager(imo)}, cors=None)
+
+        elif p.path == "/api/managers":                # read-only
+            self._json(200, {"managers": load_managers(), "count": len(load_managers())})
+
+        elif p.path == "/api/logoutreach":             # v3.12.0: recusal log, no CORS
+            ok = log_outreach(q.get("imo", [""])[0], q.get("vessel", [""])[0],
+                              q.get("fc", [""])[0], q.get("port", [""])[0],
+                              q.get("manager", [""])[0], q.get("email", [""])[0])
+            self._json(200, {"logged": ok, "entries": len(load_outreach())}, cors=None)
+
+        elif p.path == "/api/outreach":                # read-only
+            o = load_outreach()
+            self._json(200, {"outreach": o, "count": len(o),
+                             "conflicts": sum(1 for e in o if e.get("conflict"))})
 
         elif p.path == "/api/history":
             db = load_db()
@@ -799,6 +992,7 @@ class Handler(http.server.BaseHTTPRequestHandler):
                 except Exception as e:
                     out[pid] = {"ok": False, "err": type(e).__name__}
             self._json(200, {"shipnext": out, "flagsCached": len(load_db()["flags"]),
+                             "managersCached": len(load_managers()),
                              "queue": len(_resolve_q)})
         else:
             self.send_response(404); self.send_header("Content-Length", "0"); self.end_headers()
@@ -808,8 +1002,8 @@ class ThreadedHTTPServer(socketserver.ThreadingMixIn, http.server.HTTPServer):
     daemon_threads = True
     allow_reuse_address = True
 
-HTML = r"""<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>FSI Arrival Monitor v3.12.0</title><link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚓</text></svg>"><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"><style>*{box-sizing:border-box;margin:0;padding:0}:root{--bg:#060b14;--bg2:#0a1220;--brd:#162a42;--brd2:#2a5a8c;--t1:#d8e2ec;--t2:#8899aa;--t3:#4a5a6a;--blue:#5ea8f0;--green:#5cb88a;--amber:#e8b84a;--red:#e06060;--m:'JetBrains Mono',monospace;--s:'DM Sans',system-ui,sans-serif}html{background:var(--bg);color:var(--t1);font-family:var(--s);font-size:13px;line-height:1.5}::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-track{background:var(--bg2)}::-webkit-scrollbar-thumb{background:var(--brd);border-radius:3px}a{color:var(--blue);text-decoration:none}a:hover{text-decoration:underline}@keyframes pulse{0%,100%{opacity:1}50%{opacity:.25}}@keyframes spin{to{transform:rotate(360deg)}}.hdr{background:linear-gradient(180deg,#0c1a2e,var(--bg));border-bottom:1px solid var(--brd);padding:14px 22px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}.hdr-brand{display:flex;align-items:center;gap:10px}.hdr-icon{width:34px;height:34px;border-radius:7px;background:linear-gradient(135deg,#1a4a7c,#0d2a4c);display:flex;align-items:center;justify-content:center;font-size:17px;border:1px solid var(--brd2)}.hdr h1{font-size:15px;font-weight:700;color:#e8f0f8}.hdr p{font-size:10px;color:var(--t3);margin-top:1px}.hdr-actions{display:flex;gap:7px;align-items:center;flex-wrap:wrap}.btn{display:inline-flex;align-items:center;gap:4px;padding:5px 13px;border-radius:5px;font-size:11px;font-weight:600;border:1px solid var(--brd);background:var(--bg2);color:var(--t2);cursor:pointer;transition:all .12s;font-family:var(--s);white-space:nowrap}.btn:hover{border-color:var(--brd2);color:var(--blue)}.btn-green{color:var(--green);border-color:#1a5040}.btn-primary{background:linear-gradient(135deg,#1a4a7c,#0d3060);color:#fff;border-color:var(--brd2)}.btn-amber{color:var(--amber);border-color:#5a4a10}.chip{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:5px;font-size:11px;font-weight:500;border:1px solid var(--brd);background:transparent;color:var(--t3);cursor:pointer;transition:all .12s;font-family:var(--s);white-space:nowrap}.chip:hover{border-color:#3a5a7a;color:var(--t2)}.chip.active{background:#132a48;border-color:var(--brd2);color:var(--blue)}.chip .badge{padding:1px 5px;border-radius:8px;font-size:9px;font-weight:700;background:#0e1e30;color:var(--t3);margin-left:2px}.chip.active .badge{background:#1a3a60;color:#8ec8ff}.card{background:var(--bg2);border:1px solid var(--brd);border-radius:7px;padding:13px 16px}.card-label{font-size:9px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.07em}.card-value{font-size:24px;font-weight:700;font-family:var(--m);margin-top:2px}.input{padding:7px 11px;border-radius:5px;background:var(--bg);border:1px solid var(--brd);color:var(--t1);font-size:12px;outline:none;font-family:var(--s);width:100%}.input:focus{border-color:var(--brd2)}select.input{cursor:pointer;width:auto}.table-wrap{background:var(--bg2);border:1px solid var(--brd);border-radius:7px;overflow:auto;max-height:62vh}table{width:100%;border-collapse:collapse;min-width:1050px}thead th{padding:9px 11px;text-align:left;font-size:9px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.08em;border-bottom:1px solid var(--brd);background:var(--bg);position:sticky;top:0;z-index:2;cursor:pointer;user-select:none;white-space:nowrap}thead th:hover{color:var(--t2)}thead th.sorted{color:var(--blue)}tbody tr{border-bottom:1px solid #0e1a28;transition:background .08s}tbody tr:hover{background:#0b1522}tbody td{padding:9px 11px}tr.stale{opacity:.5}.main{padding:14px 22px;display:flex;flex-direction:column;gap:12px}.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px}.filters-bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.section-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}.section-title{font-size:10px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.06em}.chips-wrap{display:flex;flex-wrap:wrap;gap:5px}.picker-body{margin-top:9px;border-top:1px solid var(--brd);padding-top:9px}.region-bar{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:7px}.region-btn{padding:2px 9px;border-radius:3px;font-size:9px;font-weight:700;border:1px solid var(--brd);background:var(--bg2);color:var(--t3);cursor:pointer;text-transform:uppercase;letter-spacing:.04em}.region-btn.active{background:#132a48;border-color:var(--brd2);color:var(--blue)}.region-group{margin-bottom:7px}.region-group-label{font-size:8px;color:var(--t3);font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:3px;padding-left:2px}.picker-scroll{max-height:200px;overflow-y:auto}.loading{display:none;align-items:center;gap:8px;padding:12px;background:var(--bg2);border:1px solid var(--brd);border-radius:7px;font-size:12px;color:var(--t2)}.spinner{width:16px;height:16px;border:2px solid var(--brd);border-top-color:var(--blue);border-radius:50%;animation:spin .6s linear infinite}.plog{font-size:10px;color:var(--t3);font-family:var(--m);padding:4px 0;min-height:16px}.info{background:var(--bg2);border:1px solid var(--brd);border-radius:7px;padding:13px;font-size:11px;color:var(--t3);line-height:1.7}.db-bar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:8px 14px;background:#0c1520;border:1px solid var(--brd);border-radius:7px;font-size:10px;color:var(--t3);font-family:var(--m)}.db-bar b{color:var(--amber)}.live-tag{display:inline-flex;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;font-family:var(--m);background:#0c2a1c;color:#6ec090;border:1px solid #1a5a3a}.empty-msg{padding:36px;text-align:center;color:var(--t3);font-style:italic}.sel-bar{display:none;align-items:center;gap:10px;padding:10px 16px;background:#1a2a10;border:1px solid #3a5a20;border-radius:7px;font-size:12px;color:#b0d890}.sel-bar b{color:#e8f0a0}.ck{width:15px;height:15px;accent-color:var(--blue);cursor:pointer}@media(max-width:700px){.hdr{padding:10px 14px}.main{padding:10px 14px}.table-wrap{max-height:45vh}}</style></head><body><div class="hdr"><div class="hdr-brand"><div class="hdr-icon">⚓</div><div><h1>FSI Vessel Arrival Monitor v3.12.0</h1><p>Expected Arrivals — Bilbao PA + Marín PA + ShipNext + VesselFinder</p></div></div><div class="hdr-actions"><span class="live-tag">● LIVE + DB</span><span style="font-size:10px;color:var(--t3);font-family:var(--m)" id="upd"></span><button class="btn btn-primary" onclick="fetchAll()">↻ Refresh</button><button class="btn btn-green" onclick="exportCSV()">↓ CSV</button></div></div><div class="main"><div class="db-bar" id="dbBar">📦 Database: loading...</div><div class="stats-grid" id="stats"></div><div class="loading" id="loadBar"><div class="spinner"></div><span id="loadTxt">Fetching...</span></div><div class="plog" id="plog"></div><div id="errPanel" style="display:none;padding:8px 13px;background:#2a1010;border:1px solid #5a2020;border-radius:7px;font-size:11px;color:#e09090;font-family:var(--m)"></div><div class="sel-bar" id="selBar"><b id="selCount">0</b> vessels selected <button class="btn btn-amber" onclick="genCombinedReq()">📧 Combined Inspection Request</button> <button class="btn" onclick="clearSel()">Clear</button></div><div class="card"><div class="section-head"><span class="section-title">🏗 Ports (<span id="pC">0</span>)</span><button class="btn" onclick="tPicker('port')" id="portPickerBtn">+ Add Ports</button></div><div class="chips-wrap" id="sP"></div><div id="portPicker" style="display:none" class="picker-body"><input class="input" placeholder="Search ports..." oninput="rPP(this.value)" id="pS"><div class="region-bar" id="rBar"></div><div class="picker-scroll" id="pPL"></div></div></div><div class="card"><div class="section-head"><span class="section-title">🏴 Flag Filter (tap to toggle)</span><button class="btn" onclick="S.flags=['MT','LR','MH','HK'];sv();render()">All 4</button></div><div class="chips-wrap" id="sF"></div></div><div class="filters-bar"><input class="input" style="flex:1 1 200px;min-width:170px;width:auto;font-family:var(--m)" placeholder="🔍 Search vessel name or IMO..." oninput="S.q=this.value;render()"><select class="input" onchange="S.ft=this.value;render()"><option value="all">All Types</option><option>Bulk Carrier</option><option>Container Ship</option><option>General Cargo</option><option>Oil Tanker</option><option>Chemical Tanker</option><option>LPG Tanker</option><option>LNG Tanker</option><option>Car-carrier</option><option>Ro-Ro</option><option>Vehicles Carrier</option><option>Reefer</option></select><label class="btn" style="cursor:pointer"><input type="checkbox" id="hpChk" onchange="S.hidePast=this.checked;sv();render()" style="accent-color:var(--blue);margin-right:5px">Hide past ETA</label><select class="input" onchange="S.src=this.value;render()"><option value="all">All Sources</option><option value="live">Live Today</option><option value="db">History Only</option></select></div><div class="table-wrap"><table><thead id="tH"></thead><tbody id="tB"></tbody></table></div><div class="info"><strong style="color:#778899">ℹ️ Data sources:</strong><br>🌟 <b style="color:var(--amber)">Bilbao</b>: Port Authority → <b>~65 vessels, 3 weeks ahead</b> (flag, GT, LOA, origin, dest).<br>🌟 <b style="color:var(--amber)">Marín</b>: Port Authority → <b>~8 vessels, 10 days</b> (name, origin, dest, agent, cargo).<br>🌐 <b style="color:var(--blue)">9 ports</b> (Gijón, Avilés, Santander, Pasajes, Bayonne, San Ciprián, Ferrol, A Coruña, Vigo): ShipNext → all planned vessels.<br>📡 <b style="color:var(--t2)">Marín, Vilagarcía</b>: VesselFinder → 10 per port.<br><span style="color:var(--amber)">📧</span> Tick vessels → <b>combined inspection request</b> per flag.<br>🛳 <b style="color:var(--amber)">Gijón PCS</b> (posidoniaport future port calls, via local_sync.py) → vessels not yet AIS-destined Gijón; IMO/flag matched by exact name + LOA ±2 m.<br>🏢 <b style="color:var(--t2)">Equasis link</b> per vessel (needs login) → ISM manager, owner, PSC/inspection history.</div></div><script>
-const PORTS=[{id:"ESGIJ",name:"Gijón",vf:"ESGIJ001",region:"Cantabrian",sn:true,localfeed:true},{id:"ESAVS",name:"Avilés",vf:"ESAVS001",region:"Cantabrian",direct:"aviles",sn:true},{id:"ESTAN",name:"Santander",vf:"ESSDR001",region:"Cantabrian",sn:true},{id:"ESBIO",name:"Bilbao",vf:"ESBIO001",region:"Cantabrian",direct:"bilbao"},{id:"ESPAS",name:"Pasajes",vf:"ESPAS001",region:"Cantabrian",sn:true},{id:"FRBAY",name:"Bayonne",vf:"FRBAY001",region:"Cantabrian",sn:true},{id:"ESSCI",name:"San Ciprián",vf:"ESSCI001",region:"Galicia",sn:true},{id:"ESFER",name:"Ferrol",vf:"ESFRO001",region:"Galicia",sn:true},{id:"ESCOR",name:"A Coruña",vf:"ESLCG001",region:"Galicia",sn:true},{id:"ESMRN",name:"Marín",vf:"ESMRN001",region:"Galicia",direct:"marin"},{id:"ESVIL",name:"Vilagarcía",vf:"ESVIL001",region:"Galicia",direct:"vilagarcia"},{id:"ESVGO",name:"Vigo",vf:"ESVGO001",region:"Galicia",sn:true}];
+HTML = r"""<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>FSI Arrival Monitor v3.15.0</title><link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚓</text></svg>"><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"><style>*{box-sizing:border-box;margin:0;padding:0}:root{--bg:#060b14;--bg2:#0a1220;--brd:#162a42;--brd2:#2a5a8c;--t1:#d8e2ec;--t2:#8899aa;--t3:#4a5a6a;--blue:#5ea8f0;--green:#5cb88a;--amber:#e8b84a;--red:#e06060;--m:'JetBrains Mono',monospace;--s:'DM Sans',system-ui,sans-serif}html{background:var(--bg);color:var(--t1);font-family:var(--s);font-size:13px;line-height:1.5}::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-track{background:var(--bg2)}::-webkit-scrollbar-thumb{background:var(--brd);border-radius:3px}a{color:var(--blue);text-decoration:none}a:hover{text-decoration:underline}@keyframes pulse{0%,100%{opacity:1}50%{opacity:.25}}@keyframes spin{to{transform:rotate(360deg)}}.hdr{background:linear-gradient(180deg,#0c1a2e,var(--bg));border-bottom:1px solid var(--brd);padding:14px 22px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}.hdr-brand{display:flex;align-items:center;gap:10px}.hdr-icon{width:34px;height:34px;border-radius:7px;background:linear-gradient(135deg,#1a4a7c,#0d2a4c);display:flex;align-items:center;justify-content:center;font-size:17px;border:1px solid var(--brd2)}.hdr h1{font-size:15px;font-weight:700;color:#e8f0f8}.hdr p{font-size:10px;color:var(--t3);margin-top:1px}.hdr-actions{display:flex;gap:7px;align-items:center;flex-wrap:wrap}.btn{display:inline-flex;align-items:center;gap:4px;padding:5px 13px;border-radius:5px;font-size:11px;font-weight:600;border:1px solid var(--brd);background:var(--bg2);color:var(--t2);cursor:pointer;transition:all .12s;font-family:var(--s);white-space:nowrap}.btn:hover{border-color:var(--brd2);color:var(--blue)}.btn-green{color:var(--green);border-color:#1a5040}.btn-primary{background:linear-gradient(135deg,#1a4a7c,#0d3060);color:#fff;border-color:var(--brd2)}.btn-amber{color:var(--amber);border-color:#5a4a10}.chip{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:5px;font-size:11px;font-weight:500;border:1px solid var(--brd);background:transparent;color:var(--t3);cursor:pointer;transition:all .12s;font-family:var(--s);white-space:nowrap}.chip:hover{border-color:#3a5a7a;color:var(--t2)}.chip.active{background:#132a48;border-color:var(--brd2);color:var(--blue)}.chip .badge{padding:1px 5px;border-radius:8px;font-size:9px;font-weight:700;background:#0e1e30;color:var(--t3);margin-left:2px}.chip.active .badge{background:#1a3a60;color:#8ec8ff}.card{background:var(--bg2);border:1px solid var(--brd);border-radius:7px;padding:13px 16px}.card-label{font-size:9px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.07em}.card-value{font-size:24px;font-weight:700;font-family:var(--m);margin-top:2px}.input{padding:7px 11px;border-radius:5px;background:var(--bg);border:1px solid var(--brd);color:var(--t1);font-size:12px;outline:none;font-family:var(--s);width:100%}.input:focus{border-color:var(--brd2)}select.input{cursor:pointer;width:auto}.table-wrap{background:var(--bg2);border:1px solid var(--brd);border-radius:7px;overflow:auto;max-height:62vh}table{width:100%;border-collapse:collapse;min-width:1050px}thead th{padding:9px 11px;text-align:left;font-size:9px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.08em;border-bottom:1px solid var(--brd);background:var(--bg);position:sticky;top:0;z-index:2;cursor:pointer;user-select:none;white-space:nowrap}thead th:hover{color:var(--t2)}thead th.sorted{color:var(--blue)}tbody tr{border-bottom:1px solid #0e1a28;transition:background .08s}tbody tr:hover{background:#0b1522}tbody td{padding:9px 11px}tr.stale{opacity:.5}.main{padding:14px 22px;display:flex;flex-direction:column;gap:12px}.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px}.filters-bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.section-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}.section-title{font-size:10px;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.06em}.chips-wrap{display:flex;flex-wrap:wrap;gap:5px}.picker-body{margin-top:9px;border-top:1px solid var(--brd);padding-top:9px}.region-bar{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:7px}.region-btn{padding:2px 9px;border-radius:3px;font-size:9px;font-weight:700;border:1px solid var(--brd);background:var(--bg2);color:var(--t3);cursor:pointer;text-transform:uppercase;letter-spacing:.04em}.region-btn.active{background:#132a48;border-color:var(--brd2);color:var(--blue)}.region-group{margin-bottom:7px}.region-group-label{font-size:8px;color:var(--t3);font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:3px;padding-left:2px}.picker-scroll{max-height:200px;overflow-y:auto}.loading{display:none;align-items:center;gap:8px;padding:12px;background:var(--bg2);border:1px solid var(--brd);border-radius:7px;font-size:12px;color:var(--t2)}.spinner{width:16px;height:16px;border:2px solid var(--brd);border-top-color:var(--blue);border-radius:50%;animation:spin .6s linear infinite}.plog{font-size:10px;color:var(--t3);font-family:var(--m);padding:4px 0;min-height:16px}.info{background:var(--bg2);border:1px solid var(--brd);border-radius:7px;padding:13px;font-size:11px;color:var(--t3);line-height:1.7}.db-bar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:8px 14px;background:#0c1520;border:1px solid var(--brd);border-radius:7px;font-size:10px;color:var(--t3);font-family:var(--m)}.db-bar b{color:var(--amber)}.live-tag{display:inline-flex;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;font-family:var(--m);background:#0c2a1c;color:#6ec090;border:1px solid #1a5a3a}.empty-msg{padding:36px;text-align:center;color:var(--t3);font-style:italic}.sel-bar{display:none;align-items:center;gap:10px;padding:10px 16px;background:#1a2a10;border:1px solid #3a5a20;border-radius:7px;font-size:12px;color:#b0d890}.sel-bar b{color:#e8f0a0}.ck{width:15px;height:15px;accent-color:var(--blue);cursor:pointer}@media(max-width:700px){.hdr{padding:10px 14px}.main{padding:10px 14px}.table-wrap{max-height:45vh}}</style></head><body><div class="hdr"><div class="hdr-brand"><div class="hdr-icon">⚓</div><div><h1>FSI Vessel Arrival Monitor v3.15.0</h1><p>Expected Arrivals — Bilbao PA + Marín PA + ShipNext + VesselFinder</p></div></div><div class="hdr-actions"><span class="live-tag">● LIVE + DB</span><span style="font-size:10px;color:var(--t3);font-family:var(--m)" id="upd"></span><button class="btn btn-primary" onclick="fetchAll()">↻ Refresh</button><button class="btn btn-green" onclick="exportCSV()">↓ CSV</button></div></div><div class="main"><div class="db-bar" id="dbBar">📦 Database: loading...</div><div class="stats-grid" id="stats"></div><div class="loading" id="loadBar"><div class="spinner"></div><span id="loadTxt">Fetching...</span></div><div class="plog" id="plog"></div><div id="errPanel" style="display:none;padding:8px 13px;background:#2a1010;border:1px solid #5a2020;border-radius:7px;font-size:11px;color:#e09090;font-family:var(--m)"></div><div class="sel-bar" id="selBar"><b id="selCount">0</b> vessels selected <button class="btn btn-amber" onclick="genCombinedReq()">📧 Combined Inspection Request</button> <button class="btn" onclick="genManagerInquiry()">🏢 Manager Inquiry</button> <button class="btn" onclick="clearSel()">Clear</button></div><div class="card"><div class="section-head"><span class="section-title">🏗 Ports (<span id="pC">0</span>)</span><button class="btn" onclick="tPicker('port')" id="portPickerBtn">+ Add Ports</button></div><div class="chips-wrap" id="sP"></div><div id="portPicker" style="display:none" class="picker-body"><input class="input" placeholder="Search ports..." oninput="rPP(this.value)" id="pS"><div class="region-bar" id="rBar"></div><div class="picker-scroll" id="pPL"></div></div></div><div class="card"><div class="section-head"><span class="section-title">🏴 Flag Filter (tap to toggle)</span><span style="display:flex;gap:6px"><button class="btn" onclick="S.flags=['MT','LR','MH','HK'];sv();render()">All 4</button><button class="btn" onclick="S.flags=[];sv();render()" title="Show every flag arriving - needed for manager inquiries, which are not limited to your authorised flags">🌐 All flags</button></span></div><div class="chips-wrap" id="sF"></div></div><div class="filters-bar"><input class="input" style="flex:1 1 200px;min-width:170px;width:auto;font-family:var(--m)" placeholder="🔍 Search vessel name or IMO..." oninput="S.q=this.value;render()"><select class="input" onchange="S.ft=this.value;render()"><option value="all">All Types</option><option>Bulk Carrier</option><option>Container Ship</option><option>General Cargo</option><option>Oil Tanker</option><option>Chemical Tanker</option><option>LPG Tanker</option><option>LNG Tanker</option><option>Car-carrier</option><option>Ro-Ro</option><option>Vehicles Carrier</option><option>Reefer</option></select><label class="btn" style="cursor:pointer"><input type="checkbox" id="hpChk" onchange="S.hidePast=this.checked;sv();render()" style="accent-color:var(--blue);margin-right:5px">Hide past ETA</label><select class="input" onchange="S.src=this.value;render()"><option value="all">All Sources</option><option value="live">Live Today</option><option value="db">History Only</option></select></div><div class="table-wrap"><table><thead id="tH"></thead><tbody id="tB"></tbody></table></div><div class="info"><strong style="color:#778899">ℹ️ Data sources:</strong><br>🌟 <b style="color:var(--amber)">Bilbao</b>: Port Authority → <b>~65 vessels, 3 weeks ahead</b> (flag, GT, LOA, origin, dest).<br>🌟 <b style="color:var(--amber)">Marín</b>: Port Authority → <b>~8 vessels, 10 days</b> (name, origin, dest, agent, cargo).<br>🌐 <b style="color:var(--blue)">9 ports</b> (Gijón, Avilés, Santander, Pasajes, Bayonne, San Ciprián, Ferrol, A Coruña, Vigo): ShipNext → all planned vessels.<br>📡 <b style="color:var(--t2)">Marín, Vilagarcía</b>: VesselFinder → 10 per port.<br><span style="color:var(--amber)">📧</span> Tick vessels → <b>combined inspection request</b> per flag.<br>🌟 <b style="color:var(--amber)">Santander</b>: Port Authority → vessels at berth + scheduled berthings (flag, agent, berth), merged with ShipNext.<br>⚠ <b style="color:var(--amber)">Flag cross-check</b> (Bilbao): port-authority flag compared with AIS/VesselFinder; conflicts marked "⚠ port: XX" — verify in Equasis.<br>🏢 <b style="color:var(--t2)">Equasis link</b> per vessel (needs login) → ISM manager, owner, PSC/inspection history.<br><span style="color:var(--t2)">🏢</span> Tick vessels → <b>manager inquiry</b> (all flags, not just yours). Managers are stored per IMO once entered.</div></div><script>
+const PORTS=[{id:"ESGIJ",name:"Gijón",vf:"ESGIJ001",region:"Cantabrian",sn:true},{id:"ESAVS",name:"Avilés",vf:"ESAVS001",region:"Cantabrian",direct:"aviles",sn:true},{id:"ESTAN",name:"Santander",vf:"ESSDR001",region:"Cantabrian",direct:"santander",sn:true},{id:"ESBIO",name:"Bilbao",vf:"ESBIO001",region:"Cantabrian",direct:"bilbao"},{id:"ESPAS",name:"Pasajes",vf:"ESPAS001",region:"Cantabrian",sn:true},{id:"FRBAY",name:"Bayonne",vf:"FRBAY001",region:"Cantabrian",sn:true},{id:"ESSCI",name:"San Ciprián",vf:"ESSCI001",region:"Galicia",sn:true},{id:"ESFER",name:"Ferrol",vf:"ESFRO001",region:"Galicia",sn:true},{id:"ESCOR",name:"A Coruña",vf:"ESLCG001",region:"Galicia",sn:true},{id:"ESMRN",name:"Marín",vf:"ESMRN001",region:"Galicia",direct:"marin"},{id:"ESVIL",name:"Vilagarcía",vf:"ESVIL001",region:"Galicia",direct:"vilagarcia"},{id:"ESVGO",name:"Vigo",vf:"ESVGO001",region:"Galicia",sn:true}];
 const FLAGS=[{c:"MT",n:"Malta",e:"🇲🇹"},{c:"LR",n:"Liberia",e:"🇱🇷"},{c:"MH",n:"Marshall Islands",e:"🇲🇭"},{c:"HK",n:"Hong Kong",e:"🇭🇰"}];
 const XMAP={XB:"PT",XA:"DK",XI:"NO"};
 const flagAdmin={MT:{name:"Transport Malta",email:"maritime.surveys@transport.gov.mt",dept:"Merchant Shipping Directorate"},LR:{name:"LISCR (Liberia)",email:"inspection@liscr.com",dept:"Technical Department"},MH:{name:"RMIRS (Marshall Islands)",email:"inspections@register-iri.com",dept:"Maritime Safety Division"},HK:{name:"Hong Kong Marine Department",email:"mardep@mardep.gov.hk",dept:"Flag State Quality Control (FSQC) / Hong Kong Shipping Registry"}};
@@ -817,24 +1011,28 @@ function lsMig(nk,oks,dv){let raw=localStorage.getItem(nk);if(raw)return raw;for
 const S={ports:JSON.parse(lsMig("fsi13_p",["fsi12_p","fsi11_p","fsi10_p"],'["ESGIJ","ESAVS","ESTAN","ESBIO","ESPAS","FRBAY","ESSCI","ESFER","ESCOR","ESMRN","ESVIL","ESVGO"]')),flags:JSON.parse(lsMig("fsi13_f",["fsi12_f"],'["MT","LR","MH","HK"]')),live:[],db:[],combined:[],sel:new Set(),q:"",ft:"all",src:"all",sb:"eta",sd:"asc",loading:false,logs:[],errs:[],hidePast:JSON.parse(localStorage.getItem("fsi13_hp")||"true"),po:{port:false,flag:false},today:new Date().toISOString().slice(0,10)};
 const sv=()=>{localStorage.setItem("fsi13_p",JSON.stringify(S.ports));localStorage.setItem("fsi13_f",JSON.stringify(S.flags));localStorage.setItem("fsi13_hp",JSON.stringify(S.hidePast))};
 const el=id=>document.getElementById(id);
-function flagEmoji(c){const f=FLAGS.find(x=>x.c===c);return f?f.e:"🏳️"}
+function flagEmoji(c){const f=FLAGS.find(x=>x.c===c);if(f)return f.e;if(/^[A-Z]{2}$/.test(c||""))return String.fromCodePoint(...[...c].map(ch=>0x1F1E6+ch.charCodeAt(0)-65));return "🏳️"}
 function lg(m){S.logs.push(m);el("plog").innerHTML=S.logs.slice(-3).join(" &nbsp;|&nbsp; ")}
+// B-106: an empty saved port selection made the dashboard silently dead (no fetch, no message).
+// Heal it at page load only - never mid-session, where the user may have just clicked None to pick a subset.
+if(!S.ports.length){S.ports=PORTS.map(p=>p.id);sv();S.healedPorts=true}
 function shortDate(s){if(!s||s==="?"||s==="—")return"—";try{const d=new Date(s);if(!d||isNaN(d.getTime()))return String(s).slice(0,16);return d.toLocaleDateString("en-GB",{day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit"})}catch(e){return s}}
 function normKey(n){return (n||"").toLowerCase().replace(/[^a-z0-9]+/g,"_").replace(/^_+|_+$/g,"")}
 function vKey(v){return (v.imo||("N_"+normKey(v.name)))+"_"+(v.portId||"")}
-function buildCombined(){const map=new Map();S.db.forEach(v=>{map.set(vKey(v),{...v,_src:"db"})});S.live.forEach(v=>{const k=vKey(v);const ex=map.get(k);map.set(k,{...(ex||{}),...v,portId:v.portId||"",portName:v.portName||"",lastSeen:S.today,_src:"live",firstSeen:ex?.firstSeen||S.today})});const vals=[...map.values()];const withImo=new Set(vals.filter(v=>v.imo).map(v=>(v.portId||"")+"|"+normKey(v.name)));S.combined=vals.filter(v=>v.imo||!withImo.has((v.portId||"")+"|"+normKey(v.name)))}
+function buildCombined(){const map=new Map();S.db.forEach(v=>{map.set(vKey(v),{...v,_src:"db"})});S.live.forEach(v=>{const k=vKey(v);const ex=map.get(k);map.set(k,{...(ex||{}),...v,portId:v.portId||"",portName:v.portName||"",lastSeen:S.today,_src:"live",firstSeen:ex?.firstSeen||S.today})});const vals=[...map.values()];const byKey=new Map();vals.filter(v=>v.imo).forEach(v=>byKey.set((v.portId||"")+"|"+normKey(v.name),v));S.combined=vals.filter(v=>{if(v.imo)return true;const t=byKey.get((v.portId||"")+"|"+normKey(v.name));if(!t)return true;["agent","dest","origin","type","loa","etdISO"].forEach(f=>{if(!t[f]&&v[f])t[f]=v[f]});if(v.flagCode&&t.flagCode&&v.flagCode!==t.flagCode&&!t.flagPA){t.flagPA=v.flagCode;t.flagNote="Port authority lists "+v.flagCode+"; AIS/VesselFinder shows "+t.flagCode}else if(v.flagCode&&!t.flagCode)t.flagCode=v.flagCode;return false})}
 async function loadHistory(){try{const r=await fetch("/api/history");const d=await r.json();if(d.vessels){S.db=Object.values(d.vessels).filter(v=>v.name);lg("📦 DB: "+S.db.length+" vessels");updateDbBar(d.meta||{})}}catch(e){lg("⚠ DB: "+e.message)}}
 function updateDbBar(m){const t=S.db.length,r=m?.runs||0,l=m?.lastRun?shortDate(m.lastRun):"never";el("dbBar").innerHTML="📦 DB: <b>"+t+"</b> vessels | Runs: <b>"+r+"</b> | Last: <b>"+l+'</b> | <button class="btn" style="font-size:9px;padding:2px 8px" onclick="clearOld()">🗑 >30d</button>'}
 async function clearOld(){if(!confirm("Remove >30 days old?"))return;const r=await fetch("/api/clearold");const d=await r.json();lg("🗑 "+d.removed+" removed");await loadHistory();buildCombined();render()}
 async function fetchAll(){if(S.loading)return;S.loading=true;S.live=[];S.logs=[];S.errs=[];
+if(S.healedPorts){lg("⚠ No ports were selected — restored all "+S.ports.length);S.healedPorts=false}
 el("loadBar").style.display="flex";el("loadTxt").textContent="Starting...";render();
 const sp=PORTS.filter(p=>S.ports.includes(p.id));
+if(!sp.length){S.loading=false;el("loadBar").style.display="none";lg("⚠ No ports selected — open + Add Ports and choose ports, or All");buildCombined();render();return}
 const jobs=[];
 for(const p of sp){
   if(p.direct){jobs.push({p,url:"/api/"+p.direct,tag:"PA"});if(p.sn)jobs.push({p,url:"/api/shipnext?pid="+p.id+"&pname="+encodeURIComponent(p.name),tag:"SN+"})}
   else if(p.sn)jobs.push({p,url:"/api/shipnext?pid="+p.id+"&pname="+encodeURIComponent(p.name),tag:"SN"});
   else jobs.push({p,url:"/api/port?vf="+p.vf+"&pid="+p.id+"&pname="+encodeURIComponent(p.name),tag:"VF"});
-  if(p.localfeed)jobs.push({p,url:"/api/localfeed?pid="+p.id+"&pname="+encodeURIComponent(p.name),tag:"LOC"});
 }
 let done=0,tA=0;const total=jobs.length;
 async function runJob(j){
@@ -842,13 +1040,11 @@ async function runJob(j){
     const r=await fetch(j.url,{signal:AbortSignal.timeout(45000)});
     const d=await r.json();
     if(d.error){S.errs.push(j.p.name+" ("+j.tag+"): "+d.error);lg("x "+j.p.name+": "+d.error)}
-    if(j.tag==="LOC"){const a=d.feedAgeHours;if(a==null)S.errs.push(j.p.name+" PCS feed not synced yet (run local_sync.py)");else if(a>72)S.errs.push(j.p.name+" PCS feed is "+Math.round(a/24)+" days old (run local_sync.py)")}
     if(d.vessels&&d.vessels.length){
-      const kk=v=>[v.imo,"N_"+normKey(v.name)].filter(Boolean);
-      const have=new Set();S.live.filter(v=>v.portId===j.p.id).forEach(v=>kk(v).forEach(x=>have.add(x)));
+      const have=new Set(S.live.filter(v=>v.portId===j.p.id&&v.imo).map(v=>v.imo));
       let n=0;
       d.vessels.forEach(v=>{
-        if((j.tag==="SN+"||j.tag==="LOC")&&kk(v).some(x=>have.has(x)))return;
+        if(j.tag==="SN+"&&v.imo&&have.has(v.imo))return;
         if(XMAP[v.flagCode])v.flagCode=XMAP[v.flagCode];
         v.portId=j.p.id;v.portName=j.p.name;S.live.push(v);n++;
       });
@@ -865,11 +1061,11 @@ await Promise.all(Array.from({length:Math.min(4,queue.length)},async()=>{
 await loadHistory();buildCombined();S.loading=false;el("loadBar").style.display="none";
 lg("done: "+getF().length+" matched | "+S.live.length+" live | +"+tA+" new");
 el("upd").textContent="Updated "+new Date().toLocaleTimeString("en-GB");render()}
-function getF(){const cut=new Date(Date.now()-2*864e5).toISOString();return S.combined.filter(v=>{if(S.hidePast&&v.etaISO&&v.etaISO<cut)return false;const fc=v.flagCode||"";if(S.flags.length>0&&!S.flags.includes(fc))return false;const t=v.type||"";if(S.ft!=="all"&&!t.toLowerCase().includes(S.ft.toLowerCase()))return false;if(S.src==="live"&&v._src!=="live")return false;if(S.src==="db"&&v._src!=="db")return false;const pid=v.portId||"";if(S.ports.length>0&&pid&&!S.ports.includes(pid))return false;if(S.q){const s=S.q.toLowerCase();if(!(v.name||"").toLowerCase().includes(s)&&!(v.imo||"").includes(s))return false}return true})}
+function getF(){const cut=new Date(Date.now()-2*864e5).toISOString();return S.combined.filter(v=>{const ref=v.etdISO||v.etaISO;if(S.hidePast&&ref&&ref<cut)return false;const fc=v.flagCode||"";if(S.flags.length>0&&!S.flags.includes(fc)&&!S.flags.includes(v.flagPA||""))return false;const t=v.type||"";if(S.ft!=="all"&&!t.toLowerCase().includes(S.ft.toLowerCase()))return false;if(S.src==="live"&&v._src!=="live")return false;if(S.src==="db"&&v._src!=="db")return false;const pid=v.portId||"";if(S.ports.length>0&&pid&&!S.ports.includes(pid))return false;if(S.q){const s=S.q.toLowerCase();if(!(v.name||"").toLowerCase().includes(s)&&!(v.imo||"").includes(s))return false}return true})}
 function getS(a){const s=S.sb,d=S.sd;return[...a].sort((x,y)=>{let c=0;if(s==="eta")c=(x.etaISO||"9999").localeCompare(y.etaISO||"9999");else if(s==="name")c=(x.name||"").localeCompare(y.name||"");else if(s==="flag")c=(x.flagCode||"").localeCompare(y.flagCode||"");else if(s==="type")c=(x.type||"").localeCompare(y.type||"");else if(s==="port")c=(x.portName||"").localeCompare(y.portName||"");else if(s==="gt")c=(x.gt||0)-(y.gt||0);else if(s==="dwt")c=(x.dwt||0)-(y.dwt||0);return d==="asc"?c:-c})}
 function render(){const f=getF(),so=getS(f);
-const ep=el("errPanel");if(ep){if(S.errs.length){ep.style.display="block";ep.innerHTML="&#9888; Issues: "+S.errs.slice(0,6).join(" | ")+(S.errs.length>6?" (+"+(S.errs.length-6)+" more)":"")}else ep.style.display="none"}
-const hc=el("hpChk");if(hc)hc.checked=S.hidePast;el("stats").innerHTML=[{l:"Matched",v:f.length,c:"var(--blue)"},{l:"Live Today",v:f.filter(v=>v._src==="live").length,c:"var(--green)"},{l:"History",v:f.filter(v=>v._src==="db").length,c:"#aa88cc"},{l:"Direct PA",v:f.filter(v=>["ESBIO","ESMRN","ESAVS","ESVIL"].includes(v.portId)&&v._src==="live").length,c:"var(--amber)"},{l:"VesselFinder",v:f.filter(v=>!["ESBIO","ESMRN","ESAVS","ESVIL"].includes(v.portId)&&v._src==="live").length,c:"var(--blue)"}].map(s=>'<div class="card"><div class="card-label">'+s.l+'</div><div class="card-value" style="color:'+s.c+'">'+s.v+'</div></div>').join("");
+const ep=el("errPanel");if(ep){if(S.errs.length){ep.style.display="block";ep.innerHTML="&#9888; Failed: "+S.errs.slice(0,6).join(" | ")+(S.errs.length>6?" (+"+(S.errs.length-6)+" more)":"")}else ep.style.display="none"}
+const hc=el("hpChk");if(hc)hc.checked=S.hidePast;el("stats").innerHTML=[{l:"Matched",v:f.length,c:"var(--blue)"},{l:"Live Today",v:f.filter(v=>v._src==="live").length,c:"var(--green)"},{l:"History",v:f.filter(v=>v._src==="db").length,c:"#aa88cc"},{l:"Direct PA",v:f.filter(v=>["ESBIO","ESMRN","ESAVS","ESVIL","ESTAN"].includes(v.portId)&&v._src==="live").length,c:"var(--amber)"},{l:"VesselFinder",v:f.filter(v=>!["ESBIO","ESMRN","ESAVS","ESVIL","ESTAN"].includes(v.portId)&&v._src==="live").length,c:"var(--blue)"}].map(s=>'<div class="card"><div class="card-label">'+s.l+'</div><div class="card-value" style="color:'+s.c+'">'+s.v+'</div></div>').join("");
 el("sP").innerHTML=S.ports.map(pid=>{const p=PORTS.find(x=>x.id===pid);if(!p)return"";const c=f.filter(v=>v.portId===pid).length;return '<button class="chip active" onclick="tP(\''+pid+'\')">'+(p.bcn||p.direct?'🌟 ':'')+p.name+' <span class="badge">'+c+'</span></button>'}).join("")||"<em style='font-size:11px;color:var(--t3)'>Select ports</em>";el("pC").textContent=S.ports.length;
   // Flag toggle chips with live counts
   const fc_counts={MT:0,LR:0,MH:0,HK:0};S.combined.forEach(v=>{if(fc_counts[v.flagCode]!==undefined)fc_counts[v.flagCode]++});
@@ -878,8 +1074,8 @@ el("sP").innerHTML=S.ports.map(pid=>{const p=PORTS.find(x=>x.id===pid);if(!p)ret
 // flags always MT/LR/MH - no dynamic rendering needed
 const selCount=[...S.sel].filter(k=>f.some(v=>vKey(v)===k)).length;el("selBar").style.display=selCount>0?"flex":"none";el("selCount").textContent=selCount;
 const cols=[{k:"sel",l:"☐",x:1},{k:"eta",l:"ETA"},{k:"name",l:"Vessel"},{k:"flag",l:"Flag"},{k:"type",l:"Type"},{k:"port",l:"Port"},{k:"origin",l:"From"},{k:"gt",l:"GT"},{k:"dwt",l:"DWT"},{k:"lnk",l:"🔗",x:1}];el("tH").innerHTML="<tr>"+cols.map(c=>{const is=S.sb===c.k,ar=is?(S.sd==="asc"?" ↑":" ↓"):"",oc=c.x?"":'onclick="hs(\''+c.k+'\')"';return '<th class="'+(is?'sorted':'')+'" '+oc+'>'+c.l+ar+'</th>'}).join("")+"</tr>";
-if(!so.length){el("tB").innerHTML='<tr><td colspan="10" class="empty-msg">'+(S.loading?"Fetching...":"No vessels match.")+"</td></tr>";return}
-el("tB").innerHTML=so.map(v=>{const imo=v.imo||"",nm=v.name||"",fc=v.flagCode||"",fn=v.flagName||"";const eta=v.eta||v.lastETA||"";const isLive=v._src==="live";const vk=vKey(v).replace(/'/g,"\\'");const checked=S.sel.has(vKey(v))?"checked":"";const vfLnk=imo?'<a href="https://www.vesselfinder.com/vessels/details/'+imo+'" target="_blank" title="VesselFinder">🚢</a>':'<a href="https://www.vesselfinder.com/vessels?name='+encodeURIComponent(nm)+'" target="_blank" title="Search on VesselFinder">🔍</a>';const eqLnk=imo?' <a href="https://www.equasis.org/EquasisWeb/restricted/ShipInfo?fs=Search&P_IMO='+imo+'" target="_blank" title="Equasis (login required) — ISM manager, owner, PSC history">🏢</a>':'';const lnk=vfLnk+eqLnk;return '<tr class="'+(isLive?"":"stale")+'"><td><input type="checkbox" class="ck" '+checked+' onchange="toggleSel(\''+vk+'\')"></td><td style="font-size:11px;font-family:var(--m);color:'+(isLive?"var(--amber)":"var(--t3)")+';white-space:nowrap">'+(v.etaISO?shortDate(v.etaISO):(eta||"—"))+'</td><td><div style="font-weight:600;color:var(--t1);font-size:12px">'+nm+"</div>"+(imo?'<div style="font-size:10px;color:var(--t3);font-family:var(--m)">IMO '+imo+"</div>":"")+'</td><td style="white-space:nowrap"><span style="font-size:14px">'+flagEmoji(fc)+'</span> <span style="font-size:11px;color:var(--t2)">'+fc+'</span><div style="font-size:9px;color:var(--t3)">'+fn+'</div></td><td style="font-size:11px;color:var(--t2)">'+(v.type||"—")+'</td><td style="font-size:11px;color:var(--t2);font-weight:600">'+(v.portName||"—")+'</td><td style="font-size:10px;color:var(--t3)">'+(v.origin||"—")+'</td><td style="font-size:11px;font-family:var(--m);color:var(--t2)">'+(v.gt?v.gt.toLocaleString():"—")+'</td><td style="font-size:11px;font-family:var(--m);color:var(--t2)">'+(v.dwt?v.dwt.toLocaleString():"—")+'</td><td>'+lnk+"</td></tr>"}).join("")}
+if(!so.length){el("tB").innerHTML='<tr><td colspan="10" class="empty-msg">'+(S.loading?"Fetching...":S.ports.length?"No vessels match.":"No ports selected — open <b>+ Add Ports</b> and choose ports, or <b>All</b>.")+"</td></tr>";return}
+el("tB").innerHTML=so.map(v=>{const imo=v.imo||"",nm=v.name||"",fc=v.flagCode||"",fn=v.flagName||"";const eta=v.eta||v.lastETA||"";const isLive=v._src==="live";const vk=vKey(v).replace(/'/g,"\\'");const checked=S.sel.has(vKey(v))?"checked":"";const vfLnk=imo?'<a href="https://www.vesselfinder.com/vessels/details/'+imo+'" target="_blank" title="VesselFinder">🚢</a>':'<a href="https://www.vesselfinder.com/vessels?name='+encodeURIComponent(nm)+'" target="_blank" title="Search on VesselFinder">🔍</a>';const eqLnk=imo?' <a href="https://www.equasis.org/EquasisWeb/restricted/ShipInfo?fs=Search&P_IMO='+imo+'" target="_blank" title="Equasis (login required) — ISM manager, owner, PSC history">🏢</a>':'';const lnk=vfLnk+eqLnk;return '<tr class="'+(isLive?"":"stale")+'"><td><input type="checkbox" class="ck" '+checked+' onchange="toggleSel(\''+vk+'\')"></td><td style="font-size:11px;font-family:var(--m);color:'+(isLive?"var(--amber)":"var(--t3)")+';white-space:nowrap">'+(v.etaISO?shortDate(v.etaISO):(eta||"—"))+'</td><td><div style="font-weight:600;color:var(--t1);font-size:12px">'+nm+"</div>"+(imo?'<div style="font-size:10px;color:var(--t3);font-family:var(--m)">IMO '+imo+"</div>":"")+'</td><td style="white-space:nowrap"><span style="font-size:14px">'+flagEmoji(fc)+'</span> <span style="font-size:11px;color:var(--t2)">'+fc+'</span>'+(v.flagPA&&v.flagPA!==fc?' <span title="'+(v.flagNote||"")+' - check Equasis" style="color:var(--amber);font-size:10px;font-weight:600">⚠ port: '+v.flagPA+'</span>':'')+'<div style="font-size:9px;color:var(--t3)">'+fn+'</div></td><td style="font-size:11px;color:var(--t2)">'+(v.type||"—")+'</td><td style="font-size:11px;color:var(--t2);font-weight:600">'+(v.portName||"—")+'</td><td style="font-size:10px;color:var(--t3)">'+(v.origin||"—")+'</td><td style="font-size:11px;font-family:var(--m);color:var(--t2)">'+(v.gt?v.gt.toLocaleString():"—")+'</td><td style="font-size:11px;font-family:var(--m);color:var(--t2)">'+(v.dwt?v.dwt.toLocaleString():"—")+'</td><td>'+lnk+"</td></tr>"}).join("")}
 function toggleSel(k){if(S.sel.has(k))S.sel.delete(k);else S.sel.add(k);render()}
 function clearSel(){S.sel.clear();render()}
 function genCombinedReq(){const f=getF();const selected=f.filter(v=>S.sel.has(vKey(v)));if(!selected.length)return alert("No vessels selected");const byFlag={};selected.forEach(v=>{const fc=v.flagCode||"??";if(!byFlag[fc])byFlag[fc]=[];byFlag[fc].push(v)});let html="";for(const[fc,vessels]of Object.entries(byFlag)){const admin=flagAdmin[fc]||{name:"Flag Admin ("+fc+")",email:"[email]",dept:"Maritime Safety"};const subject="Vessel attendance opportunity — "+fc+" flagged vessels";const vesselList=vessels.map(v=>"* "+v.name.toUpperCase()+(v.imo?" - IMO "+v.imo:"")+" - "+(v.portName||"TBC")+" - ETA "+(v.eta||v.lastETA||"TBC")).join("\n");const body="Good day,\n\nPlease be informed that the following vessels are scheduled to one of ports within my coverage, in case needed it could be a good opportunity to arrange attendance:\n\n"+vesselList+"\n\nBest regards";html+='<div style="margin-bottom:20px;padding:16px;background:var(--bg);border:1px solid var(--brd);border-radius:7px"><h3 style="color:var(--t1);font-size:13px;margin:0 0 8px 0">'+flagEmoji(fc)+" "+admin.name+" — "+vessels.length+' vessel(s)</h3><div style="font-size:10px;color:var(--t3);margin-bottom:4px">To: <span style="color:var(--blue);font-family:var(--m)">'+admin.email+'</span></div><pre id="body_'+fc+'" style="font-size:11px;color:var(--t1);font-family:var(--s);padding:10px;background:#050a12;border:1px solid var(--brd);border-radius:4px;white-space:pre-wrap;line-height:1.6;max-height:250px;overflow-y:auto;user-select:all">'+body+'</pre><div style="display:flex;gap:8px;margin-top:8px"><button class="btn btn-primary" onclick="navigator.clipboard.writeText(document.getElementById(\'body_'+fc+"').textContent);this.textContent='✓ Copied!'\">📋 Copy</button><a class=\"btn\" href=\"mailto:"+admin.email+"?subject="+encodeURIComponent(subject)+"&body="+encodeURIComponent(body)+"\" style=\"text-decoration:none\">📧 Email</a></div></div>"}const modal=document.createElement("div");modal.style.cssText="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.85);z-index:999;display:flex;align-items:center;justify-content:center;padding:20px";modal.onclick=e=>{if(e.target===modal)modal.remove()};modal.innerHTML='<div style="background:var(--bg2);border:1px solid var(--brd2);border-radius:10px;padding:20px;max-width:750px;width:100%;max-height:90vh;overflow-y:auto"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px"><h2 style="color:var(--t1);font-size:15px;margin:0">📧 Inspection Requests — '+selected.length+' vessels</h2><button class="btn" onclick="this.closest(\'div[style*=fixed]\').remove()" style="font-size:16px;padding:2px 8px">✕</button></div>'+html+"</div>";document.body.appendChild(modal)}
@@ -890,8 +1086,64 @@ function tPicker(t){S.po[t]=!S.po[t];el(t+"Picker").style.display=S.po[t]?"block
 function hs(c){if(S.sb===c)S.sd=S.sd==="asc"?"desc":"asc";else{S.sb=c;S.sd="asc"}render()}
 function rPP(s=""){const regs=[...new Set(PORTS.map(p=>p.region))];s=(s||"").toLowerCase();el("rBar").innerHTML='<button class="region-btn" style="color:var(--green)" onclick="S.ports=PORTS.map(p=>p.id);sv();render();rPP()">All</button><button class="region-btn" style="color:var(--red)" onclick="S.ports=[];sv();render();rPP()">None</button>'+regs.map(r=>'<button class="region-btn '+(PORTS.filter(p=>p.region===r).every(p=>S.ports.includes(p.id))?"active":"")+'" onclick="tR(\''+r+'\')">'+r+"</button>").join("");let h="";regs.forEach(r=>{const rp=PORTS.filter(p=>p.region===r&&(!s||p.name.toLowerCase().includes(s)));if(!rp.length)return;h+='<div class="region-group"><div class="region-group-label">'+r+'</div><div class="chips-wrap">'+rp.map(p=>'<button class="chip '+(S.ports.includes(p.id)?"active":"")+'" onclick="tP(\''+p.id+'\')">'+(p.bcn||p.direct?"🌟 ":"")+p.name+"</button>").join("")+"</div></div>"});el("pPL").innerHTML=h}
 function rFP(s=""){s=(s||"").toLowerCase();el("fPL").innerHTML=FLAGS.filter(f=>!s||f.n.toLowerCase().includes(s)).map(f=>'<button class="chip '+(S.flags.includes(f.c)?"active":"")+'" onclick="tF(\''+f.c+'\')"><span style="font-size:13px">'+f.e+"</span> "+f.n+"</button>").join("")}
+// --- v3.12.0: ISM manager inquiry ---------------------------------------
+const SIG="Capt. Gitlevych Illya\nFlag State Inspector / Auditor\ninfo@ironsea.es · +34 603 730 040 (WhatsApp)\nLinkedIn: https://www.linkedin.com/in/gitlevych/";
+const MYFLAGS=["MT","LR","MH","HK"];
+const MONTHS_EN=["January","February","March","April","May","June","July","August","September","October","November","December"];
+let _MI={};
+function esc(x){return String(x==null?"":x).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function fmtDay(iso){if(!iso)return "TBC";const d=new Date(iso);if(isNaN(d.getTime()))return "TBC";return d.getDate()+" "+MONTHS_EN[d.getMonth()]}
+function loadManagers(){return fetch("/api/managers").then(r=>r.json()).then(d=>{S.mgr=d.managers||{}}).catch(()=>{S.mgr=S.mgr||{}})}
+function mgrBody(vs,contact){
+ const one=vs.length===1;
+ const lead=one?("I understand "+vs[0].name+(vs[0].imo?" (IMO "+vs[0].imo+")":"")+" is due in "+(vs[0].portName||"port")+" on "+fmtDay(vs[0].etaISO)+"."):
+   ("I understand the following vessels under your management are due in my area:\n\n"+vs.map(v=>"• "+v.name+(v.imo?" (IMO "+v.imo+")":"")+" — "+(v.portName||"TBC")+" — "+fmtDay(v.etaISO)).join("\n"));
+ return (contact?("Dear "+contact):"Dear Sirs")+",\n\n"+lead+"\n\nI'm a Flag State Inspector and qualified ISM/ISPS/MLC internal auditor, based in Gijón and authorised by Liberia, the Marshall Islands and Malta. I can offer a pre-PSC inspection and/or internal audit "+(one?"while she's":"while they are")+" in port, attending directly with no travel time or cost involved.\n\nHappy to send a quotation once I know which service would be useful.\n\nBest regards,\n\n"+SIG}
+function mgrSubject(vs){return vs.length===1?("Pre-PSC inspection / ISM internal audit — "+vs[0].name+", "+(vs[0].portName||"")+", "+fmtDay(vs[0].etaISO)):("Pre-PSC inspection / ISM internal audit — "+vs.length+" vessels, northern Spain")}
+function miCard(g,i){
+ const m=g.m||{},vs=g.vs,v0=vs[0],body=mgrBody(vs,m.contact||""),subj=mgrSubject(vs);
+ const conf=vs.filter(v=>MYFLAGS.includes(v.flagCode||""));
+ const cw=conf.length?'<div style="margin:6px 0;padding:6px 9px;background:#2a2210;border:1px solid #5a4a10;border-radius:4px;font-size:10px;color:var(--amber)">⚠ '+conf.map(v=>esc(v.name)+" ("+esc(v.flagCode)+")").join(", ")+' — you hold FSI authority for this flag. Logging marks it declarable.</div>':"";
+ let head="",form="";
+ if(m.ism){
+  const vb=m.verified?'<span style="color:var(--green)">✓ verified</span>':'<span style="color:var(--amber)">⚠ unverified'+(m.source?" ("+esc(m.source)+")":"")+'</span>';
+  head='<h3 style="color:var(--t1);font-size:13px;margin:0 0 4px 0">🏢 '+esc(m.ism)+" — "+vs.length+' vessel(s)</h3><div style="font-size:10px;color:var(--t3);margin-bottom:4px">'+vb+(m.owner?' · owner: '+esc(m.owner):"")+(m.phone?' · ☎ '+esc(m.phone):"")+'</div><div style="font-size:10px;color:var(--t3);margin-bottom:4px">To: '+(m.ismEmail?'<span style="color:var(--blue);font-family:var(--m)">'+esc(m.ismEmail)+"</span>":'<span style="color:var(--red)">no email on file</span> — <a href="https://www.google.com/search?q='+encodeURIComponent(m.ism+" contact DPA email")+'" target="_blank">find contact</a> · <a href="https://www.google.com/search?q='+encodeURIComponent(m.ism+" linkedin")+'" target="_blank">LinkedIn</a>')+"</div>"+(m.notes?'<div style="font-size:10px;color:var(--t2);margin-bottom:6px;padding:6px 8px;background:#0c1520;border:1px solid var(--brd);border-radius:4px;line-height:1.5">'+esc(m.notes)+"</div>":"");
+ }else{
+  const nm=encodeURIComponent(v0.name||""),imo=v0.imo||"";
+  head='<h3 style="color:var(--t1);font-size:13px;margin:0 0 6px 0">❓ Manager unknown — '+esc(v0.name)+(imo?" (IMO "+esc(imo)+")":"")+'</h3><div style="font-size:10px;color:var(--t3);margin-bottom:6px">Look it up, then paste it in — stored permanently against this IMO.<br>1. <a href="https://www.google.com/search?q='+nm+'+ISM+manager" target="_blank">Google “'+esc(v0.name)+' ISM manager”</a> → gives the ISM company<br>2. <a href="https://www.google.com/search?q='+nm+'+ISM+manager+site:magicport.ai" target="_blank">MagicPort</a> · '+(imo?'<a href="https://www.equasis.org/EquasisWeb/restricted/ShipInfo?fs=Search&P_IMO='+imo+'" target="_blank">Equasis (authoritative)</a>':"<i>no IMO — Equasis unavailable</i>")+'<br>3. Then search the company name for its contact page.</div>';
+  form='<div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;margin:7px 0"><input class="input" id="mi_ism_'+i+'" placeholder="ISM manager company *"><input class="input" id="mi_em_'+i+'" placeholder="ISM manager email"><input class="input" id="mi_ct_'+i+'" placeholder="Contact person (optional)"><input class="input" id="mi_ow_'+i+'" placeholder="Registered owner (optional)"></div><label style="font-size:10px;color:var(--t3);display:flex;align-items:center;gap:5px;margin-bottom:6px"><input type="checkbox" id="mi_vf_'+i+'" style="accent-color:var(--blue)"> Read off Equasis / the company’s own site (verified)</label><button class="btn btn-green" onclick="miSave('+i+')">💾 Save manager</button>';
+ }
+ const acts=m.ism?'<div style="display:flex;gap:8px;margin-top:8px;align-items:center;flex-wrap:wrap"><button class="btn btn-primary" onclick="navigator.clipboard.writeText(document.getElementById(\'mi_body_'+i+'\').textContent);this.textContent=\'✓ Copied!\'">📋 Copy</button>'+(m.ismEmail?'<a class="btn" href="mailto:'+esc(m.ismEmail)+"?subject="+encodeURIComponent(subj)+"&body="+encodeURIComponent(body)+'" style="text-decoration:none">📧 Email</a>':"")+'<button class="btn btn-amber" onclick="miLog('+i+')">✓ Log as sent</button><span id="milog_'+i+'" style="font-size:10px;color:var(--t3)"></span></div>':"";
+ return '<div style="margin-bottom:18px;padding:14px;background:var(--bg);border:1px solid var(--brd);border-radius:7px">'+head+cw+form+(m.ism?'<pre id="mi_body_'+i+'" style="font-size:11px;color:var(--t1);font-family:var(--s);padding:10px;background:#050a12;border:1px solid var(--brd);border-radius:4px;white-space:pre-wrap;line-height:1.6;max-height:260px;overflow-y:auto;user-select:all">'+esc(body)+"</pre>":"")+acts+"</div>"}
+function genManagerInquiry(){
+ const sel=getF().filter(v=>S.sel.has(vKey(v)));
+ if(!sel.length)return alert("No vessels selected");
+ S.mgr=S.mgr||{};
+ const groups={};
+ sel.forEach(v=>{const m=S.mgr[v.imo||""]||{};const k=m.ism?("M:"+m.ism):("U:"+vKey(v));if(!groups[k])groups[k]={m:m,vs:[]};groups[k].vs.push(v)});
+ const gs=Object.values(groups);_MI={};gs.forEach((g,i)=>{_MI[i]=g});
+ const known=gs.filter(g=>g.m&&g.m.ism).length;
+ const html=gs.map((g,i)=>miCard(g,i)).join("");
+ const old=document.getElementById("miModal");if(old)old.remove();
+ const modal=document.createElement("div");modal.id="miModal";
+ modal.style.cssText="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.85);z-index:999;display:flex;align-items:center;justify-content:center;padding:20px";
+ modal.onclick=e=>{if(e.target===modal)modal.remove()};
+ modal.innerHTML='<div style="background:var(--bg2);border:1px solid var(--brd2);border-radius:10px;padding:20px;max-width:780px;width:100%;max-height:90vh;overflow-y:auto"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px"><h2 style="color:var(--t1);font-size:15px;margin:0">🏢 Manager Inquiries — '+sel.length+" vessel(s), "+known+" of "+gs.length+' with a manager on file</h2><button class="btn" onclick="document.getElementById(\'miModal\').remove()" style="font-size:16px;padding:2px 8px">✕</button></div>'+html+"</div>";
+ document.body.appendChild(modal)}
+function miSave(i){
+ const g=_MI[i],v=g.vs[0],imo=v.imo||"";
+ if(!/^\d{7}$/.test(imo))return alert("This vessel has no IMO, so a manager cannot be stored against it.");
+ const ism=el("mi_ism_"+i).value.trim();if(!ism)return alert("ISM manager company is required.");
+ const ver=el("mi_vf_"+i).checked;
+ const qs="imo="+imo+"&ism="+encodeURIComponent(ism)+"&email="+encodeURIComponent(el("mi_em_"+i).value.trim())+"&contact="+encodeURIComponent(el("mi_ct_"+i).value.trim())+"&owner="+encodeURIComponent(el("mi_ow_"+i).value.trim())+"&source="+encodeURIComponent(ver?"equasis/company site":"manual")+"&verified="+(ver?"1":"0");
+ fetch("/api/savemanager?"+qs).then(r=>r.json()).then(d=>{if(!d.saved){alert("Rejected — check the email format.");return}S.mgr[imo]=d.manager;genManagerInquiry()}).catch(e=>alert("Save failed: "+e))}
+function miLog(i){
+ const g=_MI[i],m=g.m||{};
+ Promise.all(g.vs.map(v=>fetch("/api/logoutreach?imo="+encodeURIComponent(v.imo||"")+"&vessel="+encodeURIComponent(v.name||"")+"&fc="+encodeURIComponent(v.flagCode||"")+"&port="+encodeURIComponent(v.portName||"")+"&manager="+encodeURIComponent(m.ism||"")+"&email="+encodeURIComponent(m.ismEmail||"")).then(r=>r.json())))
+  .then(rs=>{el("milog_"+i).textContent="✓ logged "+rs.length+" (recusal log: "+(rs[rs.length-1]||{}).entries+")"})
+  .catch(e=>{el("milog_"+i).textContent="log failed: "+e})}
 function exportCSV(){const d=getS(getF());const h=["ETA","Vessel","IMO","Flag","Flag Name","Type","Port","From","To","GT","DWT","LOA","Agent","Line","VesselFinder","Equasis"];const rows=d.map(v=>[v.eta||v.lastETA||"",v.name,v.imo,v.flagCode,v.flagName||"",v.type||"",v.portName||"",v.origin||"",v.dest||"",v.gt||"",v.dwt||"",v.loa||"",v.agent||"",v.line||"",v.imo?"https://www.vesselfinder.com/vessels/details/"+v.imo:"",v.imo?"https://www.equasis.org/EquasisWeb/restricted/ShipInfo?fs=Search&P_IMO="+v.imo:""]);const csv_data=[h,...rows].map(r=>r.map(c=>'"'+String(c||"").replace(/"/g,'""')+'"').join(",")).join("\n");const a=document.createElement("a");a.href=URL.createObjectURL(new Blob(["\ufeff"+csv_data],{type:"text/csv;charset=utf-8"}));a.download="fsi-arrivals-"+new Date().toISOString().slice(0,10)+".csv";a.click()}
-render();fetchAll();
+S.mgr={};loadManagers();render();fetchAll();
 setInterval(()=>{fetch("/api/ping").catch(()=>{})},600000);
 setInterval(()=>{if(!S.loading)fetchAll()},1800000);
 </script></body></html>"""
@@ -899,6 +1151,7 @@ setInterval(()=>{if(!S.loading)fetchAll()},1800000);
 
 if __name__ == "__main__":
     db = load_db()
+    mgr = load_managers()
     start_resolver()
     server = ThreadedHTTPServer((HOST, PORT), Handler)
     url = f"http://localhost:{PORT}"
@@ -911,6 +1164,7 @@ if __name__ == "__main__":
    Dashboard : {url}
    Database  : {DB_FILE}
    Tracked   : {len(db.get('vessels', {}))} vessels, {len(db.get('flags', {}))} cached flags
+   Managers  : {len(mgr)} vessels with ISM manager on file
    Binding   : {HOST}:{PORT}
 +===========================================================+
 """, flush=True)

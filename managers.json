@@ -417,6 +417,17 @@
   "updated": "2026-10-16T09:27:43",
   "verified": false
  },
+ "9232204": {
+  "contact": "",
+  "ism": "ERSHIP SAU",
+  "ismEmail": "adm.mad@ership.com",
+  "notes": "Commercial manager: TUDELA VEGUIN",
+  "owner": "ERSHIP INTERNACIONAL SA",
+  "phone": "+34 914 263 400",
+  "source": "magicport-auto +contacts from sibling",
+  "updated": "2026-10-27T10:11:00",
+  "verified": false
+ },
  "9238387": {
   "contact": "",
   "ism": "BALTNAUTIC SHIPPING LTD",
@@ -514,6 +525,17 @@
   "phone": "",
   "source": "magicport-auto",
   "updated": "2026-10-21T09:48:07",
+  "verified": false
+ },
+ "9330379": {
+  "contact": "",
+  "ism": "FLEET MANAGEMENT LTD-HKG",
+  "ismEmail": "",
+  "notes": "Commercial manager: CHEMSHIP BV",
+  "owner": "CHEMICAL VOYAGER SHIPPING LTD",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-10-27T10:11:06",
   "verified": false
  },
  "9331335": {
@@ -1000,6 +1022,17 @@
   "updated": "2026-09-29T11:02:27",
   "verified": false
  },
+ "9490624": {
+  "contact": "",
+  "ism": "GENCO-SYNERGY PVT LTD",
+  "ismEmail": "",
+  "notes": "Commercial manager: GENCO SHIP MANAGEMENT LLC",
+  "owner": "GENCO AQUITAINE LTD",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-10-27T10:11:03",
+  "verified": false
+ },
  "9491927": {
   "contact": "",
   "ism": "SEAQUEST SHIPMANAGEMENT DOO",
@@ -1453,10 +1486,10 @@
   "contact": "",
   "ism": "DOCKENDALE SHIP MANAGEMENT",
   "ismEmail": "",
-  "notes": "",
+  "notes": "Commercial manager: MUR SHIPPING BV",
   "owner": "WHOLESOME LTD",
   "phone": "",
-  "source": "magicport-auto",
+  "source": "magicport-auto +contacts from sibling",
   "updated": "2026-10-24T09:16:22",
   "verified": false
  },
@@ -1502,6 +1535,17 @@
   "phone": "",
   "source": "magicport-auto",
   "updated": "2026-09-25T09:58:04",
+  "verified": false
+ },
+ "9700794": {
+  "contact": "",
+  "ism": "DOCKENDALE SHIP MANAGEMENT",
+  "ismEmail": "",
+  "notes": "Commercial manager: MUR SHIPPING BV",
+  "owner": "AFRICAN HARRIER SHIPPING CO",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-10-27T10:11:09",
   "verified": false
  },
  "9703576": {
@@ -1603,6 +1647,17 @@
   "updated": "2026-10-04T10:52:03",
   "verified": false
  },
+ "9772606": {
+  "contact": "Mr Conlon",
+  "ism": "ARKLOW SHIPPING NEDERLAND BV",
+  "ismEmail": "technical@asl.ie",
+  "notes": "John Conlon, Marine Superintendent / DPA, +353 86 3088836. Technical Director Iain Shirley. North Beach, Arklow, Co. Wicklow.",
+  "owner": "FERRYBANK SHIPPING BV",
+  "phone": "+353 402 39901",
+  "source": "magicport-auto +contacts from sibling",
+  "updated": "2026-10-27T10:11:12",
+  "verified": false
+ },
  "9772618": {
   "contact": "Mr Conlon",
   "ism": "ARKLOW SHIPPING NEDERLAND BV",
@@ -1678,6 +1733,17 @@
   "phone": "",
   "source": "magicport-auto",
   "updated": "2026-09-30T10:52:37",
+  "verified": false
+ },
+ "9856799": {
+  "contact": "",
+  "ism": "UNIBALTIC SP Z OO",
+  "ismEmail": "",
+  "notes": "Commercial manager: UNIBALTIC SHIPPING LTD",
+  "owner": "ALVANITE SHIPPING LTD",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-10-27T10:11:15",
   "verified": false
  },
  "9879052": {

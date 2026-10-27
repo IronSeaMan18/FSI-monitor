@@ -622,5 +622,115 @@
   "built": "2011",
   "loaVF": 145,
   "ts": 1793012683.1535647
+ },
+ "SANTONA|215": {
+  "status": "ok",
+  "imo": "9886847",
+  "flag": "FR",
+  "vtype": "Passenger/Ro-Ro Cargo Ship",
+  "gt": 41716,
+  "dwt": 7205,
+  "built": "2022",
+  "loaVF": 214,
+  "ts": 1793095934.158126
+ },
+ "BITUMA|108": {
+  "status": "ok",
+  "imo": "9753832",
+  "flag": "NL",
+  "vtype": "Bitumen Tanker",
+  "gt": 4703,
+  "dwt": 4995,
+  "built": "2016",
+  "loaVF": 108,
+  "ts": 1793095937.3094363
+ },
+ "GLOBAL STAR|295": {
+  "status": "ok",
+  "imo": "9859741",
+  "flag": "MH",
+  "vtype": "LNG Tanker",
+  "gt": 113822,
+  "dwt": 94732,
+  "built": "2021",
+  "loaVF": 295,
+  "ts": 1793095940.4764693
+ },
+ "ALBIZ|100": {
+  "status": "ok",
+  "imo": "9397652",
+  "flag": "PT",
+  "vtype": "General Cargo Ship",
+  "gt": 3995,
+  "dwt": 5750,
+  "built": "2008",
+  "loaVF": 100,
+  "ts": 1793095943.6738653
+ },
+ "HAVSTRAUM|105": {
+  "status": "ok",
+  "imo": "9962495",
+  "flag": "NO",
+  "vtype": "Chemical/Oil Products Tanker",
+  "gt": 6033,
+  "dwt": 7497,
+  "built": "2025",
+  "loaVF": 105,
+  "ts": 1793095946.6617155
+ },
+ "ODIN R|160": {
+  "status": "ok",
+  "imo": "9991379",
+  "flag": "DK",
+  "vtype": "Barge Carrier",
+  "gt": 16289,
+  "dwt": 20905,
+  "built": "2024",
+  "loaVF": 160,
+  "ts": 1793095949.8652387
+ },
+ "BELLIS THERESA|137": {
+  "status": "ok",
+  "imo": "9192375",
+  "flag": "MT",
+  "vtype": "Chemical/Oil Products Tanker",
+  "gt": 11287,
+  "dwt": 15200,
+  "built": "2000",
+  "loaVF": 136,
+  "ts": 1793095953.022093
+ },
+ "C INSTALLER|94": {
+  "status": "ok",
+  "imo": "9165554",
+  "flag": "DK",
+  "vtype": "Research Vessel",
+  "gt": 5970,
+  "dwt": 5570,
+  "built": "1998",
+  "loaVF": 92,
+  "ts": 1793095956.0228486
+ },
+ "PARKGRACHT|169": {
+  "status": "ok",
+  "imo": "9424546",
+  "flag": "NL",
+  "vtype": "General Cargo Ship",
+  "gt": 17628,
+  "dwt": 20170,
+  "built": "2009",
+  "loaVF": 169,
+  "ts": 1793095959.1931872
+ },
+ "X PRESS TAGUS|135": {
+  "status": "ok",
+  "imo": "9354375",
+  "flag": "PT",
+  "vtype": "Container Ship",
+  "gt": 9962,
+  "dwt": 11435,
+  "built": "2007",
+  "loaVF": 134,
+  "ts": 1793095962.2027922
  }
 }

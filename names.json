@@ -732,5 +732,93 @@
   "built": "2007",
   "loaVF": 134,
   "ts": 1793095962.2027922
+ },
+ "SONGA FALCON|171": {
+  "status": "ok",
+  "imo": "9396012",
+  "flag": "PT",
+  "vtype": "Chemical/Oil Products Tanker",
+  "gt": 17822,
+  "dwt": 25418,
+  "built": "2009",
+  "loaVF": 170,
+  "ts": 1793185094.2590694
+ },
+ "FRONT LEOPARD|252": {
+  "status": "ok",
+  "imo": "9703320",
+  "flag": "MH",
+  "vtype": "Crude Oil Tanker",
+  "gt": 62700,
+  "dwt": 109900,
+  "built": "2016",
+  "loaVF": 252,
+  "ts": 1793185097.1555612
+ },
+ "GRANE R|93": {
+  "status": "ok",
+  "imo": "9448530",
+  "flag": "DK",
+  "vtype": "Offshore Tug/Supply Ship",
+  "gt": 6029,
+  "dwt": 5225,
+  "built": "2010",
+  "loaVF": 93,
+  "ts": 1793185100.0554972
+ },
+ "VALFOGLIA|243": {
+  "status": "ok",
+  "imo": "9417309",
+  "flag": "MT",
+  "vtype": "Crude Oil Tanker",
+  "gt": 60185,
+  "dwt": 109060,
+  "built": "2009",
+  "loaVF": 243,
+  "ts": 1793185103.119075
+ },
+ "SEAWAYS FRIO|275": {
+  "status": "ok",
+  "imo": "9596985",
+  "flag": "MH",
+  "vtype": "Crude Oil Tanker",
+  "gt": 81708,
+  "dwt": 158782,
+  "built": "2012",
+  "loaVF": 274,
+  "ts": 1793185106.1743565
+ },
+ "SIENNA|120": {
+  "status": "ok",
+  "imo": "9353022",
+  "flag": "MT",
+  "vtype": "General Cargo Ship",
+  "gt": 5109,
+  "dwt": 8163,
+  "built": "2005",
+  "loaVF": 120,
+  "ts": 1793185112.2011042
+ },
+ "WEC MONDRIAAN|135": {
+  "status": "ok",
+  "imo": "9354363",
+  "flag": "PT",
+  "vtype": "Container Ship",
+  "gt": 9981,
+  "dwt": 11273,
+  "built": "2006",
+  "loaVF": 134,
+  "ts": 1793185115.257477
+ },
+ "EVA MASTER|180": {
+  "status": "ok",
+  "imo": "9932139",
+  "flag": "PA",
+  "vtype": "Bulk Carrier",
+  "gt": 25163,
+  "dwt": 40242,
+  "built": "2022",
+  "loaVF": 180,
+  "ts": 1793185118.1532278
  }
 }

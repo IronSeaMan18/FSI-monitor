@@ -286,9 +286,15 @@
   "ts": 1793012546.5314806
  },
  "FAITH|155": {
-  "status": "ambiguous",
-  "note": "12 exact-name hits, 2 within 2 m",
-  "ts": 1793012565.138091
+  "status": "ok",
+  "imo": "9301108",
+  "flag": "PT",
+  "vtype": "Container Ship",
+  "gt": 8971,
+  "dwt": 10700,
+  "built": "2006",
+  "loaVF": 155,
+  "ts": 1793272669.8293676
  },
  "MED BLUE JAY|120": {
   "status": "none",
@@ -331,7 +337,7 @@
  "JAN D|88": {
   "status": "none",
   "note": "1 exact-name hits, 0 within 2 m",
-  "ts": 1793012580.643707
+  "ts": 1793272642.4067836
  },
  "ALVANITH|118": {
   "status": "ok",
@@ -374,7 +380,7 @@
  "VANQUISH|100": {
   "status": "ambiguous",
   "note": "6 exact-name hits, 2 within 2 m",
-  "ts": 1793012599.3703754
+  "ts": 1793272648.653153
  },
  "EAGLE II|162": {
   "status": "ok",
@@ -577,7 +583,7 @@
  "FINNECO III|238": {
   "status": "none",
   "note": "1 exact-name hits, 0 within 2 m",
-  "ts": 1793012670.7859466
+  "ts": 1793272681.4503727
  },
  "HELMUT|135": {
   "status": "ok",
@@ -820,5 +826,71 @@
   "built": "2022",
   "loaVF": 180,
   "ts": 1793185118.1532278
+ },
+ "HAFNIA LISE|184": {
+  "status": "ok",
+  "imo": "9726621",
+  "flag": "MT",
+  "vtype": "Chemical/Oil Products Tanker",
+  "gt": 29658,
+  "dwt": 49875,
+  "built": "2016",
+  "loaVF": 183,
+  "ts": 1793272651.5323286
+ },
+ "PALEISGRACHT|169": {
+  "status": "ok",
+  "imo": "9448346",
+  "flag": "NL",
+  "vtype": "General Cargo Ship",
+  "gt": 17644,
+  "dwt": 19496,
+  "built": "2011",
+  "loaVF": 169,
+  "ts": 1793272672.709061
+ },
+ "COMBI DOCK I|170": {
+  "status": "ok",
+  "imo": "9400473",
+  "flag": "PT",
+  "vtype": "Heavy Load Carrier",
+  "gt": 17341,
+  "dwt": 10480,
+  "built": "2008",
+  "loaVF": 169,
+  "ts": 1793272675.588731
+ },
+ "OCEAN TRADER|180": {
+  "status": "ok",
+  "imo": "1014369",
+  "flag": "PH",
+  "vtype": "Bulk Carrier",
+  "gt": 25171,
+  "dwt": 40552,
+  "built": "2025",
+  "loaVF": 179,
+  "ts": 1793272678.5558944
+ },
+ "MSC MUGE|335": {
+  "status": "ok",
+  "imo": "9978949",
+  "flag": "LR",
+  "vtype": "Container Ship",
+  "gt": 101311,
+  "dwt": 139897,
+  "built": "2025",
+  "loaVF": 335,
+  "ts": 1793272684.3302338
+ },
+ "MIA|183": {
+  "status": "ok",
+  "imo": "9618501",
+  "flag": "SM",
+  "vtype": "General Cargo Ship",
+  "gt": 24020,
+  "dwt": 38529,
+  "built": "2011",
+  "loaVF": 183,
+  "ts": 1793272702.5716326
  }
 }

@@ -395,6 +395,17 @@
   "updated": "2026-09-30T10:52:47",
   "verified": false
  },
+ "9201944": {
+  "contact": "",
+  "ism": "CONCURRENT SHIPMANAGEMENT BV",
+  "ismEmail": "",
+  "notes": "Commercial manager: WAGENBORG SHIPPING BV",
+  "owner": "WAGENBORG SHIPOWNERS 1 BV",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-10-29T11:16:00",
+  "verified": false
+ },
  "9201970": {
   "contact": "",
   "ism": "WESTEWIND SCHEEPVAART",
@@ -1724,6 +1735,17 @@
   "updated": "2026-09-13T16:00:00",
   "verified": true
  },
+ "9851945": {
+  "contact": "Mr Conlon",
+  "ism": "ARKLOW SHIPPING ULC",
+  "ismEmail": "technical@asl.ie",
+  "notes": "John Conlon, Marine Superintendent / DPA, +353 86 3088836. Technical Director Iain Shirley. North Beach, Arklow, Co. Wicklow.",
+  "owner": "ABBEY SHIPPING LTD-IRP",
+  "phone": "+353 402 39901",
+  "source": "magicport-auto +contacts from sibling",
+  "updated": "2026-10-29T11:15:47",
+  "verified": false
+ },
  "9851957": {
   "contact": "Mr Conlon",
   "ism": "ARKLOW SHIPPING ULC",
@@ -1799,6 +1821,17 @@
   "phone": "+357 2558 5435",
   "source": "magicport-auto; email from directory (unverified)",
   "updated": "2026-09-14T12:00:00",
+  "verified": false
+ },
+ "9923255": {
+  "contact": "Mr Conlon",
+  "ism": "ARKLOW SHIPPING ULC",
+  "ismEmail": "technical@asl.ie",
+  "notes": "John Conlon, Marine Superintendent / DPA, +353 86 3088836. Technical Director Iain Shirley. North Beach, Arklow, Co. Wicklow.",
+  "owner": "INVERMORE SHIPPING LTD",
+  "phone": "+353 402 39901",
+  "source": "magicport-auto +contacts from sibling",
+  "updated": "2026-10-29T11:16:18",
   "verified": false
  },
  "9933456": {

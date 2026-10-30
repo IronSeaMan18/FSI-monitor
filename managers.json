@@ -549,6 +549,17 @@
   "updated": "2026-10-21T09:48:07",
   "verified": false
  },
+ "9326964": {
+  "contact": "",
+  "ism": "MSC SHIPMANAGEMENT LTD",
+  "ismEmail": "",
+  "notes": "Commercial manager: MSC MEDITERRANEAN SHIPPING CO",
+  "owner": "HOLLAND MAAS BEHEER XI BV",
+  "phone": "",
+  "source": "magicport-auto +contacts from sibling",
+  "updated": "2026-10-30T11:09:13",
+  "verified": false
+ },
  "9330379": {
   "contact": "",
   "ism": "FLEET MANAGEMENT LTD-HKG",
@@ -1931,6 +1942,17 @@
   "phone": "",
   "source": "magicport-auto",
   "updated": "2026-10-03T10:11:05",
+  "verified": false
+ },
+ "9969493": {
+  "contact": "",
+  "ism": "DE BOCK MARITIEM BV",
+  "ismEmail": "",
+  "notes": "",
+  "owner": "CONTI-LINES COASTAL NV",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-10-30T11:09:19",
   "verified": false
  },
  "9972763": {

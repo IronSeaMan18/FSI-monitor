@@ -892,5 +892,98 @@
   "built": "2011",
   "loaVF": 183,
   "ts": 1793272702.5716326
+ },
+ "EEMS DART|89": {
+  "status": "ok",
+  "imo": "9195640",
+  "flag": "GI",
+  "vtype": "General Cargo Ship",
+  "gt": 2535,
+  "dwt": 3725,
+  "built": "2002",
+  "loaVF": 89,
+  "ts": 1793358622.7473807
+ },
+ "NATALIE|90": {
+  "status": "ok",
+  "imo": "9361720",
+  "flag": "AG",
+  "vtype": "General Cargo Ship",
+  "gt": 2998,
+  "dwt": 4995,
+  "built": "2006",
+  "loaVF": 90,
+  "ts": 1793358629.1921895
+ },
+ "ORIENTAL ACACIA|125": {
+  "status": "ok",
+  "imo": "9553048",
+  "flag": "KY",
+  "vtype": "Chemical/Oil Products Tanker",
+  "gt": 7785,
+  "dwt": 12332,
+  "built": "2011",
+  "loaVF": 124,
+  "ts": 1793358632.2142837
+ },
+ "ASH ATLANTIC|170": {
+  "status": "ok",
+  "imo": "9470844",
+  "flag": "MH",
+  "vtype": "Bulk Carrier",
+  "gt": 17023,
+  "dwt": 28352,
+  "built": "2008",
+  "loaVF": 169,
+  "ts": 1793358635.215865
+ },
+ "ECO TREASURE|133": {
+  "status": "ok",
+  "imo": "9938690",
+  "flag": "PT",
+  "vtype": "General Cargo Ship",
+  "gt": 7887,
+  "dwt": 9072,
+  "built": "2024",
+  "loaVF": 133,
+  "ts": 1793358638.4250567
+ },
+ "ONEGO GLOMMA|146": {
+  "status": "ok",
+  "imo": "9294977",
+  "flag": "AG",
+  "vtype": "General Cargo Ship",
+  "gt": 7767,
+  "dwt": 10649,
+  "built": "2004",
+  "loaVF": 146,
+  "ts": 1793358641.4615066
+ },
+ "SCHOKLAND|90": {
+  "status": "ok",
+  "imo": "9431599",
+  "flag": "NL",
+  "vtype": "General Cargo Ship",
+  "gt": 2702,
+  "dwt": 3300,
+  "built": "2010",
+  "loaVF": 90,
+  "ts": 1793358644.6532464
+ },
+ "GOTLAND|144": {
+  "status": "ok",
+  "imo": "9480136",
+  "flag": "PT",
+  "vtype": "General Cargo Ship",
+  "gt": 12772,
+  "dwt": 17409,
+  "built": "2011",
+  "loaVF": 144,
+  "ts": 1793358647.816051
+ },
+ "FINNECO I|238": {
+  "status": "none",
+  "note": "0 exact-name hits, 0 within 2 m",
+  "ts": 1793358650.83306
  }
 }

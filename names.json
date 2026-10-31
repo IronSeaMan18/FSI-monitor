@@ -985,5 +985,82 @@
   "status": "none",
   "note": "0 exact-name hits, 0 within 2 m",
   "ts": 1793358650.83306
+ },
+ "FPMC 32|184": {
+  "status": "ok",
+  "imo": "9831701",
+  "flag": "LR",
+  "vtype": "Chemical/Oil Products Tanker",
+  "gt": 28891,
+  "dwt": 49660,
+  "built": "2019",
+  "loaVF": 183,
+  "ts": 1793443438.0190065
+ },
+ "GAS VICTORY|100": {
+  "status": "ok",
+  "imo": "9707194",
+  "flag": "PT",
+  "vtype": "LPG Tanker",
+  "gt": 4749,
+  "dwt": 5169,
+  "built": "2015",
+  "loaVF": 100,
+  "ts": 1793443440.974338
+ },
+ "JOSEPH PLATEAU|192": {
+  "status": "ok",
+  "imo": "9619000",
+  "flag": "LU",
+  "vtype": "Pipe Burying Vessel",
+  "gt": 35287,
+  "dwt": 35671,
+  "built": "2013",
+  "loaVF": 192,
+  "ts": 1793443443.9455137
+ },
+ "CHEM SELENIUM|147": {
+  "status": "ok",
+  "imo": "9817509",
+  "flag": "MH",
+  "vtype": "Chemical/Oil Products Tanker",
+  "gt": 12075,
+  "dwt": 19998,
+  "built": "2018",
+  "loaVF": 146,
+  "ts": 1793443446.9079328
+ },
+ "MONIKA|90": {
+  "status": "ok",
+  "imo": "9815317",
+  "flag": "PT",
+  "vtype": "General Cargo Ship",
+  "gt": 3415,
+  "dwt": 4938,
+  "built": "2018",
+  "loaVF": 90,
+  "ts": 1793443453.1577163
+ },
+ "MAAS CONFIDENCE|180": {
+  "status": "ok",
+  "imo": "9713210",
+  "flag": "PT",
+  "vtype": "General Cargo Ship",
+  "gt": 21502,
+  "dwt": 34914,
+  "built": "2016",
+  "loaVF": 180,
+  "ts": 1793443456.230036
+ },
+ "BEAUTRIDENT|119": {
+  "status": "ok",
+  "imo": "9369306",
+  "flag": "PT",
+  "vtype": "General Cargo Ship",
+  "gt": 5132,
+  "dwt": 7223,
+  "built": "2008",
+  "loaVF": 118,
+  "ts": 1793443459.2008417
  }
 }

@@ -153,6 +153,17 @@
   "updated": "2026-10-20T09:46:44",
   "verified": false
  },
+ "9001813": {
+  "contact": "",
+  "ism": "HAV SHIP MANAGEMENT AS",
+  "ismEmail": "",
+  "notes": "Commercial manager: HAV CHARTERING AS",
+  "owner": "HAV BULK AS",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-10-31T10:42:55",
+  "verified": false
+ },
  "9001837": {
   "contact": "",
   "ism": "HAV SHIP MANAGEMENT AS",
@@ -1502,6 +1513,17 @@
   "phone": "",
   "source": "magicport-auto",
   "updated": "2026-10-15T09:34:45",
+  "verified": false
+ },
+ "9666522": {
+  "contact": "",
+  "ism": "ALASSIA NEWSHIPS MANAGEMENT",
+  "ismEmail": "",
+  "notes": "",
+  "owner": "CYNINE SHIPPING CORP",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-10-31T10:42:58",
   "verified": false
  },
  "9675731": {

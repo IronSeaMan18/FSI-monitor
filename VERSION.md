@@ -1,9 +1,43 @@
 # FSI Vessel Arrival Monitor — VERSION LOG
-Current production version: **v3.15.0**
+Current production version: **v3.16.0**
 
 Semantics: MAJOR = architecture change | MINOR = feature | PATCH = fix
 Release entries below are **newest first**; standing reference sections
 (data source matrix, standing constraint) are at the end of the file.
+
+## v3.16.0 — PSC status column (Paris MoU THETIS)
+Spec from the user. New column **PSC** per vessel with an IMO:
+- Source: THETIS public endpoint `POST portal.emsa.europa.eu/o/portlet-public/rest/inspection/getPublicInspections.json`
+  (form: shipImoNumber, periodMin/periodMax dd/mm/yyyy — 3-year window, pscInspectionRegime=1,
+  page=1, start=0, limit=50). Verified reachable from a datacenter IP (sandbox) and from Render.
+  Fields used: inspectionDate, portAndMS, ndeficiencies, inspectionType.description, flag.code,
+  resume.detentions.
+- Server: `/api/psc?imo=` — global throttle 1 request / 2 s (lock, all threads), cache per IMO
+  in DB (`psc`) for 7 days, reloaded from the DB file at boot. Bad IMO → 400; THETIS error →
+  `{error}` (not cached, shown as "n/a").
+- Browser: lazy — queues only rows currently visible, one request at a time; when the
+  "PSC due/window only" filter is on it queues the whole port/flag selection so unchecked
+  vessels can still qualify.
+- Badge from months since last inspection (30.44-day months): >12 "PSC due" (red), 10–12
+  "PSC window" (amber), <10 "Not due" (grey), none in 3 y "No PSC 3y" (blue). The risk
+  profile is not public — tooltip says it is an estimate. Hover: last date, port,
+  deficiencies, type, months ago, 3-y count, detentions.
+- "⚠ THETIS: XX" when the flag at last inspection ≠ list flag (e.g. AURA list MH / THETIS BS;
+  WILSON GOOLE THETIS BB in Jun 2026 vs AIS BS — consistent with a recent reflag).
+- Filter checkbox "PSC due/window only" (not persisted, by design — saved filters confused
+  the user before). CSV export gains PSC status, last PSC, port, deficiencies.
+### Known limitation
+Render's disk is ephemeral and the daily seed commit redeploys the service, so the 7-day
+cache effectively resets once a day; the first view after a redeploy takes ~2 min to fill
+~45 visible vessels (1 req / 2 s). Persisting it via the seed workflow needs the token's
+Workflows permission (same open item as names.json in the workflow).
+### Verified
+Server 6/6 (MSC MARYLENA II last PSC 28/03/2026 Riga LR parsed; cache hit 0.00 s;
+3 parallel uncached ≥ 4 s; invalid IMO 400; DB cache). Frontend 16/16 (thresholds, hover
+text + disclaimer, mismatch, no-IMO "—", filter incl. hidden unchecked vessels, n/a on
+error, CSV). Repo tests 38/38 + 12/12. Real data: 48 visible tracked vessels, 45 checked in
+119 s — 10 due, 7 window, 28 not due, 3 no IMO; filter → 17 vessels (incl. ALICANTE,
+last PSC 29/10/2024 Gdańsk).
 
 ## v3.15.0 — Merge: restores v3.14.0 after accidental overwrite + Santander, Bilbao flag cross-check, flag-name fix
 ### What happened (23 Oct 2026)

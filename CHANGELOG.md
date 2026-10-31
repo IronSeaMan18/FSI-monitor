@@ -3,6 +3,12 @@
 Newest first. Full root-cause detail for every entry lives in `VERSION.md`;
 bug IDs referenced here are tracked in `BUGS.md`.
 
+## v3.16.0 — PSC status column
+Each vessel now shows when it was last inspected under Paris MoU (THETIS, last 3 years):
+"PSC due" (>12 months), "PSC window" (10–12), "Not due", or "No PSC 3y". Hover for date,
+port and deficiencies; "⚠ THETIS: XX" if the flag at that inspection differs from the
+list. New filter "PSC due/window only". Estimate only — the ship's risk profile is not public.
+
 ## v3.15.0 — Restored v3.14.0 + Santander + Bilbao flag cross-check
 The 23 Oct web upload had replaced v3.14.0 with an older file (manager directory
 gone, flags 756 → 283). Restored, then added: Santander port-authority berthings;

@@ -1,6 +1,6 @@
 # HANDOFF.md — Read this file first
 
-You are picking up **FSI Vessel Arrival Monitor**, currently **v3.15.0**, from a
+You are picking up **FSI Vessel Arrival Monitor**, currently **v3.16.0**, from a
 long-running Claude.ai chat session. This document exists so you don't have to
 rediscover things that were already found the hard way — several of them cost
 real debugging time. Read this fully before touching code.
@@ -53,6 +53,7 @@ GET /api/aviles          -> Avilés Port Authority CSV (has IMO + flag)
 GET /api/vilagarcia      -> Vilagarcía Port Authority feed (has flag, no IMO)
 GET /api/shipnext?pid=&pname=  -> ShipNext planned-vessels API (9 ports, no flag)
 GET /api/santander       -> Santander Port Authority berthings (flag inline)
+GET /api/psc?imo=        -> Paris MoU THETIS last-3-year inspections (throttled 1/2 s, cached 7 d)
 GET /api/saveflag?imo=&fc=     -> persist a resolved flag to the DB cache
 GET /api/history         -> full DB dump (vessels + meta + flag count)
 GET /api/clearold        -> purge vessels unseen >30 days
@@ -275,3 +276,11 @@ primary (`flagCode`); the other is kept in `flagPA` + `flagNote`; the table show
 never hidden. Verify in Equasis before contacting an administration. Bilbao is
 checked server-side via `names.json`; port-authority vs ShipNext twins are merged
 in the browser (`buildCombined`).
+
+
+## 12. PSC status column (v3.16.0)
+THETIS public endpoint (POST, form-encoded, 3-year max window) — see VERSION.md v3.16.0
+for the exact form. Server throttles to 1 request / 2 s globally and caches per IMO for
+7 days in the DB (`psc`); the browser asks only for visible rows. Badge thresholds are
+months since last inspection (>12 due, 10–12 window, <10 not due, none = "No PSC 3y").
+Never present these as certain: the ship risk profile (HRS/SRS/LRS) is not public.

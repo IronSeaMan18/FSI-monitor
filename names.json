@@ -380,7 +380,7 @@
  "VANQUISH|100": {
   "status": "ambiguous",
   "note": "6 exact-name hits, 2 within 2 m",
-  "ts": 1793272648.653153
+  "ts": 1793533125.3980653
  },
  "EAGLE II|162": {
   "status": "ok",
@@ -583,7 +583,7 @@
  "FINNECO III|238": {
   "status": "none",
   "note": "1 exact-name hits, 0 within 2 m",
-  "ts": 1793272681.4503727
+  "ts": 1793533128.433991
  },
  "HELMUT|135": {
   "status": "ok",
@@ -1062,5 +1062,16 @@
   "built": "2008",
   "loaVF": 118,
   "ts": 1793443459.2008417
+ },
+ "APPIA|180": {
+  "status": "ok",
+  "imo": "9994840",
+  "flag": "LR",
+  "vtype": "Bulk Carrier",
+  "gt": 25859,
+  "dwt": 39917,
+  "built": "2024",
+  "loaVF": 180,
+  "ts": 1793533119.1781175
  }
 }

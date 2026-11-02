@@ -984,7 +984,7 @@
  "FINNECO I|238": {
   "status": "none",
   "note": "0 exact-name hits, 0 within 2 m",
-  "ts": 1793358650.83306
+  "ts": 1793624607.3559482
  },
  "FPMC 32|184": {
   "status": "ok",
@@ -1073,5 +1073,60 @@
   "built": "2024",
   "loaVF": 180,
   "ts": 1793533119.1781175
+ },
+ "BEAUMAGIC|89": {
+  "status": "ok",
+  "imo": "9373266",
+  "flag": "NL",
+  "vtype": "General Cargo Ship",
+  "gt": 2545,
+  "dwt": 3820,
+  "built": "2007",
+  "loaVF": 89,
+  "ts": 1793624595.2945087
+ },
+ "WILSON GDYNIA|88": {
+  "status": "ok",
+  "imo": "9056064",
+  "flag": "BS",
+  "vtype": "General Cargo Ship",
+  "gt": 2506,
+  "dwt": 3632,
+  "built": "1994",
+  "loaVF": 88,
+  "ts": 1793624598.2942054
+ },
+ "WEC VAN GOGH|135": {
+  "status": "ok",
+  "imo": "9246566",
+  "flag": "CY",
+  "vtype": "Container Ship",
+  "gt": 9991,
+  "dwt": 11408,
+  "built": "2004",
+  "loaVF": 134,
+  "ts": 1793624601.2769299
+ },
+ "RIDGEWAY|274": {
+  "status": "ok",
+  "imo": "1033717",
+  "flag": "LR",
+  "vtype": "Crude Oil Tanker",
+  "gt": 84677,
+  "dwt": 156037,
+  "built": "2026",
+  "loaVF": 274,
+  "ts": 1793624604.3840847
+ },
+ "MSC ZLATA R|281": {
+  "status": "ok",
+  "imo": "9227314",
+  "flag": "LR",
+  "vtype": "Container Ship",
+  "gt": 45803,
+  "dwt": 63176,
+  "built": "2002",
+  "loaVF": 281,
+  "ts": 1793624610.336361
  }
 }

@@ -241,6 +241,17 @@
   "updated": "2026-09-14T12:00:00",
   "verified": true
  },
+ "9101546": {
+  "contact": "",
+  "ism": "AASEN SHIPPING AS",
+  "ismEmail": "",
+  "notes": "",
+  "owner": "AASEN TRANSPORT AS",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-11-02T13:02:11",
+  "verified": false
+ },
  "9106912": {
   "contact": "",
   "ism": "HAV SHIP MANAGEMENT AS",
@@ -912,6 +923,17 @@
   "updated": "2026-10-21T09:48:00",
   "verified": false
  },
+ "9411771": {
+  "contact": "",
+  "ism": "CONCURRENT SHIPMANAGEMENT BV",
+  "ismEmail": "",
+  "notes": "Commercial manager: WAGENBORG SHIPPING BV",
+  "owner": "EEMS BEHEER XII BV",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-11-02T13:02:18",
+  "verified": false
+ },
  "9432517": {
   "contact": "",
   "ism": "NOVA SHIP TECH SA",
@@ -1086,6 +1108,17 @@
   "phone": "",
   "source": "magicport-auto",
   "updated": "2026-10-18T09:18:28",
+  "verified": false
+ },
+ "9498884": {
+  "contact": "",
+  "ism": "ULUSOY DENIZYOLLARI",
+  "ismEmail": "",
+  "notes": "",
+  "owner": "ULUSOY DENIZCILIK AS",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-11-02T13:02:15",
   "verified": false
  },
  "9503536": {

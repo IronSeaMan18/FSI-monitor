@@ -1,9 +1,40 @@
 # FSI Vessel Arrival Monitor — VERSION LOG
-Current production version: **v3.16.0**
+Current production version: **v3.16.1**
 
 Semantics: MAJOR = architecture change | MINOR = feature | PATCH = fix
 Release entries below are **newest first**; standing reference sections
 (data source matrix, standing constraint) are at the end of the file.
+
+## v3.16.1 — PSC loads fast; combined message: date-only ETA + "due to Paris MOU PSC"
+### Combined message (user request)
+- ETA shown as date only ("06 Nov"); old display strings have the time stripped.
+- Vessels with PSC status **PSC due** get " - due to Paris MOU PSC" appended to their line
+  (window / not due: nothing). Before building the message the app makes sure PSC status is
+  known for the ticked vessels (waits up to 20 s); if still unknown it says so in the window
+  ("PSC status unknown for N — no due note added") instead of silently omitting it.
+### Why PSC loaded slowly (measured live, v3.16.0)
+| | cached | uncached | 4 in parallel |
+|---|---|---|---|
+| v3.16.0 | 0.25 s each | ~3 s each | 3 / 6 / 9 / 12 s |
+1. B-112: throttle measured from the END of the previous THETIS request → 2 s gap + ~1 s
+   request ≈ 3 s per vessel. Spec is 1 request / 2 s → now start-to-start.
+2. Browser asked one IMO per round trip, sequentially (~12 s for 45 even when all cached).
+3. The daily seed commit redeploys Render and wipes the cache; nothing refilled it until
+   someone opened the page.
+### Fix
+- `/api/psc?imos=a,b,…` batch: cached results returned immediately, the rest queued for a
+  single background worker (browser requests jump ahead of warm-up); browser polls every 3 s.
+  Single-IMO `/api/psc?imo=` kept.
+- Fetching any vessel list queues its IMOs for background lookup (tracked flags first).
+- `_warm_loop`: at boot (+20 s) and every 6 h the server pulls all lists itself and queues PSC
+  lookups — the cache is warm before anyone opens the dashboard after a redeploy.
+### Verified
+Server: 4 uncached 7.1 s (was 12.2), batch of cached 0.00 s, pending resolved by worker,
+invalid entries ignored. Fresh server, no browser: after ~113 s all 39 MT/LR/MH/HK vessels
+cached (157 total listed, rest filling at 1 req / 2 s). Frontend 8/8 (one batch request,
+polling, n/a on error, date-only ETA, due note only on due, unknown note). Real data: page
+reload with warm cache 0.1 s for all 37 visible badges (was ~12 s); cold 74 s (was ~2 min).
+Repo tests 38/38 + 12/12.
 
 ## v3.16.0 — PSC status column (Paris MoU THETIS)
 Spec from the user. New column **PSC** per vessel with an IMO:

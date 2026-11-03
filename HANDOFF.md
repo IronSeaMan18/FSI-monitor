@@ -1,6 +1,6 @@
 # HANDOFF.md — Read this file first
 
-You are picking up **FSI Vessel Arrival Monitor**, currently **v3.16.0**, from a
+You are picking up **FSI Vessel Arrival Monitor**, currently **v3.16.1**, from a
 long-running Claude.ai chat session. This document exists so you don't have to
 rediscover things that were already found the hard way — several of them cost
 real debugging time. Read this fully before touching code.
@@ -54,6 +54,7 @@ GET /api/vilagarcia      -> Vilagarcía Port Authority feed (has flag, no IMO)
 GET /api/shipnext?pid=&pname=  -> ShipNext planned-vessels API (9 ports, no flag)
 GET /api/santander       -> Santander Port Authority berthings (flag inline)
 GET /api/psc?imo=        -> Paris MoU THETIS last-3-year inspections (throttled 1/2 s, cached 7 d)
+GET /api/psc?imos=a,b    -> batch: cached now + pending queued for background worker
 GET /api/saveflag?imo=&fc=     -> persist a resolved flag to the DB cache
 GET /api/history         -> full DB dump (vessels + meta + flag count)
 GET /api/clearold        -> purge vessels unseen >30 days
@@ -284,3 +285,7 @@ for the exact form. Server throttles to 1 request / 2 s globally and caches per 
 7 days in the DB (`psc`); the browser asks only for visible rows. Badge thresholds are
 months since last inspection (>12 due, 10–12 window, <10 not due, none = "No PSC 3y").
 Never present these as certain: the ship risk profile (HRS/SRS/LRS) is not public.
+
+v3.16.1: one background worker does all THETIS calls (start-to-start 2 s). It is fed by the
+browser (batch endpoint, high priority), by every vessel-list fetch, and by `_warm_loop`
+(boot +20 s, then every 6 h), so the cache is warm after each daily redeploy.

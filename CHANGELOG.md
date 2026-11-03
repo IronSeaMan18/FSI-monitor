@@ -3,6 +3,11 @@
 Newest first. Full root-cause detail for every entry lives in `VERSION.md`;
 bug IDs referenced here are tracked in `BUGS.md`.
 
+## v3.16.1 — Faster PSC, cleaner combined message
+Combined message: ETA as date only, and "due to Paris MOU PSC" on vessels that are PSC due.
+PSC badges: the server now keeps them ready in the background (after every restart and every
+6 hours), so they appear immediately instead of trickling in over ~2 minutes.
+
 ## v3.16.0 — PSC status column
 Each vessel now shows when it was last inspected under Paris MoU (THETIS, last 3 years):
 "PSC due" (>12 months), "PSC window" (10–12), "Not due", or "No PSC 3y". Hover for date,

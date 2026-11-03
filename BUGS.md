@@ -82,3 +82,8 @@
 | B-031 | MED | Gijón PCS feed could never produce data | Posidonia is a JS app | feature removed |
 | B-111 | LOW | tests/test_ports_b106.js 2 failures from mid-Oct | fixed September fixture ETAs hidden by Hide-past | fixtures relative to today |
 
+## v3.16.1
+| ID | Sev | Description | Root cause | Fix |
+|---|---|---|---|---|
+| B-112 | MED | PSC badges take ~2 min to appear and trickle in | throttle end-to-start (~3 s/vessel); one request per vessel; cache wiped by daily redeploy with no warm-up | start-to-start throttle; batch endpoint + background worker; warm on list fetch, at boot and every 6 h |
+

@@ -1128,5 +1128,54 @@
   "built": "2002",
   "loaVF": 281,
   "ts": 1793624610.336361
+ },
+ "BARFLEUR|158": {
+  "status": "none",
+  "note": "1 exact-name hits, 0 within 2 m",
+  "ts": 1793709360.5245092
+ },
+ "BIGLIFT BARENTSZ|173": {
+  "status": "ok",
+  "imo": "9710464",
+  "flag": "NL",
+  "vtype": "Heavy Load Carrier",
+  "gt": 23134,
+  "dwt": 20098,
+  "built": "2016",
+  "loaVF": 173,
+  "ts": 1793709363.6362731
+ },
+ "LADY ANNA|88": {
+  "status": "ok",
+  "imo": "9624811",
+  "flag": "NL",
+  "vtype": "General Cargo Ship",
+  "gt": 2544,
+  "dwt": 3700,
+  "built": "2012",
+  "loaVF": 88,
+  "ts": 1793709366.8934126
+ },
+ "SEA HOPE|180": {
+  "status": "ok",
+  "imo": "9713399",
+  "flag": "LR",
+  "vtype": "Bulk Carrier",
+  "gt": 23274,
+  "dwt": 37687,
+  "built": "2015",
+  "loaVF": 180,
+  "ts": 1793709370.446238
+ },
+ "MSC NORA III|211": {
+  "status": "ok",
+  "imo": "9327671",
+  "flag": "PT",
+  "vtype": "Container Ship",
+  "gt": 32161,
+  "dwt": 48356,
+  "built": "2006",
+  "loaVF": 211,
+  "ts": 1793709373.8241057
  }
 }

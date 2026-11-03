@@ -1,6 +1,6 @@
 # HANDOFF.md — Read this file first
 
-You are picking up **FSI Vessel Arrival Monitor**, currently **v3.16.1**, from a
+You are picking up **FSI Vessel Arrival Monitor**, currently **v3.16.2**, from a
 long-running Claude.ai chat session. This document exists so you don't have to
 rediscover things that were already found the hard way — several of them cost
 real debugging time. Read this fully before touching code.

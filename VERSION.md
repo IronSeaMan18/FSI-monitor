@@ -1,9 +1,20 @@
 # FSI Vessel Arrival Monitor — VERSION LOG
-Current production version: **v3.16.1**
+Current production version: **v3.16.2**
 
 Semantics: MAJOR = architecture change | MINOR = feature | PATCH = fix
 Release entries below are **newest first**; standing reference sections
 (data source matrix, standing constraint) are at the end of the file.
+
+## v3.16.2 — Combined request opens instantly again
+User: "button combine report stopped working at all". Live code reproduced in jsdom: it works
+when PSC is cached, but v3.16.1 made the button **await up to 20 s** for PSC status of ticked
+vessels before showing anything — right after a redeploy (cache refilling) the click looked
+dead. Now: the window opens immediately; if PSC is still loading the header shows
+"⏳ checking PSC status…" and the window rebuilds itself when statuses arrive (due notes
+added then). Any exception now raises an alert ("Combined request failed: …") instead of
+failing silently (async onclick swallowed errors).
+Verified in jsdom against a local server: opens in 0.3 s with PSC unknown, refreshes at 3.3 s
+with "due to Paris MOU PSC", date-only ETA, error → alert, no JS errors. Repo tests 38/38 + 12/12.
 
 ## v3.16.1 — PSC loads fast; combined message: date-only ETA + "due to Paris MOU PSC"
 ### Combined message (user request)

@@ -3,6 +3,9 @@
 Newest first. Full root-cause detail for every entry lives in `VERSION.md`;
 bug IDs referenced here are tracked in `BUGS.md`.
 
+## v3.16.2 — Combined request opens instantly
+The request window opens right away; PSC "due" notes fill in a moment later if still loading.
+
 ## v3.16.1 — Faster PSC, cleaner combined message
 Combined message: ETA as date only, and "due to Paris MOU PSC" on vessels that are PSC due.
 PSC badges: the server now keeps them ready in the background (after every restart and every

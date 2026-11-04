@@ -791,6 +791,17 @@
   "updated": "2026-09-24T09:41:17",
   "verified": false
  },
+ "9363675": {
+  "contact": "",
+  "ism": "LAMDA MARITIME SA",
+  "ismEmail": "",
+  "notes": "",
+  "owner": "VALIANT SHIPPING & TRADING LTD",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-11-04T12:45:06",
+  "verified": false
+ },
  "9371854": {
   "contact": "Mr Verbeek",
   "ism": "VERTOM BEREEDERUNGS GMBH",
@@ -1506,6 +1517,17 @@
   "updated": "2026-09-19T09:08:52",
   "verified": false
  },
+ "9638812": {
+  "contact": "Mr Conlon",
+  "ism": "ARKLOW SHIPPING NEDERLAND BV",
+  "ismEmail": "technical@asl.ie",
+  "notes": "John Conlon, Marine Superintendent / DPA, +353 86 3088836. Technical Director Iain Shirley. North Beach, Arklow, Co. Wicklow.",
+  "owner": "GLENTHORNE SHIPPING LTD",
+  "phone": "+353 402 39901",
+  "source": "magicport-auto +contacts from sibling",
+  "updated": "2026-11-04T12:45:03",
+  "verified": false
+ },
  "9640621": {
   "contact": "",
   "ism": "Viridian Maritime Pte Ltd",
@@ -1678,6 +1700,17 @@
   "phone": "",
   "source": "magicport-auto",
   "updated": "2026-10-07T11:29:40",
+  "verified": false
+ },
+ "9711444": {
+  "contact": "",
+  "ism": "AM NOMIKOS TRANSWORLD MARITIME",
+  "ismEmail": "",
+  "notes": "",
+  "owner": "PASSEPARTOUT SHIPPING INC",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-11-04T12:45:12",
   "verified": false
  },
  "9713935": {

@@ -380,7 +380,7 @@
  "VANQUISH|100": {
   "status": "ambiguous",
   "note": "6 exact-name hits, 2 within 2 m",
-  "ts": 1793533125.3980653
+  "ts": 1793796371.659173
  },
  "EAGLE II|162": {
   "status": "ok",
@@ -583,7 +583,7 @@
  "FINNECO III|238": {
   "status": "none",
   "note": "1 exact-name hits, 0 within 2 m",
-  "ts": 1793533128.433991
+  "ts": 1793796377.5549774
  },
  "HELMUT|135": {
   "status": "ok",
@@ -1177,5 +1177,71 @@
   "built": "2006",
   "loaVF": 211,
   "ts": 1793709373.8241057
+ },
+ "ARKLOW VIKING|87": {
+  "status": "ok",
+  "imo": "9772606",
+  "flag": "NL",
+  "vtype": "General Cargo Ship",
+  "gt": 2999,
+  "dwt": 5150,
+  "built": "2018",
+  "loaVF": 87,
+  "ts": 1793796365.6602223
+ },
+ "ARKLOW GLEN|88": {
+  "status": "ok",
+  "imo": "9874090",
+  "flag": "NL",
+  "vtype": "General Cargo Ship",
+  "gt": 2999,
+  "dwt": 5145,
+  "built": "2023",
+  "loaVF": 87,
+  "ts": 1793796374.6595244
+ },
+ "WECO PISCES|184": {
+  "status": "ok",
+  "imo": "9923932",
+  "flag": "SG",
+  "vtype": "Chemical/Oil Products Tanker",
+  "gt": 29671,
+  "dwt": 49999,
+  "built": "2022",
+  "loaVF": 183,
+  "ts": 1793796380.6528563
+ },
+ "VEGA CHRISTINA|90": {
+  "status": "ok",
+  "imo": "1108110",
+  "flag": "AG",
+  "vtype": "General Cargo Ship",
+  "gt": 2787,
+  "dwt": 3800,
+  "built": "2026",
+  "loaVF": 89,
+  "ts": 1793796383.560707
+ },
+ "KOOL TIGER|290": {
+  "status": "ok",
+  "imo": "9976135",
+  "flag": "LR",
+  "vtype": "LNG Tanker",
+  "gt": 110601,
+  "dwt": 92924,
+  "built": "2024",
+  "loaVF": 290,
+  "ts": 1793796386.6228118
+ },
+ "LUISA|175": {
+  "status": "ok",
+  "imo": "9471616",
+  "flag": "AG",
+  "vtype": "Heavy Load Carrier",
+  "gt": 17825,
+  "dwt": 17113,
+  "built": "2008",
+  "loaVF": 174,
+  "ts": 1793796392.7896585
  }
 }

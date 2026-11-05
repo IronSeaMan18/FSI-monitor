@@ -1243,5 +1243,65 @@
   "built": "2008",
   "loaVF": 174,
   "ts": 1793796392.7896585
+ },
+ "LAMENTIN|120": {
+  "status": "ok",
+  "imo": "9377054",
+  "flag": "MT",
+  "vtype": "LPG Tanker",
+  "gt": 7292,
+  "dwt": 11320,
+  "built": "2007",
+  "loaVF": 119,
+  "ts": 1793883342.6278467
+ },
+ "BERMEO NM|103": {
+  "status": "ok",
+  "imo": "1047055",
+  "flag": "PT",
+  "vtype": "General Cargo Ship",
+  "gt": 4190,
+  "dwt": 6500,
+  "built": "2025",
+  "loaVF": 103,
+  "ts": 1793883345.6799016
+ },
+ "GULF PETROLEUM 4|129": {
+  "status": "ok",
+  "imo": "9439345",
+  "flag": "MH",
+  "vtype": "Chemical/Oil Products Tanker",
+  "gt": 8539,
+  "dwt": 13006,
+  "built": "2009",
+  "loaVF": 129,
+  "ts": 1793883348.7812154
+ },
+ "MAPLE GLORY|180": {
+  "status": "none",
+  "note": "1 exact-name hits, 0 within 2 m",
+  "ts": 1793883351.8313851
+ },
+ "STEEL C|200": {
+  "status": "ok",
+  "imo": "9700330",
+  "flag": "LR",
+  "vtype": "Bulk Carrier",
+  "gt": 36203,
+  "dwt": 63118,
+  "built": "2015",
+  "loaVF": 200,
+  "ts": 1793883355.0804985
+ },
+ "GRANDE RIVIERE|175": {
+  "status": "ok",
+  "imo": "9733686",
+  "flag": "PA",
+  "vtype": "Chemical/Oil Products Tanker",
+  "gt": 21101,
+  "dwt": 30732,
+  "built": "2015",
+  "loaVF": 175,
+  "ts": 1793883358.1552546
  }
 }

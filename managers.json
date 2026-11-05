@@ -373,6 +373,17 @@
   "updated": "2026-10-22T09:48:51",
   "verified": false
  },
+ "9178458": {
+  "contact": "",
+  "ism": "WILSON SHIP MANAGEMENT AS",
+  "ismEmail": "",
+  "notes": "Commercial manager: WILSON EUROCARRIERS AS",
+  "owner": "WILSON SHIPOWNING AS",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-11-05T12:54:25",
+  "verified": false
+ },
  "9180839": {
   "contact": "",
   "ism": "WAGENBORG SHIPPING BV",
@@ -824,6 +835,17 @@
   "updated": "2026-10-11T11:10:37",
   "verified": false
  },
+ "9373539": {
+  "contact": "",
+  "ism": "WILSON SHIP MANAGEMENT AS",
+  "ismEmail": "",
+  "notes": "Commercial manager: WILSON EUROCARRIERS AS",
+  "owner": "WILSON SHIPOWNING AS",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-11-05T12:54:28",
+  "verified": false
+ },
  "9376050": {
   "contact": "",
   "ism": "JENS U WALLER GMBH",
@@ -1064,6 +1086,17 @@
   "phone": "",
   "source": "magicport-auto",
   "updated": "2026-09-21T10:22:26",
+  "verified": false
+ },
+ "9458145": {
+  "contact": "",
+  "ism": "VEYSEL VARDAL GEMICILIK",
+  "ismEmail": "",
+  "notes": "",
+  "owner": "VARKAN GEMI INSA SANAYI AS",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-11-05T12:54:38",
   "verified": false
  },
  "9470844": {
@@ -1634,6 +1667,17 @@
   "phone": "+65 6329 9190",
   "source": "magicport-auto +contacts from sibling",
   "updated": "2026-10-08T11:45:10",
+  "verified": false
+ },
+ "9693329": {
+  "contact": "",
+  "ism": "PETER DOEHLE SCHIFFAHRTS-KG",
+  "ismEmail": "",
+  "notes": "",
+  "owner": "RICARDA SCHIFFAHRTS GMBH & CO",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-11-05T12:54:35",
   "verified": false
  },
  "9697844": {

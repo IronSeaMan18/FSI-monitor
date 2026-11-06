@@ -1,9 +1,21 @@
 # FSI Vessel Arrival Monitor — VERSION LOG
-Current production version: **v3.16.2**
+Current production version: **v3.17.0**
 
 Semantics: MAJOR = architecture change | MINOR = feature | PATCH = fix
 Release entries below are **newest first**; standing reference sections
 (data source matrix, standing constraint) are at the end of the file.
+
+## v3.17.0 — "Requested" mark per vessel / port call
+User request: a click in front of the vessel to record that the attendance request was already
+sent — only for the current port call, removable after 45 days.
+- ✉ button before each vessel name; click → "✓ Req 06 Nov" chip (hover: sent date, auto-clear
+  date, click to undo). Click again removes it.
+- Key = IMO (or normalised name if no IMO) + port → the same vessel at another port is not marked.
+- Marks expire automatically 45 days after the click (pruned on page load and on every toggle).
+- Stored in the browser (localStorage `fsi_req`), NOT the server: Render's disk is wiped on every
+  daily redeploy. Consequence: marks are per browser/device (laptop and phone do not sync).
+Verified in jsdom on the real page (10/10): button present, chip + tooltip, saved, port-scoped,
+survives reload, undo, 46-day mark removed, 44-day mark kept, no JS errors. Repo tests 38/38 + 12/12.
 
 ## v3.16.2 — Combined request opens instantly again
 User: "button combine report stopped working at all". Live code reproduced in jsdom: it works

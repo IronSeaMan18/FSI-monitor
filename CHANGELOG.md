@@ -3,6 +3,9 @@
 Newest first. Full root-cause detail for every entry lives in `VERSION.md`;
 bug IDs referenced here are tracked in `BUGS.md`.
 
+## v3.17.0 — Mark vessels as requested
+Click ✉ in front of a vessel to mark the inspection request as sent ("✓ Req 06 Nov"). Applies to that vessel at that port; clears itself after 45 days. Saved in your browser.
+
 ## v3.16.2 — Combined request opens instantly
 The request window opens right away; PSC "due" notes fill in a moment later if still loading.
 

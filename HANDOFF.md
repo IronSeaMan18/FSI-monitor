@@ -1,6 +1,6 @@
 # HANDOFF.md — Read this file first
 
-You are picking up **FSI Vessel Arrival Monitor**, currently **v3.16.2**, from a
+You are picking up **FSI Vessel Arrival Monitor**, currently **v3.17.0**, from a
 long-running Claude.ai chat session. This document exists so you don't have to
 rediscover things that were already found the hard way — several of them cost
 real debugging time. Read this fully before touching code.
@@ -289,3 +289,7 @@ Never present these as certain: the ship risk profile (HRS/SRS/LRS) is not publi
 v3.16.1: one background worker does all THETIS calls (start-to-start 2 s). It is fed by the
 browser (batch endpoint, high priority), by every vessel-list fetch, and by `_warm_loop`
 (boot +20 s, then every 6 h), so the cache is warm after each daily redeploy.
+
+
+## 13. Requested marks (v3.17.0)
+Browser-only (`localStorage.fsi_req`, key `IMO|portId` or `N_<name>|portId`, value `{ts}`), pruned after 45 days. Deliberately not server-side: Render disk resets daily. If cross-device sync is ever needed, it needs persistent storage (repo commit via a token in a Render env var, or a hosted KV).

@@ -984,7 +984,7 @@
  "FINNECO I|238": {
   "status": "none",
   "note": "0 exact-name hits, 0 within 2 m",
-  "ts": 1793624607.3559482
+  "ts": 1793968920.3939896
  },
  "FPMC 32|184": {
   "status": "ok",
@@ -1132,7 +1132,7 @@
  "BARFLEUR|158": {
   "status": "none",
   "note": "1 exact-name hits, 0 within 2 m",
-  "ts": 1793709360.5245092
+  "ts": 1793968905.0098827
  },
  "BIGLIFT BARENTSZ|173": {
   "status": "ok",
@@ -1303,5 +1303,54 @@
   "built": "2015",
   "loaVF": 175,
   "ts": 1793883358.1552546
+ },
+ "CLEAN PLANET|289": {
+  "status": "ok",
+  "imo": "9637507",
+  "flag": "MH",
+  "vtype": "LNG Tanker",
+  "gt": 105943,
+  "dwt": 89848,
+  "built": "2014",
+  "loaVF": 289,
+  "ts": 1793968908.1204586
+ },
+ "SAN MARCOS|183": {
+  "status": "ok",
+  "imo": "9425540",
+  "flag": "MT",
+  "vtype": "Chemical/Oil Products Tanker",
+  "gt": 28418,
+  "dwt": 49999,
+  "built": "2010",
+  "loaVF": 182,
+  "ts": 1793968911.206013
+ },
+ "ZUGA|101": {
+  "status": "none",
+  "note": "0 exact-name hits, 0 within 2 m",
+  "ts": 1793968914.312792
+ },
+ "HAV SARDIS|90": {
+  "status": "ok",
+  "imo": "1089209",
+  "flag": "PT",
+  "vtype": "General Cargo Ship",
+  "gt": 3961,
+  "dwt": 5200,
+  "built": "2025",
+  "loaVF": 90,
+  "ts": 1793968917.4334192
+ },
+ "AQUALEGEND|249": {
+  "status": "ok",
+  "imo": "9592240",
+  "flag": "LR",
+  "vtype": "Crude Oil Tanker",
+  "gt": 61237,
+  "dwt": 115571,
+  "built": "2012",
+  "loaVF": 249,
+  "ts": 1793968923.5237684
  }
 }

@@ -1352,5 +1352,38 @@
   "built": "2012",
   "loaVF": 249,
   "ts": 1793968923.5237684
+ },
+ "STI HACKNEY|185": {
+  "status": "ok",
+  "imo": "9686883",
+  "flag": "MH",
+  "vtype": "Chemical/Oil Products Tanker",
+  "gt": 24230,
+  "dwt": 38734,
+  "built": "2014",
+  "loaVF": 184,
+  "ts": 1794050918.2402515
+ },
+ "ARKLOW VALIANT|87": {
+  "status": "ok",
+  "imo": "9772541",
+  "flag": "NL",
+  "vtype": "General Cargo Ship",
+  "gt": 2999,
+  "dwt": 5169,
+  "built": "2016",
+  "loaVF": 87,
+  "ts": 1794050921.3058224
+ },
+ "FLUVIUS AXE|90": {
+  "status": "ok",
+  "imo": "9163623",
+  "flag": "BB",
+  "vtype": "General Cargo Ship",
+  "gt": 2316,
+  "dwt": 3193,
+  "built": "1998",
+  "loaVF": 90,
+  "ts": 1794050924.3012793
  }
 }

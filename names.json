@@ -380,7 +380,7 @@
  "VANQUISH|100": {
   "status": "ambiguous",
   "note": "6 exact-name hits, 2 within 2 m",
-  "ts": 1793796371.659173
+  "ts": 1794138022.0677197
  },
  "EAGLE II|162": {
   "status": "ok",
@@ -1385,5 +1385,16 @@
   "built": "1998",
   "loaVF": 90,
   "ts": 1794050924.3012793
+ },
+ "ADMIRAL QUEEN|229": {
+  "status": "ok",
+  "imo": "9970258",
+  "flag": "SG",
+  "vtype": "Bulk Carrier",
+  "gt": 43821,
+  "dwt": 82563,
+  "built": "2024",
+  "loaVF": 229,
+  "ts": 1794138015.6748357
  }
 }

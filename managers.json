@@ -230,6 +230,17 @@
   "updated": "2026-10-05T12:00:19",
   "verified": false
  },
+ "9056064": {
+  "contact": "",
+  "ism": "WILSON SHIP MANAGEMENT AS",
+  "ismEmail": "",
+  "notes": "Commercial manager: WILSON EUROCARRIERS AS",
+  "owner": "WILSON SHIPOWNING AS",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-11-10T13:12:51",
+  "verified": false
+ },
  "9060687": {
   "contact": "Mr Mirkovic",
   "ism": "WILSON SHIP MANAGEMENT AS",
@@ -261,6 +272,17 @@
   "phone": "",
   "source": "magicport-auto",
   "updated": "2026-11-02T13:02:11",
+  "verified": false
+ },
+ "9103972": {
+  "contact": "",
+  "ism": "VARAN GEMI KIRALAMA",
+  "ismEmail": "",
+  "notes": "",
+  "owner": "VISTA INTERNATIONAL TRADING CO",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-11-10T13:12:57",
   "verified": false
  },
  "9106912": {
@@ -349,6 +371,17 @@
   "phone": "",
   "source": "magicport-auto",
   "updated": "2026-09-16T09:39:10",
+  "verified": false
+ },
+ "9163685": {
+  "contact": "",
+  "ism": "WAGENBORG SHIPPING BV",
+  "ismEmail": "",
+  "notes": "",
+  "owner": "DINTELBORG BV",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-11-10T13:13:09",
   "verified": false
  },
  "9169031": {
@@ -1528,6 +1561,17 @@
   "updated": "2026-09-13T16:00:00",
   "verified": true
  },
+ "9624835": {
+  "contact": "",
+  "ism": "WIJNNE & BARENDS CARGADOORS",
+  "ismEmail": "qhsse@wijnnebarends.com",
+  "notes": "QHSSE dept - site says explicitly: 'ISO and ISM related issues, audits, flag state, port state'. Also technical@wijnnebarends.com. Handelskade Oost 5, Delfzijl. Spliethoff Group.",
+  "owner": "LADY ALEXANDRA REDERIJ",
+  "phone": "+31 596 637 777",
+  "source": "magicport-auto +contacts from sibling",
+  "updated": "2026-11-10T13:12:54",
+  "verified": false
+ },
  "9624847": {
   "contact": "",
   "ism": "WIJNNE & BARENDS CARGADOORS",
@@ -1812,6 +1856,17 @@
   "updated": "2026-09-15T09:45:18",
   "verified": false
  },
+ "9738882": {
+  "contact": "",
+  "ism": "BERGE BULK MARITIME PTE LTD",
+  "ismEmail": "",
+  "notes": "Commercial manager: SHOEI KISEN KK",
+  "owner": "BERGE SNOWDON CO SA",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-11-10T13:13:00",
+  "verified": false
+ },
  "9741865": {
   "contact": "",
   "ism": "NORD GMBH REEDEREI",
@@ -2041,6 +2096,17 @@
   "phone": "+353 402 39901",
   "source": "magicport-auto +contacts from sibling",
   "updated": "2026-10-29T11:16:18",
+  "verified": false
+ },
+ "9927445": {
+  "contact": "",
+  "ism": "MISJE REDERI AS",
+  "ismEmail": "",
+  "notes": "",
+  "owner": "MISJE ECOBULK AS",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-11-10T13:13:03",
   "verified": false
  },
  "9933456": {

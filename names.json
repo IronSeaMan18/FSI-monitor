@@ -1462,5 +1462,54 @@
   "built": "2015",
   "loaVF": 200,
   "ts": 1794231345.2735596
+ },
+ "NKT VICTORIA|140": {
+  "status": "ok",
+  "imo": "9791016",
+  "flag": "NO",
+  "vtype": "Cable Layer",
+  "gt": 16192,
+  "dwt": 14900,
+  "built": "2017",
+  "loaVF": 140,
+  "ts": 1794316454.8736076
+ },
+ "ENDO OSTRO|102": {
+  "status": "ok",
+  "imo": "9393656",
+  "flag": "MT",
+  "vtype": "Chemical/Oil Products Tanker",
+  "gt": 5581,
+  "dwt": 7335,
+  "built": "2008",
+  "loaVF": 101,
+  "ts": 1794316457.8932276
+ },
+ "ARKLOW MANOR|137": {
+  "status": "ok",
+  "imo": "9440241",
+  "flag": "IE",
+  "vtype": "General Cargo Ship",
+  "gt": 9758,
+  "dwt": 14998,
+  "built": "2009",
+  "loaVF": 136,
+  "ts": 1794316460.9126601
+ },
+ "NQ LAELIA|115": {
+  "status": "none",
+  "note": "1 exact-name hits, 0 within 2 m",
+  "ts": 1794316463.9304678
+ },
+ "SAVA|122": {
+  "status": "ok",
+  "imo": "9158082",
+  "flag": "BB",
+  "vtype": "General Cargo Ship",
+  "gt": 5742,
+  "dwt": 9752,
+  "built": "1999",
+  "loaVF": 121,
+  "ts": 1794316483.1172814
  }
 }

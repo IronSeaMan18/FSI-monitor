@@ -337,7 +337,7 @@
  "JAN D|88": {
   "status": "none",
   "note": "1 exact-name hits, 0 within 2 m",
-  "ts": 1793272642.4067836
+  "ts": 1794399901.5405762
  },
  "ALVANITH|118": {
   "status": "ok",
@@ -380,7 +380,7 @@
  "VANQUISH|100": {
   "status": "ambiguous",
   "note": "6 exact-name hits, 2 within 2 m",
-  "ts": 1794138022.0677197
+  "ts": 1794399883.1933413
  },
  "EAGLE II|162": {
   "status": "ok",
@@ -1511,5 +1511,126 @@
   "built": "1999",
   "loaVF": 121,
   "ts": 1794316483.1172814
+ },
+ "ARAGONITH|93": {
+  "status": "ok",
+  "imo": "9164081",
+  "flag": "CY",
+  "vtype": "Chemical/Oil Products Tanker",
+  "gt": 3218,
+  "dwt": 4482,
+  "built": "1999",
+  "loaVF": 93,
+  "ts": 1794399861.22269
+ },
+ "MORAIME|118": {
+  "status": "ok",
+  "imo": "9423853",
+  "flag": "PT",
+  "vtype": "General Cargo Ship",
+  "gt": 5574,
+  "dwt": 7126,
+  "built": "2008",
+  "loaVF": 118,
+  "ts": 1794399864.1947773
+ },
+ "WILMA|89": {
+  "status": "ok",
+  "imo": "9462744",
+  "flag": "CY",
+  "vtype": "General Cargo Ship",
+  "gt": 2545,
+  "dwt": 3794,
+  "built": "2009",
+  "loaVF": 89,
+  "ts": 1794399876.8834136
+ },
+ "ARKLOW VALE|87": {
+  "status": "ok",
+  "imo": "9772527",
+  "flag": "NL",
+  "vtype": "General Cargo Ship",
+  "gt": 2999,
+  "dwt": 5158,
+  "built": "2015",
+  "loaVF": 87,
+  "ts": 1794399886.2726665
+ },
+ "TROON|140": {
+  "status": "ok",
+  "imo": "9326304",
+  "flag": "MH",
+  "vtype": "Bulk Carrier",
+  "gt": 11751,
+  "dwt": 18830,
+  "built": "2005",
+  "loaVF": 140,
+  "ts": 1794399889.3798244
+ },
+ "LADY ARIANE|88": {
+  "status": "ok",
+  "imo": "9760366",
+  "flag": "NL",
+  "vtype": "General Cargo Ship",
+  "gt": 2544,
+  "dwt": 3700,
+  "built": "2015",
+  "loaVF": 88,
+  "ts": 1794399892.3612895
+ },
+ "WEC BOUMEESTER|133": {
+  "status": "ok",
+  "imo": "9150080",
+  "flag": "PT",
+  "vtype": "Container Ship",
+  "gt": 5941,
+  "dwt": 7900,
+  "built": "1997",
+  "loaVF": 132,
+  "ts": 1794399895.4867144
+ },
+ "OCEAN INSPIRATION|295": {
+  "status": "ok",
+  "imo": "9979761",
+  "flag": "HK",
+  "vtype": "LNG Tanker",
+  "gt": 114636,
+  "dwt": 91157,
+  "built": "2025",
+  "loaVF": 295,
+  "ts": 1794399898.4556258
+ },
+ "INSPIRATION|250": {
+  "status": "ok",
+  "imo": "1024613",
+  "flag": "MH",
+  "vtype": "Crude Oil Tanker",
+  "gt": 64714,
+  "dwt": 116855,
+  "built": "2026",
+  "loaVF": 250,
+  "ts": 1794399914.1598423
+ },
+ "RISHIRI GALAXY|157": {
+  "status": "ok",
+  "imo": "9950284",
+  "flag": "PA",
+  "vtype": "Chemical/Oil Products Tanker",
+  "gt": 18287,
+  "dwt": 26396,
+  "built": "2023",
+  "loaVF": 157,
+  "ts": 1794399917.3040912
+ },
+ "NAVARINO|336": {
+  "status": "ok",
+  "imo": "9400289",
+  "flag": "MT",
+  "vtype": "Container Ship",
+  "gt": 91354,
+  "dwt": 119995,
+  "built": "2010",
+  "loaVF": 335,
+  "ts": 1794399920.2750328
  }
 }

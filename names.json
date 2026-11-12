@@ -1632,5 +1632,125 @@
   "built": "2010",
   "loaVF": 335,
   "ts": 1794399920.2750328
+ },
+ "RIDGEWAY|275": {
+  "status": "ok",
+  "imo": "1033717",
+  "flag": "LR",
+  "vtype": "Crude Oil Tanker",
+  "gt": 84677,
+  "dwt": 156037,
+  "built": "2026",
+  "loaVF": 274,
+  "ts": 1794490263.851034
+ },
+ "HENNING MAERSK|180": {
+  "status": "ok",
+  "imo": "9389526",
+  "flag": "DK",
+  "vtype": "Chemical/Oil Products Tanker",
+  "gt": 25710,
+  "dwt": 38001,
+  "built": "2010",
+  "loaVF": 180,
+  "ts": 1794490266.9039419
+ },
+ "KMS KARELLE|28": {
+  "status": "none",
+  "note": "0 exact-name hits, 0 within 2 m",
+  "ts": 1794490269.957144
+ },
+ "RED HORN|183": {
+  "status": "ok",
+  "imo": "9402809",
+  "flag": "MT",
+  "vtype": "Oil Products Tanker",
+  "gt": 26914,
+  "dwt": 47366,
+  "built": "2010",
+  "loaVF": 182,
+  "ts": 1794490273.0319767
+ },
+ "CGAS MASTER|88": {
+  "status": "ok",
+  "imo": "9344203",
+  "flag": "MT",
+  "vtype": "LPG Tanker",
+  "gt": 3430,
+  "dwt": 3801,
+  "built": "2007",
+  "loaVF": 87,
+  "ts": 1794490276.2800004
+ },
+ "EMSTAL|88": {
+  "status": "ok",
+  "imo": "9356878",
+  "flag": "PT",
+  "vtype": "General Cargo Ship",
+  "gt": 2461,
+  "dwt": 3700,
+  "built": "2007",
+  "loaVF": 88,
+  "ts": 1794490279.3352911
+ },
+ "NORTH STAR|250": {
+  "status": "none",
+  "note": "10 exact-name hits, 0 within 2 m",
+  "ts": 1794490295.3102446
+ },
+ "AZZARO|133": {
+  "status": "ok",
+  "imo": "9213727",
+  "flag": "AG",
+  "vtype": "General Cargo Ship",
+  "gt": 6154,
+  "dwt": 8733,
+  "built": "2000",
+  "loaVF": 132,
+  "ts": 1794490298.4927201
+ },
+ "W WEST|102": {
+  "status": "ok",
+  "imo": "9383651",
+  "flag": "MT",
+  "vtype": "Chemical/Oil Products Tanker",
+  "gt": 5713,
+  "dwt": 8026,
+  "built": "2008",
+  "loaVF": 101,
+  "ts": 1794490301.9218888
+ },
+ "NEHIR|180": {
+  "status": "ok",
+  "imo": "9969120",
+  "flag": "MH",
+  "vtype": "Bulk Carrier",
+  "gt": 23232,
+  "dwt": 37979,
+  "built": "2023",
+  "loaVF": 180,
+  "ts": 1794490304.9746668
+ },
+ "ATACAMA|27": {
+  "status": "ok",
+  "imo": "9240299",
+  "flag": "ES",
+  "vtype": "Tug",
+  "gt": 259,
+  "dwt": 301,
+  "built": "2001",
+  "loaVF": 27,
+  "ts": 1794490308.1603105
+ },
+ "BOW OCELOT|157": {
+  "status": "ok",
+  "imo": "1075600",
+  "flag": "PA",
+  "vtype": "Chemical/Oil Products Tanker",
+  "gt": 15973,
+  "dwt": 25593,
+  "built": "2026",
+  "loaVF": 156,
+  "ts": 1794490311.2143729
  }
 }

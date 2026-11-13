@@ -984,7 +984,7 @@
  "FINNECO I|238": {
   "status": "none",
   "note": "0 exact-name hits, 0 within 2 m",
-  "ts": 1794231341.7215188
+  "ts": 1794574180.1256902
  },
  "FPMC 32|184": {
   "status": "ok",
@@ -1132,7 +1132,7 @@
  "BARFLEUR|158": {
   "status": "none",
   "note": "1 exact-name hits, 0 within 2 m",
-  "ts": 1794231298.2389495
+  "ts": 1794574174.1659107
  },
  "BIGLIFT BARENTSZ|173": {
   "status": "ok",
@@ -1280,7 +1280,7 @@
  "MAPLE GLORY|180": {
   "status": "none",
   "note": "1 exact-name hits, 0 within 2 m",
-  "ts": 1794231314.885123
+  "ts": 1794574189.3921554
  },
  "STEEL C|200": {
   "status": "ok",
@@ -1329,7 +1329,7 @@
  "ZUGA|101": {
   "status": "none",
   "note": "0 exact-name hits, 0 within 2 m",
-  "ts": 1794231311.744472
+  "ts": 1794574183.2655091
  },
  "HAV SARDIS|90": {
   "status": "ok",
@@ -1752,5 +1752,60 @@
   "built": "2026",
   "loaVF": 156,
   "ts": 1794490311.2143729
+ },
+ "EIKBORG|89": {
+  "status": "ok",
+  "imo": "9356490",
+  "flag": "NL",
+  "vtype": "General Cargo Ship",
+  "gt": 2281,
+  "dwt": 3592,
+  "built": "2008",
+  "loaVF": 89,
+  "ts": 1794574177.1323721
+ },
+ "KAARI|116": {
+  "status": "ok",
+  "imo": "9434761",
+  "flag": "AG",
+  "vtype": "General Cargo Ship",
+  "gt": 5313,
+  "dwt": 7100,
+  "built": "2009",
+  "loaVF": 115,
+  "ts": 1794574186.4265506
+ },
+ "BWEK TAHITI|117": {
+  "status": "ok",
+  "imo": "9506186",
+  "flag": "MT",
+  "vtype": "LPG Tanker",
+  "gt": 7267,
+  "dwt": 7868,
+  "built": "2010",
+  "loaVF": 116,
+  "ts": 1794574192.387767
+ },
+ "ARAMIS|90": {
+  "status": "ok",
+  "imo": "9815329",
+  "flag": "PT",
+  "vtype": "General Cargo Ship",
+  "gt": 3415,
+  "dwt": 4938,
+  "built": "2018",
+  "loaVF": 90,
+  "ts": 1794574198.7420986
+ },
+ "FRONT SILKEBORG|275": {
+  "status": "ok",
+  "imo": "9832274",
+  "flag": "HK",
+  "vtype": "Crude Oil Tanker",
+  "gt": 82305,
+  "dwt": 157271,
+  "built": "2019",
+  "loaVF": 275,
+  "ts": 1794574201.6996598
  }
 }

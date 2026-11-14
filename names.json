@@ -1499,7 +1499,7 @@
  "NQ LAELIA|115": {
   "status": "none",
   "note": "1 exact-name hits, 0 within 2 m",
-  "ts": 1794316463.9304678
+  "ts": 1794657343.6887693
  },
  "SAVA|122": {
   "status": "ok",
@@ -1807,5 +1807,16 @@
   "built": "2019",
   "loaVF": 275,
   "ts": 1794574201.6996598
+ },
+ "SKYLINE S|100": {
+  "status": "ok",
+  "imo": "9437842",
+  "flag": "PA",
+  "vtype": "General Cargo Ship",
+  "gt": 4109,
+  "dwt": 6064,
+  "built": "2009",
+  "loaVF": 100,
+  "ts": 1794657340.7025428
  }
 }

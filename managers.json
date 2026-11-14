@@ -65,6 +65,17 @@
   "updated": "2026-10-07T11:29:34",
   "verified": false
  },
+ "1067079": {
+  "contact": "",
+  "ism": "MARLOW SHIP MGMT DEUTSCHLAND",
+  "ismEmail": "",
+  "notes": "Commercial manager: AUERBACH MARITIME GMBH & CO KG",
+  "owner": "SCHIFF 22 FELIPA AUERBACH GMBH",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-11-14T11:54:43",
+  "verified": false
+ },
  "1069508": {
   "contact": "",
   "ism": "DELFT SCHIFFAHRT GMBH & CO KG",
@@ -338,6 +349,17 @@
   "phone": "",
   "source": "magicport-auto",
   "updated": "2026-10-22T09:48:57",
+  "verified": false
+ },
+ "9136101": {
+  "contact": "",
+  "ism": "FAST BALTIC SP Z OO",
+  "ismEmail": "",
+  "notes": "",
+  "owner": "FAST LINES BELGIUM NV",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-11-14T11:54:49",
   "verified": false
  },
  "9136137": {
@@ -723,6 +745,17 @@
   "phone": "",
   "source": "magicport-auto",
   "updated": "2026-09-18T09:21:26",
+  "verified": false
+ },
+ "9349447": {
+  "contact": "",
+  "ism": "AKAYLAR DENIZ NAKLIYAT SANAYI",
+  "ismEmail": "",
+  "notes": "",
+  "owner": "CATTURI SHIPPING & TRADING INC",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-11-14T11:54:46",
   "verified": false
  },
  "9352341": {
@@ -2052,6 +2085,17 @@
   "phone": "+353 402 39901",
   "source": "magicport-auto +contacts from sibling",
   "updated": "2026-10-22T09:48:54",
+  "verified": false
+ },
+ "9851971": {
+  "contact": "Mr Conlon",
+  "ism": "ARKLOW SHIPPING ULC",
+  "ismEmail": "technical@asl.ie",
+  "notes": "John Conlon, Marine Superintendent / DPA, +353 86 3088836. Technical Director Iain Shirley. North Beach, Arklow, Co. Wicklow.",
+  "owner": "ABBEY SHIPPING LTD-IRP",
+  "phone": "+353 402 39901",
+  "source": "magicport-auto +contacts from sibling",
+  "updated": "2026-11-14T11:54:38",
   "verified": false
  },
  "9852925": {

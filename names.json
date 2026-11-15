@@ -337,7 +337,7 @@
  "JAN D|88": {
   "status": "none",
   "note": "1 exact-name hits, 0 within 2 m",
-  "ts": 1794399901.5405762
+  "ts": 1794745704.0533175
  },
  "ALVANITH|118": {
   "status": "ok",
@@ -380,7 +380,7 @@
  "VANQUISH|100": {
   "status": "ambiguous",
   "note": "6 exact-name hits, 2 within 2 m",
-  "ts": 1794399883.1933413
+  "ts": 1794745710.830359
  },
  "EAGLE II|162": {
   "status": "ok",
@@ -1818,5 +1818,16 @@
   "built": "2009",
   "loaVF": 100,
   "ts": 1794657340.7025428
+ },
+ "ARTAX|178": {
+  "status": "ok",
+  "imo": "9623063",
+  "flag": "PT",
+  "vtype": "General Cargo Ship",
+  "gt": 22861,
+  "dwt": 37072,
+  "built": "2014",
+  "loaVF": 178,
+  "ts": 1794745700.6627238
  }
 }

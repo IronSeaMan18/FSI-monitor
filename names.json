@@ -1132,7 +1132,7 @@
  "BARFLEUR|158": {
   "status": "none",
   "note": "1 exact-name hits, 0 within 2 m",
-  "ts": 1794574174.1659107
+  "ts": 1794835191.6681752
  },
  "BIGLIFT BARENTSZ|173": {
   "status": "ok",
@@ -1280,7 +1280,7 @@
  "MAPLE GLORY|180": {
   "status": "none",
   "note": "1 exact-name hits, 0 within 2 m",
-  "ts": 1794574189.3921554
+  "ts": 1794835198.170543
  },
  "STEEL C|200": {
   "status": "ok",
@@ -1329,7 +1329,7 @@
  "ZUGA|101": {
   "status": "none",
   "note": "0 exact-name hits, 0 within 2 m",
-  "ts": 1794574183.2655091
+  "ts": 1794835194.9029274
  },
  "HAV SARDIS|90": {
   "status": "ok",
@@ -1829,5 +1829,60 @@
   "built": "2014",
   "loaVF": 178,
   "ts": 1794745700.6627238
+ },
+ "MILITOS|275": {
+  "status": "ok",
+  "imo": "9607435",
+  "flag": "GR",
+  "vtype": "Crude Oil Tanker",
+  "gt": 84851,
+  "dwt": 164751,
+  "built": "2012",
+  "loaVF": 274,
+  "ts": 1794835201.2261605
+ },
+ "MINA LONDON|185": {
+  "status": "ok",
+  "imo": "9489974",
+  "flag": "MH",
+  "vtype": "Bulk Carrier",
+  "gt": 23548,
+  "dwt": 36519,
+  "built": "2010",
+  "loaVF": 185,
+  "ts": 1794835204.491508
+ },
+ "BALTICA HAV|83": {
+  "status": "ok",
+  "imo": "8415665",
+  "flag": "AG",
+  "vtype": "General Cargo Ship",
+  "gt": 1530,
+  "dwt": 2324,
+  "built": "1984",
+  "loaVF": 82,
+  "ts": 1794835207.5865693
+ },
+ "FRONT SPARTA|275": {
+  "status": "ok",
+  "imo": "9847114",
+  "flag": "HK",
+  "vtype": "Crude Oil Tanker",
+  "gt": 82305,
+  "dwt": 157271,
+  "built": "2019",
+  "loaVF": 275,
+  "ts": 1794835210.8515584
+ },
+ "YU ZHU FENG|225": {
+  "status": "ok",
+  "imo": "9523160",
+  "flag": "CN",
+  "vtype": "Bulk Carrier",
+  "gt": 40913,
+  "dwt": 75519,
+  "built": "2011",
+  "loaVF": 225,
+  "ts": 1794835214.101516
  }
 }

@@ -1499,7 +1499,7 @@
  "NQ LAELIA|115": {
   "status": "none",
   "note": "1 exact-name hits, 0 within 2 m",
-  "ts": 1794657343.6887693
+  "ts": 1794924290.1939836
  },
  "SAVA|122": {
   "status": "ok",
@@ -1884,5 +1884,92 @@
   "built": "2011",
   "loaVF": 225,
   "ts": 1794835214.101516
+ },
+ "HARBOUR EXPRESS|162": {
+  "status": "ok",
+  "imo": "9418822",
+  "flag": "PT",
+  "vtype": "Chemical/Oil Products Tanker",
+  "gt": 12745,
+  "dwt": 20522,
+  "built": "2011",
+  "loaVF": 162,
+  "ts": 1794924287.167265
+ },
+ "TITLIS|119": {
+  "status": "ok",
+  "imo": "9352353",
+  "flag": "PT",
+  "vtype": "General Cargo Ship",
+  "gt": 4990,
+  "dwt": 8291,
+  "built": "2009",
+  "loaVF": 119,
+  "ts": 1794924293.2269194
+ },
+ "ARKLOW MUSE|137": {
+  "status": "ok",
+  "imo": "9509487",
+  "flag": "IE",
+  "vtype": "General Cargo Ship",
+  "gt": 9758,
+  "dwt": 15008,
+  "built": "2013",
+  "loaVF": 136,
+  "ts": 1794924296.2866178
+ },
+ "AL YASAT II|190": {
+  "status": "none",
+  "note": "0 exact-name hits, 0 within 2 m",
+  "ts": 1794924299.1814375
+ },
+ "ERSOZ KAYE|190": {
+  "status": "ok",
+  "imo": "9625798",
+  "flag": "MH",
+  "vtype": "Bulk Carrier",
+  "gt": 33329,
+  "dwt": 57700,
+  "built": "2011",
+  "loaVF": 190,
+  "ts": 1794924302.2066731
+ },
+ "JSP FALSTER|90": {
+  "status": "ok",
+  "imo": "9968152",
+  "flag": "PT",
+  "vtype": "General Cargo Ship",
+  "gt": 3952,
+  "dwt": 5231,
+  "built": "2023",
+  "loaVF": 90,
+  "ts": 1794924305.1020296
+ },
+ "SONGA COSMOS|171": {
+  "status": "ok",
+  "imo": "9457024",
+  "flag": "MT",
+  "vtype": "Chemical/Oil Products Tanker",
+  "gt": 17862,
+  "dwt": 25130,
+  "built": "2010",
+  "loaVF": 170,
+  "ts": 1794924308.1342764
+ },
+ "MED TUNCER|124": {
+  "status": "none",
+  "note": "1 exact-name hits, 0 within 2 m",
+  "ts": 1794924311.0317936
+ },
+ "MARIA|110": {
+  "status": "ok",
+  "imo": "9986415",
+  "flag": "PT",
+  "vtype": "General Cargo Ship",
+  "gt": 5534,
+  "dwt": 7272,
+  "built": "2026",
+  "loaVF": 110,
+  "ts": 1794924329.3219283
  }
 }

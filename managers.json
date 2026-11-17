@@ -659,6 +659,17 @@
   "updated": "2026-10-21T09:48:07",
   "verified": false
  },
+ "9320518": {
+  "contact": "",
+  "ism": "GN GROUP PANAMA ISTANBUL",
+  "ismEmail": "",
+  "notes": "",
+  "owner": "VIVIANA SHIPPING CORP",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-11-17T14:04:11",
+  "verified": false
+ },
  "9326964": {
   "contact": "",
   "ism": "MSC SHIPMANAGEMENT LTD",
@@ -2382,6 +2393,17 @@
   "phone": "+852 3940 7000",
   "source": "magicport-auto +contacts from sibling",
   "updated": "2026-11-03T12:35:21",
+  "verified": false
+ },
+ "9978482": {
+  "contact": "",
+  "ism": "SAL SHIP MANAGEMENT UG",
+  "ismEmail": "",
+  "notes": "Commercial manager: SAL HEAVY LIFT GMBH & CO KG",
+  "owner": "ORCA I SAL SHIPPING UG",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-11-17T14:04:07",
   "verified": false
  },
  "9979462": {

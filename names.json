@@ -380,7 +380,7 @@
  "VANQUISH|100": {
   "status": "ambiguous",
   "note": "6 exact-name hits, 2 within 2 m",
-  "ts": 1794745710.830359
+  "ts": 1795009158.9764109
  },
  "EAGLE II|162": {
   "status": "ok",
@@ -1971,5 +1971,71 @@
   "built": "2026",
   "loaVF": 110,
   "ts": 1794924329.3219283
+ },
+ "CATHMA|111": {
+  "status": "ok",
+  "imo": "9357482",
+  "flag": "NL",
+  "vtype": "General Cargo Ship",
+  "gt": 3990,
+  "dwt": 6665,
+  "built": "2007",
+  "loaVF": 111,
+  "ts": 1795009146.1454804
+ },
+ "MINA LONDON|186": {
+  "status": "ok",
+  "imo": "9489974",
+  "flag": "MH",
+  "vtype": "Bulk Carrier",
+  "gt": 23548,
+  "dwt": 36519,
+  "built": "2010",
+  "loaVF": 185,
+  "ts": 1795009149.2098837
+ },
+ "KATARIINA|95": {
+  "status": "ok",
+  "imo": "9467213",
+  "flag": "AG",
+  "vtype": "General Cargo Ship",
+  "gt": 2862,
+  "dwt": 4114,
+  "built": "2011",
+  "loaVF": 95,
+  "ts": 1795009152.3987792
+ },
+ "LADY ANNEKE|88": {
+  "status": "ok",
+  "imo": "9624823",
+  "flag": "NL",
+  "vtype": "General Cargo Ship",
+  "gt": 2544,
+  "dwt": 3718,
+  "built": "2012",
+  "loaVF": 88,
+  "ts": 1795009162.0348368
+ },
+ "VISBY|180": {
+  "status": "ok",
+  "imo": "9563380",
+  "flag": "LR",
+  "vtype": "Bulk Carrier",
+  "gt": 22409,
+  "dwt": 35052,
+  "built": "2010",
+  "loaVF": 180,
+  "ts": 1795009165.4123316
+ },
+ "MSC ZIVANA|335": {
+  "status": "ok",
+  "imo": "1016719",
+  "flag": "LR",
+  "vtype": "Container Ship",
+  "gt": 107062,
+  "dwt": 139646,
+  "built": "2026",
+  "loaVF": 335,
+  "ts": 1795009168.465151
  }
 }

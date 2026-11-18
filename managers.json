@@ -1099,6 +1099,17 @@
   "updated": "2026-10-18T09:18:25",
   "verified": false
  },
+ "9433353": {
+  "contact": "",
+  "ism": "JENS U WALLER GMBH",
+  "ismEmail": "",
+  "notes": "",
+  "owner": "MB3 JENS & WALLER GMBH",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-11-18T13:38:19",
+  "verified": false
+ },
  "9433365": {
   "contact": "",
   "ism": "ALPHA SHIPPING CO SIA",
@@ -1295,6 +1306,17 @@
   "phone": "",
   "source": "magicport-auto",
   "updated": "2026-11-08T11:39:29",
+  "verified": false
+ },
+ "9501681": {
+  "contact": "",
+  "ism": "BRIESE SHORTSEA GMBH & CO KG",
+  "ismEmail": "",
+  "notes": "Commercial manager: BRIESE SCHIFFAHRTS GMBH & CO",
+  "owner": "NETTELBURG",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-11-18T13:38:22",
   "verified": false
  },
  "9503536": {
@@ -2360,6 +2382,17 @@
   "phone": "+34 94 600 40 60",
   "source": "magicport-auto +contacts from sibling",
   "updated": "2026-10-28T10:57:15",
+  "verified": false
+ },
+ "9972921": {
+  "contact": "Sr. Merchán",
+  "ism": "NAVIERA MURUETA SAU",
+  "ismEmail": "admon@navieramurueta.com",
+  "notes": "DPA: Juan Jesús Merchán (listed as 'DPA' on navieramurueta.com/contacto). Inspectors dept +34 94 600 40 64. C/ San Vicente 8, Edificio Albia I 9º, Bilbao. Spanish-language. Email from a directory listing, not seen on the site.",
+  "owner": "CAIXBANK SA",
+  "phone": "+34 94 600 40 60",
+  "source": "magicport-auto +contacts from sibling",
+  "updated": "2026-11-18T13:38:26",
   "verified": false
  },
  "9974008": {

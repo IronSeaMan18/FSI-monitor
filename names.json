@@ -337,7 +337,7 @@
  "JAN D|88": {
   "status": "none",
   "note": "1 exact-name hits, 0 within 2 m",
-  "ts": 1794745704.0533175
+  "ts": 1795097165.0777166
  },
  "ALVANITH|118": {
   "status": "ok",
@@ -583,7 +583,7 @@
  "FINNECO III|238": {
   "status": "none",
   "note": "1 exact-name hits, 0 within 2 m",
-  "ts": 1793796377.5549774
+  "ts": 1795097186.648016
  },
  "HELMUT|135": {
   "status": "ok",
@@ -984,7 +984,7 @@
  "FINNECO I|238": {
   "status": "none",
   "note": "0 exact-name hits, 0 within 2 m",
-  "ts": 1794574180.1256902
+  "ts": 1795097195.8985043
  },
  "FPMC 32|184": {
   "status": "ok",
@@ -1132,7 +1132,7 @@
  "BARFLEUR|158": {
   "status": "none",
   "note": "1 exact-name hits, 0 within 2 m",
-  "ts": 1794835191.6681752
+  "ts": 1795097158.7966912
  },
  "BIGLIFT BARENTSZ|173": {
   "status": "ok",
@@ -1280,7 +1280,7 @@
  "MAPLE GLORY|180": {
   "status": "none",
   "note": "1 exact-name hits, 0 within 2 m",
-  "ts": 1794835198.170543
+  "ts": 1795097168.126472
  },
  "STEEL C|200": {
   "status": "ok",
@@ -1329,7 +1329,7 @@
  "ZUGA|101": {
   "status": "none",
   "note": "0 exact-name hits, 0 within 2 m",
-  "ts": 1794835194.9029274
+  "ts": 1795097149.4357183
  },
  "HAV SARDIS|90": {
   "status": "ok",
@@ -1658,7 +1658,7 @@
  "KMS KARELLE|28": {
   "status": "none",
   "note": "0 exact-name hits, 0 within 2 m",
-  "ts": 1794490269.957144
+  "ts": 1795097152.5054493
  },
  "RED HORN|183": {
   "status": "ok",
@@ -2037,5 +2037,119 @@
   "built": "2026",
   "loaVF": 335,
   "ts": 1795009168.465151
+ },
+ "IVERO|35": {
+  "status": "ok",
+  "imo": "8108377",
+  "flag": "GB",
+  "vtype": "Research Vessel",
+  "gt": 307,
+  "dwt": 289,
+  "built": "1982",
+  "loaVF": 34,
+  "ts": 1795097155.7517304
+ },
+ "WEC DE HOOGH|150": {
+  "status": "ok",
+  "imo": "9315018",
+  "flag": "CY",
+  "vtype": "Container Ship",
+  "gt": 11662,
+  "dwt": 13716,
+  "built": "2005",
+  "loaVF": 149,
+  "ts": 1795097161.8673792
+ },
+ "AZOV FUTURE|145": {
+  "status": "ok",
+  "imo": "9643233",
+  "flag": "KN",
+  "vtype": "General Cargo Ship",
+  "gt": 9071,
+  "dwt": 12107,
+  "built": "2013",
+  "loaVF": 145,
+  "ts": 1795097171.1985707
+ },
+ "SJ COLOMBO|190": {
+  "status": "ok",
+  "imo": "9478511",
+  "flag": "KR",
+  "vtype": "Bulk Carrier",
+  "gt": 31544,
+  "dwt": 55989,
+  "built": "2010",
+  "loaVF": 190,
+  "ts": 1795097174.3294988
+ },
+ "MISTRAL ASCENT|147": {
+  "status": "ok",
+  "imo": "9740794",
+  "flag": "LR",
+  "vtype": "Chemical/Oil Products Tanker",
+  "gt": 11918,
+  "dwt": 19994,
+  "built": "2017",
+  "loaVF": 146,
+  "ts": 1795097177.4046867
+ },
+ "LNG SCHNEEWEISSCHEN|298": {
+  "status": "ok",
+  "imo": "9771913",
+  "flag": "PA",
+  "vtype": "LNG Tanker",
+  "gt": 119660,
+  "dwt": 98747,
+  "built": "2018",
+  "loaVF": 298,
+  "ts": 1795097180.4762542
+ },
+ "STAR AQUARIUS|198": {
+  "status": "ok",
+  "imo": "9715828",
+  "flag": "LR",
+  "vtype": "Bulk Carrier",
+  "gt": 34255,
+  "dwt": 60916,
+  "built": "2015",
+  "loaVF": 198,
+  "ts": 1795097183.579434
+ },
+ "CS CELESTE|180": {
+  "status": "ok",
+  "imo": "9670418",
+  "flag": "MH",
+  "vtype": "Bulk Carrier",
+  "gt": 24933,
+  "dwt": 38737,
+  "built": "2014",
+  "loaVF": 180,
+  "ts": 1795097189.7562833
+ },
+ "FRONT COSMOS|276": {
+  "status": "ok",
+  "imo": "9769817",
+  "flag": "MH",
+  "vtype": "Crude Oil Tanker",
+  "gt": 82515,
+  "dwt": 157528,
+  "built": "2017",
+  "loaVF": 276,
+  "ts": 1795097192.8279119
+ },
+ "SAR GAVIA|": {
+  "status": "none",
+  "note": "1 exact-name hits, 0 within 2 m",
+  "ts": 1795097198.945659
+ },
+ "URGOZO Y ALAI|": {
+  "status": "none",
+  "note": "0 exact-name hits, 0 within 2 m",
+  "ts": 1795097202.0226038
+ },
+ "FROY FROHAV|88": {
+  "status": "none",
+  "note": "0 exact-name hits, 0 within 2 m",
+  "ts": 1795097205.2717483
  }
 }

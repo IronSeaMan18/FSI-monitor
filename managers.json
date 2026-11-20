@@ -516,6 +516,17 @@
   "updated": "2026-09-30T10:52:47",
   "verified": false
  },
+ "9195418": {
+  "contact": "",
+  "ism": "RDJ SHIP MANAGEMENT BV",
+  "ismEmail": "",
+  "notes": "",
+  "owner": "RDJ JOHANNA SHIPPING BV",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-11-20T13:47:26",
+  "verified": false
+ },
  "9195729": {
   "contact": "",
   "ism": "RIX SHIPMANAGEMENT SIA",
@@ -1339,6 +1350,17 @@
   "phone": "",
   "source": "magicport-auto",
   "updated": "2026-11-18T13:38:22",
+  "verified": false
+ },
+ "9501710": {
+  "contact": "",
+  "ism": "SHIPOWNERS SUPPORT BV",
+  "ismEmail": "",
+  "notes": "Commercial manager: AMASUS SHIPPING BV",
+  "owner": "FLUVIUS TAVY LTD",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-11-20T13:47:22",
   "verified": false
  },
  "9503536": {

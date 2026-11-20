@@ -2151,5 +2151,76 @@
   "status": "none",
   "note": "0 exact-name hits, 0 within 2 m",
   "ts": 1795097205.2717483
+ },
+ "ARDMORE DAUNTLESS|184": {
+  "status": "ok",
+  "imo": "9707388",
+  "flag": "MH",
+  "vtype": "Chemical/Oil Products Tanker",
+  "gt": 23702,
+  "dwt": 37764,
+  "built": "2015",
+  "loaVF": 184,
+  "ts": 1795182497.7903593
+ },
+ "AGATH|122": {
+  "status": "ok",
+  "imo": "9537642",
+  "flag": "CY",
+  "vtype": "Chemical/Oil Products Tanker",
+  "gt": 4364,
+  "dwt": 6257,
+  "built": "2020",
+  "loaVF": 122,
+  "ts": 1795182507.5502257
+ },
+ "CELTIC FORTUNE|90": {
+  "status": "ok",
+  "imo": "9353711",
+  "flag": "GB",
+  "vtype": "General Cargo Ship",
+  "gt": 2999,
+  "dwt": 5063,
+  "built": "2006",
+  "loaVF": 90,
+  "ts": 1795182510.7156372
+ },
+ "ARKLOW COAST|87": {
+  "status": "ok",
+  "imo": "9757151",
+  "flag": "IE",
+  "vtype": "General Cargo Ship",
+  "gt": 2999,
+  "dwt": 5094,
+  "built": "2022",
+  "loaVF": 87,
+  "ts": 1795182513.7189443
+ },
+ "BORINGIA SWAN|110": {
+  "status": "ok",
+  "imo": "9566693",
+  "flag": "DK",
+  "vtype": "Chemical/Oil Products Tanker",
+  "gt": 4812,
+  "dwt": 7046,
+  "built": "2010",
+  "loaVF": 110,
+  "ts": 1795182516.7473702
+ },
+ "FERICEK|127": {
+  "status": "ok",
+  "imo": "9125267",
+  "flag": "TR",
+  "vtype": "Chemical/Oil Products Tanker",
+  "gt": 6737,
+  "dwt": 10106,
+  "built": "1996",
+  "loaVF": 126,
+  "ts": 1795182519.9596148
+ },
+ "WEC DE KOONING|158": {
+  "status": "none",
+  "note": "0 exact-name hits, 0 within 2 m",
+  "ts": 1795182522.9632316
  }
 }

@@ -1499,7 +1499,7 @@
  "NQ LAELIA|115": {
   "status": "none",
   "note": "1 exact-name hits, 0 within 2 m",
-  "ts": 1794924290.1939836
+  "ts": 1795266800.696988
  },
  "SAVA|122": {
   "status": "ok",
@@ -1921,7 +1921,7 @@
  "AL YASAT II|190": {
   "status": "none",
   "note": "0 exact-name hits, 0 within 2 m",
-  "ts": 1794924299.1814375
+  "ts": 1795266803.662162
  },
  "ERSOZ KAYE|190": {
   "status": "ok",
@@ -1959,7 +1959,7 @@
  "MED TUNCER|124": {
   "status": "none",
   "note": "1 exact-name hits, 0 within 2 m",
-  "ts": 1794924311.0317936
+  "ts": 1795266806.7622244
  },
  "MARIA|110": {
   "status": "ok",
@@ -2222,5 +2222,16 @@
   "status": "none",
   "note": "0 exact-name hits, 0 within 2 m",
   "ts": 1795182522.9632316
+ },
+ "COE LUISA|139": {
+  "status": "ok",
+  "imo": "9435026",
+  "flag": "AG",
+  "vtype": "General Cargo Ship",
+  "gt": 9611,
+  "dwt": 12668,
+  "built": "2008",
+  "loaVF": 138,
+  "ts": 1795266809.7163227
  }
 }

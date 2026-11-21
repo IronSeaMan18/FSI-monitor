@@ -87,4 +87,5 @@
 |---|---|---|---|---|
 | B-112 | MED | PSC badges take ~2 min to appear and trickle in | throttle end-to-start (~3 s/vessel); one request per vessel; cache wiped by daily redeploy with no warm-up | start-to-start throttle; batch endpoint + background worker; warm on list fetch, at boot and every 6 h |
 | B-113 | HIGH | Combined Inspection Request button appears dead | v3.16.1 awaited PSC status (up to 20 s) before opening; errors in async onclick were silent | open immediately, refresh in place when PSC arrives; try/catch → alert |
+| B-114 | HIGH | Bilbao: port names in ETA column, wrong GT, past arrivals listed | port page gained extra tables (arrivals/departures/at berth); parser used fixed column positions on every flagged row | parse only 'Expected arrival' table, header-driven columns, drop non-date ETA, exact GT header |
 

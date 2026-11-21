@@ -1,9 +1,21 @@
 # FSI Vessel Arrival Monitor — VERSION LOG
-Current production version: **v3.17.0**
+Current production version: **v3.17.1**
 
 Semantics: MAJOR = architecture change | MINOR = feature | PATCH = fix
 Release entries below are **newest first**; standing reference sections
 (data source matrix, standing constraint) are at the end of the file.
+
+## v3.17.1 — Bilbao ETA column showing port names (B-114)
+User report: Bilbao rows showed HUELVA / CARTAGENA / ROSTOCK in the ETA column, past dates in "From",
+GT 58 / 86 / 270, and "05 Dec at 00:00".
+Root cause: bilbaoport.eus now puts 6 tables on the page (in port, recent arrivals, recent departures,
+at berth with arrival/departure, expected arrivals, at anchor). The parser read every flagged row with
+the expected-arrivals column positions → rows from the "at berth" table (origin in col 5, arrival date
+in col 6) were mis-mapped; those already-arrived ships also escaped "Hide past ETA" (no ETA date).
+Fix: parse only the table whose header has "Expected arrival"; map columns by header text; drop rows
+whose ETA is not a date; GT matched exactly (was matching the "gt" inside "Length"); Bilbao publishes
+date only, so no fake "00:00" time is shown.
+Verified live: 79 vessels, 0 without a real ETA date (was 99 incl. 20 mis-read). Test B-114 5/5.
 
 ## v3.17.0 — "Requested" mark per vessel / port call
 User request: a click in front of the vessel to record that the attendance request was already

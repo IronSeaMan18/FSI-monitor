@@ -1253,6 +1253,17 @@
   "updated": "2026-11-21T13:12:34",
   "verified": false
  },
+ "9469508": {
+  "contact": "",
+  "ism": "SEAGOING LTD",
+  "ismEmail": "",
+  "notes": "",
+  "owner": "SEAGOING LTD",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-11-22T13:01:12",
+  "verified": false
+ },
  "9470844": {
   "contact": "",
   "ism": "DEVAL MARINE GEMI",
@@ -1616,6 +1627,17 @@
   "updated": "2026-11-19T14:04:54",
   "verified": false
  },
+ "9566289": {
+  "contact": "",
+  "ism": "HARTMANN GAS CARRIERS GERMANY",
+  "ismEmail": "",
+  "notes": "Commercial manager: CHEMGAS SHIPPING BV",
+  "owner": "CHEMGAS SHIPPING BV",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-11-22T13:01:08",
+  "verified": false
+ },
  "9566552": {
   "contact": "",
   "ism": "SEACOAST LTD",
@@ -1865,6 +1887,17 @@
   "phone": "",
   "source": "magicport-auto",
   "updated": "2026-10-31T10:42:58",
+  "verified": false
+ },
+ "9669213": {
+  "contact": "",
+  "ism": "ATLANTIC OFFSHORE MANAGEMENT",
+  "ismEmail": "",
+  "notes": "",
+  "owner": "ATLANTIC OFFSHORE SEISMIC AS",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-11-22T13:01:15",
   "verified": false
  },
  "9674828": {
@@ -2228,6 +2261,17 @@
   "phone": "",
   "source": "magicport-auto",
   "updated": "2026-10-27T10:11:15",
+  "verified": false
+ },
+ "9871012": {
+  "contact": "",
+  "ism": "EMPRESA NAVIERA ELCANO SA",
+  "ismEmail": "",
+  "notes": "",
+  "owner": "IBERIAN TANKERS 2 LTD",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-11-22T13:01:05",
   "verified": false
  },
  "9879052": {

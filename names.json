@@ -1921,7 +1921,7 @@
  "AL YASAT II|190": {
   "status": "none",
   "note": "0 exact-name hits, 0 within 2 m",
-  "ts": 1795266803.662162
+  "ts": 1795534188.7010055
  },
  "ERSOZ KAYE|190": {
   "status": "ok",
@@ -1959,7 +1959,7 @@
  "MED TUNCER|124": {
   "status": "none",
   "note": "1 exact-name hits, 0 within 2 m",
-  "ts": 1795266806.7622244
+  "ts": 1795534191.6881864
  },
  "MARIA|110": {
   "status": "ok",
@@ -2348,5 +2348,82 @@
   "built": "2015",
   "loaVF": 179,
   "ts": 1795448384.4294076
+ },
+ "OINOUSSIAN STAR|184": {
+  "status": "ok",
+  "imo": "9827578",
+  "flag": "MH",
+  "vtype": "Chemical/Oil Products Tanker",
+  "gt": 29544,
+  "dwt": 49999,
+  "built": "2018",
+  "loaVF": 183,
+  "ts": 1795534185.6531765
+ },
+ "MIA MARIA|89": {
+  "status": "ok",
+  "imo": "9518218",
+  "flag": "CY",
+  "vtype": "General Cargo Ship",
+  "gt": 2597,
+  "dwt": 3748,
+  "built": "2012",
+  "loaVF": 89,
+  "ts": 1795534194.5681152
+ },
+ "SERENGETI PARK|147": {
+  "status": "ok",
+  "imo": "9992579",
+  "flag": "LR",
+  "vtype": "Chemical/Oil Products Tanker",
+  "gt": 12221,
+  "dwt": 19970,
+  "built": "2025",
+  "loaVF": 146,
+  "ts": 1795534197.6106465
+ },
+ "NG WORKER|89": {
+  "status": "ok",
+  "imo": "9533244",
+  "flag": "IT",
+  "vtype": "Offshore Support Vessel",
+  "gt": 3923,
+  "dwt": 2350,
+  "built": "2009",
+  "loaVF": 89,
+  "ts": 1795534200.6455202
+ },
+ "GOLF|180": {
+  "status": "ok",
+  "imo": "9580120",
+  "flag": "MH",
+  "vtype": "Bulk Carrier",
+  "gt": 23440,
+  "dwt": 37856,
+  "built": "2011",
+  "loaVF": 180,
+  "ts": 1795534216.1950428
+ },
+ "MSC JOY|203": {
+  "status": "ok",
+  "imo": "9039250",
+  "flag": "PA",
+  "vtype": "Container Ship",
+  "gt": 30567,
+  "dwt": 41109,
+  "built": "1992",
+  "loaVF": 202,
+  "ts": 1795534219.2404208
+ },
+ "MSC SERENA|335": {
+  "status": "ok",
+  "imo": "1013169",
+  "flag": "LR",
+  "vtype": "Container Ship",
+  "gt": 107062,
+  "dwt": 139647,
+  "built": "2025",
+  "loaVF": 335,
+  "ts": 1795534222.1228127
  }
 }

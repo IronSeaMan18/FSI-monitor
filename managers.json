@@ -2087,6 +2087,17 @@
   "updated": "2026-10-17T08:58:49",
   "verified": false
  },
+ "9729269": {
+  "contact": "",
+  "ism": "WESTERN SHIPPING PTE LTD",
+  "ismEmail": "",
+  "notes": "",
+  "owner": "FOURTH LPG SHIP PTE LTD",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-11-25T15:15:38",
+  "verified": false
+ },
  "9736066": {
   "contact": "",
   "ism": "MARFIN MANAGEMENT SAM",
@@ -2646,6 +2657,17 @@
   "phone": "",
   "source": "magicport-auto",
   "updated": "2026-11-11T12:23:20",
+  "verified": false
+ },
+ "9993365": {
+  "contact": "Mr Verbeek",
+  "ism": "VERTOM BEREEDERUNGS GMBH",
+  "ismEmail": "daan.verbeek@vertom.nl",
+  "notes": "Commercial manager: BOJEN-SCHIFFAHRTSBETRIEB EK",
+  "owner": "VERTOM JOYCE BV",
+  "phone": "+31 10 285 84 39",
+  "source": "magicport-auto +contacts from sibling",
+  "updated": "2026-11-25T15:15:41",
   "verified": false
  },
  "9994682": {

@@ -380,7 +380,7 @@
  "VANQUISH|100": {
   "status": "ambiguous",
   "note": "6 exact-name hits, 2 within 2 m",
-  "ts": 1795352534.2679343
+  "ts": 1795619792.9186404
  },
  "EAGLE II|162": {
   "status": "ok",
@@ -2425,5 +2425,71 @@
   "built": "2025",
   "loaVF": 335,
   "ts": 1795534222.1228127
+ },
+ "FAST OLIVIA|89": {
+  "status": "ok",
+  "imo": "1029065",
+  "flag": "BE",
+  "vtype": "General Cargo Ship",
+  "gt": 2518,
+  "dwt": 3850,
+  "built": "2025",
+  "loaVF": 89,
+  "ts": 1795619785.862959
+ },
+ "NEW COMMANDER|187": {
+  "status": "ok",
+  "imo": "9610652",
+  "flag": "PA",
+  "vtype": "Bulk Carrier",
+  "gt": 22662,
+  "dwt": 37187,
+  "built": "2012",
+  "loaVF": 186,
+  "ts": 1795619796.2870913
+ },
+ "FRI STREAM|90": {
+  "status": "ok",
+  "imo": "9346677",
+  "flag": "BS",
+  "vtype": "General Cargo Ship",
+  "gt": 2984,
+  "dwt": 4891,
+  "built": "2007",
+  "loaVF": 90,
+  "ts": 1795619799.6749942
+ },
+ "BW LILAC|295": {
+  "status": "ok",
+  "imo": "9758076",
+  "flag": "MT",
+  "vtype": "LNG Tanker",
+  "gt": 114364,
+  "dwt": 90714,
+  "built": "2018",
+  "loaVF": 295,
+  "ts": 1795619802.8205101
+ },
+ "ECO DELAWARE|180": {
+  "status": "ok",
+  "imo": "9831490",
+  "flag": "MH",
+  "vtype": "Bulk Carrier",
+  "gt": 25189,
+  "dwt": 39511,
+  "built": "2018",
+  "loaVF": 180,
+  "ts": 1795619806.1907873
+ },
+ "PRIMEWAY|277": {
+  "status": "ok",
+  "imo": "9817626",
+  "flag": "LR",
+  "vtype": "Crude Oil Tanker",
+  "gt": 81394,
+  "dwt": 157470,
+  "built": "2018",
+  "loaVF": 277,
+  "ts": 1795619809.331652
  }
 }

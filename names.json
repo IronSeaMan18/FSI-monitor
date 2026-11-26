@@ -2491,5 +2491,71 @@
   "built": "2018",
   "loaVF": 277,
   "ts": 1795619809.331652
+ },
+ "AMETHYST|93": {
+  "status": "ok",
+  "imo": "9246918",
+  "flag": "CY",
+  "vtype": "Chemical/Oil Products Tanker",
+  "gt": 2682,
+  "dwt": 4282,
+  "built": "2002",
+  "loaVF": 92,
+  "ts": 1795704105.0893312
+ },
+ "WILSON WEDAU|88": {
+  "status": "ok",
+  "imo": "9987079",
+  "flag": "BB",
+  "vtype": "General Cargo Ship",
+  "gt": 1952,
+  "dwt": 2897,
+  "built": "2024",
+  "loaVF": 88,
+  "ts": 1795704108.2609644
+ },
+ "SULPHUR GENESIS|95": {
+  "status": "ok",
+  "imo": "9511789",
+  "flag": "MT",
+  "vtype": "Chemical Tanker",
+  "gt": 3235,
+  "dwt": 4451,
+  "built": "2008",
+  "loaVF": 95,
+  "ts": 1795704111.4318297
+ },
+ "EMS CALYPSO|88": {
+  "status": "ok",
+  "imo": "9557393",
+  "flag": "AG",
+  "vtype": "General Cargo Ship",
+  "gt": 1934,
+  "dwt": 2600,
+  "built": "2012",
+  "loaVF": 88,
+  "ts": 1795704114.609238
+ },
+ "VERTOM JOY|129": {
+  "status": "ok",
+  "imo": "9706865",
+  "flag": "NL",
+  "vtype": "General Cargo Ship",
+  "gt": 7905,
+  "dwt": 11000,
+  "built": "2023",
+  "loaVF": 128,
+  "ts": 1795704117.7785082
+ },
+ "RED FIN|191": {
+  "status": "ok",
+  "imo": "9607306",
+  "flag": "MT",
+  "vtype": "Bulk Carrier",
+  "gt": 33042,
+  "dwt": 56780,
+  "built": "2011",
+  "loaVF": 190,
+  "ts": 1795704120.9523563
  }
 }

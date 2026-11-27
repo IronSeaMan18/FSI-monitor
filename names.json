@@ -583,7 +583,7 @@
  "FINNECO III|238": {
   "status": "none",
   "note": "1 exact-name hits, 0 within 2 m",
-  "ts": 1795448369.1544642
+  "ts": 1795790369.9959311
  },
  "HELMUT|135": {
   "status": "ok",
@@ -984,7 +984,7 @@
  "FINNECO I|238": {
   "status": "none",
   "note": "0 exact-name hits, 0 within 2 m",
-  "ts": 1795448378.4217868
+  "ts": 1795790386.024728
  },
  "FPMC 32|184": {
   "status": "ok",
@@ -2221,7 +2221,7 @@
  "WEC DE KOONING|158": {
   "status": "none",
   "note": "0 exact-name hits, 0 within 2 m",
-  "ts": 1795448375.3405998
+  "ts": 1795790379.4583466
  },
  "COE LUISA|139": {
   "status": "ok",
@@ -2557,5 +2557,60 @@
   "built": "2011",
   "loaVF": 190,
   "ts": 1795704120.9523563
+ },
+ "PAULA S|20": {
+  "status": "ok",
+  "imo": "9098579",
+  "flag": "DM",
+  "vtype": "Tug",
+  "gt": 131,
+  "dwt": null,
+  "built": "2002",
+  "loaVF": 20,
+  "ts": 1795790366.8989692
+ },
+ "MANISA ARIEL|120": {
+  "status": "ok",
+  "imo": "1097828",
+  "flag": "IT",
+  "vtype": "General Cargo Ship",
+  "gt": 6321,
+  "dwt": 9335,
+  "built": "2026",
+  "loaVF": 120,
+  "ts": 1795790373.0803556
+ },
+ "MIGHTY STAR|229": {
+  "status": "ok",
+  "imo": "9860881",
+  "flag": "PA",
+  "vtype": "Bulk Carrier",
+  "gt": 43206,
+  "dwt": 81635,
+  "built": "2020",
+  "loaVF": 229,
+  "ts": 1795790376.1612434
+ },
+ "CLEAN HORIZON|289": {
+  "status": "ok",
+  "imo": "9655444",
+  "flag": "MT",
+  "vtype": "LNG Tanker",
+  "gt": 105943,
+  "dwt": 89831,
+  "built": "2015",
+  "loaVF": 289,
+  "ts": 1795790382.7498746
+ },
+ "AAL GEELONG|160": {
+  "status": "ok",
+  "imo": "9393539",
+  "flag": "CY",
+  "vtype": "General Cargo Ship",
+  "gt": 19128,
+  "dwt": 25820,
+  "built": "2009",
+  "loaVF": 160,
+  "ts": 1795790389.3028886
  }
 }

@@ -395,6 +395,17 @@
   "updated": "2026-10-07T11:29:50",
   "verified": false
  },
+ "9148192": {
+  "contact": "",
+  "ism": "KOPERVIK SHIP MGMT POLAND",
+  "ismEmail": "",
+  "notes": "Commercial manager: KOPERVIK SHIP MANAGEMENT AS",
+  "owner": "HOGLI AS",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-11-28T13:50:21",
+  "verified": false
+ },
  "9150509": {
   "contact": "Mr Mirkovic",
   "ism": "Wilson Ship Management AS",
@@ -1605,6 +1616,17 @@
   "updated": "2026-10-24T09:16:09",
   "verified": false
  },
+ "9557393": {
+  "contact": "",
+  "ism": "EMS SHIPMANAGEMENT GMBH & CO",
+  "ismEmail": "",
+  "notes": "",
+  "owner": "FUNFZIGSTE FEHN SCHIFFAHRTS",
+  "phone": "",
+  "source": "magicport-auto",
+  "updated": "2026-11-28T13:50:24",
+  "verified": false
+ },
  "9558000": {
   "contact": "",
   "ism": "CARISBROOKE SHIPPING LTD",
@@ -2140,6 +2162,17 @@
   "phone": "",
   "source": "magicport-auto",
   "updated": "2026-09-15T09:45:18",
+  "verified": false
+ },
+ "9736951": {
+  "contact": "",
+  "ism": "ANGLO-EASTERN SHIP MANAGEMENT",
+  "ismEmail": "",
+  "notes": "Commercial manager: MERIDIAN 1 LTD",
+  "owner": "MERIDIAN 1 LTD",
+  "phone": "+852 3940 7000",
+  "source": "magicport-auto +contacts from sibling",
+  "updated": "2026-11-28T13:50:18",
   "verified": false
  },
  "9738882": {
